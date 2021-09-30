@@ -1,7 +1,7 @@
 
 <div align="center">
   <h1>FACT</h1>
-  <h3>Forensic Automated Collection Tool</h3>
+  <h3>Forensic Artefact Collection Tool</h3>
 </div>
 
 # Overview
