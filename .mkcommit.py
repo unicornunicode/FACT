@@ -31,9 +31,7 @@ def is_conventional(s: str) -> bool:
 
 def is_word(s: str) -> bool:
     if not matches(r"\S+"):
-        raise ValidationFailedException(
-                "The scope should be a single word"
-        )
+        raise ValidationFailedException("The scope should be a single word")
     return True
 
 
@@ -44,9 +42,7 @@ def is_sentence(s: str) -> bool:
 
 
 def ask_type() -> str:
-    return ask(
-        "Select the type of change that you're committing", one_of=type_keywords
-    )
+    return ask("Select the type of change that you're committing", one_of=type_keywords)
 
 
 def ask_scope() -> str:
