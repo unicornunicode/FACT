@@ -8,10 +8,10 @@ license = "AGPL-3.0-or-later"
 [tool.poetry.dependencies]
 python = "^3.9"
 parallel-ssh = "^2.6.0"
-flake8-bugbear = "^21.9.2"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
+flake8-bugbear = "^21.9.2"
 mypy = "^0.910"
 black = "^21.9b0"
 pytest = "^6.2.5"
