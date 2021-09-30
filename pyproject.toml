@@ -3,7 +3,7 @@ name = "fact"
 version = "0.1.0"
 description = "Tool to collect, process and visualise forensic data from clusters of machines"
 authors = []
-license = "AGPL-3.0-or-later"
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
