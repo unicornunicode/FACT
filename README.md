@@ -1,6 +1,6 @@
 
 <div align="center">
-  <h1>FACT</h1>
+  <h1><img src=".github/logo.png" alt="FACT" /></h1>
   <h3>Forensic Artefact Collection Tool</h3>
 </div>
 
@@ -11,7 +11,7 @@ machines running in the cloud or on-premise.
 
 # Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
