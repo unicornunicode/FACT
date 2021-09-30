@@ -15,6 +15,7 @@ flake8 = "^3.9.2"
 mypy = "^0.910"
 black = "^21.9b0"
 pytest = "^6.2.5"
+mkcommit = "^1.0.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
