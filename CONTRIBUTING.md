@@ -30,5 +30,23 @@ mypy .
 python -m pytest
 ```
 
+# Writing Messages
+
+We follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+for commit messages and pull requests:
+```
+<type>[optional scope]: <description>
+```
+
+We use the following types:
+
+* **ci**: Changes to CI configuration
+* **docs**: Documentation only changes
+* **feat**: A new feature
+* **fix**: A bug fix
+* **refactor**: A code change that neither fixes a bug nor adds a feature
+* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+* **test**: Adding missing tests or correcting existing tests
+
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
