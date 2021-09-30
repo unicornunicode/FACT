@@ -20,6 +20,8 @@ poetry shell
 Before submitting commits or pull requests, consider running the following
 checks:
 ```sh
+# Enter virtual environment if you haven't already
+poetry shell
 # Linting
 flake8 .
 # Type-check
