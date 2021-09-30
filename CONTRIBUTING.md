@@ -40,13 +40,21 @@ for commit messages and pull requests:
 
 We use the following types:
 
-* **ci**: Changes to CI configuration
-* **docs**: Documentation only changes
-* **feat**: A new feature
-* **fix**: A bug fix
-* **refactor**: A code change that neither fixes a bug nor adds a feature
-* **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
-* **test**: Adding missing tests or correcting existing tests
+- **feat**: A new feature
+- **fix**: A bug fix
+- **docs**: Documentation only changes
+- **style**: Changes that do not affect the meaning of the code
+- **refactor**: A code change that neither fixes a bug nor adds a feature
+- **test**: Adding missing tests or correcting existing tests
+- **ci**: Changes to our CI configuration files and scripts
+- **chore**: Other changes that don't modify src or test files
+- **wip**: Work-in-progress
+
+To help you write commit messages, you can use:
+```sh
+# Asks you a series of questions about your commit
+mkcommit
+```
 
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->

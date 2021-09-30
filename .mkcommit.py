@@ -1,8 +1,8 @@
-from mkcommit import Keyword, CommitMessage, to_stdout
-from mkcommit.model import CommaSeparatedList, ask
-from mkcommit.suites import semantic
+from mkcommit import Keyword, CommitMessage
+from mkcommit.validators import matches
+from mkcommit.model import ask, ValidationFailedException
 
-commit_keywords = [
+type_keywords = [
     Keyword("feat", "A new feature"),
     Keyword("fix", "A bug fix"),
     Keyword("docs", "Documentation only changes"),
@@ -15,31 +15,78 @@ commit_keywords = [
 ]
 
 
-def ask_short_commit_msg() -> str:
-    return ask("Provide the short commit msg: ")
+def is_conventional(s: str) -> bool:
+    types = "(" + "|".join([k.keyword for k in type_keywords]) + ")"
+    scope = r"(\(.+\))?"
+    breaking = r"!?"
+    subject = r".+"
+
+    expression = f"{types}{scope}{breaking}: {subject}"
+    if not matches(expression)(s):
+        raise ValidationFailedException(
+            "The message is not a valid Conventional Commit"
+        )
+    return True
 
 
-def default_short() -> str:
-    keywords = CommaSeparatedList(*[k.keyword for k in semantic.ask_keywords()])
-    scope = semantic.ask_scope()
-    short_commit = ask_short_commit_msg()
-    breaking = ""
+def is_word(s: str) -> bool:
+    if not matches(r"\S+"):
+        raise ValidationFailedException(
+                "The scope should be a single word"
+        )
+    return True
+
+
+def is_sentence(s: str) -> bool:
+    if " " not in s or len(s) < 3:
+        raise ValidationFailedException("The message should at least contain two words")
+    return True
+
+
+def ask_type() -> str:
+    return ask(
+        "Select the type of change that you're committing", one_of=type_keywords
+    )
+
+
+def ask_scope() -> str:
+    return ask("What is the scope of this change (Optional)", check=is_word)
+
+
+def ask_subject() -> str:
+    return ask(
+        "Write a short, imperative tense description of the change",
+        check=is_sentence,
+    )
+
+
+def ask_body() -> str:
+    return ask(
+        "Provide a longer description of the change (Optional)",
+    )
+
+
+# NOTE: Breaking change not implemented
+
+
+def message_simple() -> str:
+    type = ask_type().keyword
+    scope = ask_scope()
+    subject = ask_subject()
     if scope:
-        return f"{keywords}({scope}){breaking}: {short_commit}"
+        return f"{type}({scope}): {subject}"
     else:
-        return f"{keywords}{breaking}: {short_commit}"
+        return f"{type}: {subject}"
 
 
 def commit():
-    return CommitMessage(default_short())
+    first_line, body = message_simple(), ask_body()
+    is_conventional(first_line)
+    return CommitMessage(first_line, body)
 
 
 def on_commit(msg: CommitMessage):
-    semantic.is_semantic(msg.first_line)
-
-
-if __name__ == "__main__":
-    to_stdout(commit())
+    is_conventional(msg.first_line)
 
 
 # vim: set et ts=4 sw=4:
