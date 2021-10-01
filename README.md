@@ -9,6 +9,30 @@
 FACT is a tool to collect, process and visualise forensic data from clusters of
 machines running in the cloud or on-premise.
 
+# Manual Deployment
+
+You'll need Python 3.9+ on your controller node and worker nodes, and a 
+PostgreSQL database.
+
+Install FACT on the controller node and worker nodes with:
+```sh
+sudo pip install https://github.com/unicornunicode/FACT.git
+```
+
+## Controller
+
+Start the controller node using:
+```sh
+python -m fact.controller
+```
+
+## Worker
+
+Start the worker nodes using:
+```sh
+python -m fact.worker
+```
+
 # Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
