@@ -72,5 +72,16 @@ When `make` is unavailable, directly invoke the compiler:
 python -m grpc_tools.protoc -Iproto --python_out=. --grpc_python_out=. --mypy_out=. --proto_path=proto proto/fact/controller.proto
 ```
 
+# Running
+
+For development, a script combining the controller and worker components
+communicating on the loopback interface can be used:
+```sh
+# Enter virtual environment if you haven't already
+poetry shell
+# Start the development instance
+python -m fact.dev
+```
+
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
