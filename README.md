@@ -30,7 +30,7 @@ python -m fact.controller --listen-addr [::]:5123
 
 Start the worker nodes using:
 ```sh
-python -m fact.worker --controller-addr <controller-host>:5123
+python -m fact.worker --controller-addr $CONTROLLER_ADDRESS:5123
 ```
 
 # Contributing
