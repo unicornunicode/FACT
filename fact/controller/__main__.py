@@ -12,7 +12,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--listen-addr",
         default="localhost:5123",
-        help="Address and port for the controller to listen on (Set to [::]:5123 to listen on all interfaces and families) (Default: localhost:5123)",
+        help="Address and port for the controller to listen on (Set to [::]:5123 to "
+        "listen on all interfaces and families) "
+        "(Default: localhost:5123)",
     )
     args = parser.parse_args()
 
