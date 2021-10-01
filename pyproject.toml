@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.9"
 parallel-ssh = "^2.6.0"
+grpcio = "^1.41.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -16,7 +17,26 @@ mypy = "^0.910"
 black = "^21.9b0"
 pytest = "^6.2.5"
 mkcommit = "^1.0.2"
+grpcio-tools = "^1.41.0"
+# Type stubs
+mypy-protobuf = "^2.10"
+grpc-stubs = "^1.24.7"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[[tool.mypy.overrides]]
+module = ["grpc.aio"]
+ignore_missing_imports = true
+
+[tool.black]
+extend-exclude = """
+(
+  .*_pb2.py
+  | .*_pb2_grpc.py
+)
+"""
+
+
+# vim: set et ts=4 sw=4:
