@@ -8,8 +8,12 @@ from . import Worker
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    parser = ArgumentParser(description='FACT worker')
-    parser.add_argument('--controller-addr', default='localhost:5123', help='Address and port of the controller for the worker to connect to (Default: localhost:5123)')
+    parser = ArgumentParser(description="FACT worker")
+    parser.add_argument(
+        "--controller-addr",
+        default="localhost:5123",
+        help="Address and port of the controller for the worker to connect to (Default: localhost:5123)",
+    )
     args = parser.parse_args()
 
     loop = asyncio.get_event_loop()
