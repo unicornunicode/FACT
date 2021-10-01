@@ -56,5 +56,21 @@ To help you write commit messages, you can use:
 mkcommit
 ```
 
+# Updating gRPC Protocol
+
+After any change to the gRPC protocol as defined in the `.proto` files, the
+services, stubs and types must be regenerated using the protocol buffer compiler.
+This can be done by running:
+```sh
+# Enter virtual environment if you haven't already
+poetry shell
+# Compile the files specified in Makefile if they changed
+make proto
+```
+When `make` is unavailable, directly invoke the compiler:
+```sh
+python -m grpc_tools.protoc -Iproto --python_out=. --grpc_python_out=. --mypy_out=. --proto_path=proto proto/fact/controller.proto
+```
+
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
