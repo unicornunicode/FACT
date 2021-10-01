@@ -15,15 +15,17 @@ class Greeter(GreeterServicer):
 
 
 class Controller:
+    listen_addr: str
     server: Server
 
-    def __init__(self):
+    def __init__(self, listen_addr: str):
+        self.listen_addr = listen_addr
         self.server = grpc_server()
         add_GreeterServicer_to_server(Greeter(), self.server)
 
-    async def start(self, listen_addr: str):
-        logging.info(f"Starting server on {listen_addr}")
-        self.server.add_insecure_port(listen_addr)
+    async def start(self):
+        logging.info(f"Starting server on {self.listen_addr}")
+        self.server.add_insecure_port(self.listen_addr)
         await self.server.start()
         await self.server.wait_for_termination()
 

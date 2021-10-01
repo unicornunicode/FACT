@@ -18,9 +18,9 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
 
-    c = Controller()
+    c = Controller(listen_addr=args.listen_addr)
     try:
-        loop.run_until_complete(c.start(args.listen_addr))
+        loop.run_until_complete(c.start())
     except KeyboardInterrupt:
         loop.run_until_complete(c.stop(10))
 
