@@ -23,14 +23,14 @@ sudo pip install https://github.com/unicornunicode/FACT.git
 
 Start the controller node using:
 ```sh
-python -m fact.controller
+python -m fact.controller --listen-addr [::]:5123
 ```
 
 ## Worker
 
 Start the worker nodes using:
 ```sh
-python -m fact.worker
+python -m fact.worker --controller-addr <controller-host>:5123
 ```
 
 # Contributing
