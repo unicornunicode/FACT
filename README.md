@@ -11,8 +11,7 @@ machines running in the cloud or on-premise.
 
 # Manual Deployment
 
-You'll need Python 3.9+ on your controller node and worker nodes, and a 
-PostgreSQL database.
+You'll need Python 3.9+ on your controller node and worker nodes.
 
 Install FACT on the controller node and worker nodes with:
 ```sh
