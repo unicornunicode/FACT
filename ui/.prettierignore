@@ -1,5 +1,0 @@
-# Ignore all JavaScrip and TypeScript files, these are handled by xo.
-*.ts
-*.tsx
-*.js
-*.jsx

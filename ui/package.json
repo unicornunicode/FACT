@@ -6,8 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "xo && prettier --check .",
-    "format": "xo --fix; prettier --write ."
+    "type-check": "tsc --pretty --noEmit",
+    "lint": "xo && prettier --check **/*.{css,html,json,yaml}",
+    "format": "xo --fix; prettier --write **/*.{css,html,json,yaml}"
   },
   "dependencies": {
     "debug": "^4.3.2",
