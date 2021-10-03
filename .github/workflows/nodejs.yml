@@ -15,7 +15,8 @@ jobs:
       matrix:
         node-version: [14.x]
     defaults:
-      working-directory: ui
+      run:
+        working-directory: ui
 
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +27,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: ui/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Format
@@ -46,7 +47,8 @@ jobs:
       matrix:
         node-version: [14.x]
     defaults:
-      working-directory: ui
+      run:
+        working-directory: ui
 
     steps:
       - uses: actions/checkout@v2
@@ -57,7 +59,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: ui/package-lock.json
       - name: Install dependencies
         run: npm ci
       - name: Type-check

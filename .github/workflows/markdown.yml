@@ -23,8 +23,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
       - name: Install prettier
         run: npm install --no-save prettier@2
       - name: Format
