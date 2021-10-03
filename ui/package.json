@@ -7,13 +7,14 @@
     "build": "next build",
     "start": "next start",
     "type-check": "tsc --pretty --noEmit",
-    "lint": "xo && prettier --check **/*.{css,html,json,yaml}",
-    "format": "xo --fix; prettier --write **/*.{css,html,json,yaml}"
+    "lint": "xo && prettier --check **/*.css *.json",
+    "format": "xo --fix; prettier --write **/*.css *.json"
   },
   "dependencies": {
     "debug": "^4.3.2",
     "next": "11.1.2",
     "react": "17.0.2",
+    "react-bootstrap": "^2.0.0-rc.0",
     "react-dom": "17.0.2"
   },
   "devDependencies": {
@@ -25,6 +26,9 @@
     "xo": "^0.45.0"
   },
   "xo": {
+    "ignores": [
+      "next-env.d.ts"
+    ],
     "extends": [
       "xo-react",
       "next"
