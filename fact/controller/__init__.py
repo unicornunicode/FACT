@@ -14,7 +14,7 @@ from ..controller_pb2 import (
 from ..controller_pb2_grpc import WorkerTasksServicer, add_WorkerTasksServicer_to_server
 
 
-log = logging.getLogger("controller")
+log = logging.getLogger(__name__)
 
 
 class WorkerTasks(WorkerTasksServicer):
