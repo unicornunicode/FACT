@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\x1a\x1bgoogle/protobuf/empty.proto\"=\n\x12WorkerRegistration\x12\x15\n\rprevious_uuid\x18\x01 \x01(\x0c\x12\x10\n\x08hostname\x18\x02 \x01(\t\" \n\x10WorkerAcceptance\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x96\x01\n\nWorkerTask\x12\x1e\n\ttask_null\x18\x01 \x01(\x0b\x32\t.TaskNullH\x00\x12-\n\x11task_collect_disk\x18\x02 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x03 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x42\x06\n\x04task\"\n\n\x08TaskNull\"P\n\x0fTaskCollectDisk\x12\x17\n\x06target\x18\x01 \x01(\x0b\x32\x07.Target\x12$\n\rdisk_selector\x18\x02 \x01(\x0b\x32\r.DiskSelector\"m\n\x0c\x44iskSelector\x12\"\n\x05group\x18\x01 \x01(\x0e\x32\x13.DiskSelector.Group\"9\n\x05Group\x12\r\n\tALL_DISKS\x10\x00\x12\r\n\tROOT_DISK\x10\x01\x12\x12\n\x0eROOT_PARTITION\x10\x02\",\n\x11TaskCollectMemory\x12\x17\n\x06target\x18\x01 \x01(\x0b\x32\x07.Target\";\n\x06Target\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"I\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x12\n\nprivateKey\x18\x04 \x01(\t2q\n\x0bWorkerTasks\x12\x32\n\x08Register\x12\x13.WorkerRegistration\x1a\x11.WorkerAcceptance\x12.\n\x07GetTask\x12\x16.google.protobuf.Empty\x1a\x0b.WorkerTaskb\x06proto3'
+  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\x1a\x1bgoogle/protobuf/empty.proto\"=\n\x12WorkerRegistration\x12\x15\n\rprevious_uuid\x18\x01 \x01(\x0c\x12\x10\n\x08hostname\x18\x02 \x01(\t\" \n\x10WorkerAcceptance\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x96\x01\n\nWorkerTask\x12\x1e\n\ttask_none\x18\x01 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x02 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x03 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x42\x06\n\x04task\"\n\n\x08TaskNone\"P\n\x0fTaskCollectDisk\x12\x17\n\x06target\x18\x01 \x01(\x0b\x32\x07.Target\x12$\n\rdisk_selector\x18\x02 \x01(\x0b\x32\r.DiskSelector\"m\n\x0c\x44iskSelector\x12\"\n\x05group\x18\x01 \x01(\x0e\x32\x13.DiskSelector.Group\"9\n\x05Group\x12\r\n\tALL_DISKS\x10\x00\x12\r\n\tROOT_DISK\x10\x01\x12\x12\n\x0eROOT_PARTITION\x10\x02\",\n\x11TaskCollectMemory\x12\x17\n\x06target\x18\x01 \x01(\x0b\x32\x07.Target\";\n\x06Target\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"I\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x12\n\nprivateKey\x18\x04 \x01(\t2q\n\x0bWorkerTasks\x12\x32\n\x08Register\x12\x13.WorkerRegistration\x1a\x11.WorkerAcceptance\x12.\n\x07GetTask\x12\x16.google.protobuf.Empty\x1a\x0b.WorkerTaskb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
@@ -137,7 +137,7 @@ _WORKERTASK = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='task_null', full_name='WorkerTask.task_null', index=0,
+      name='task_none', full_name='WorkerTask.task_none', index=0,
       number=1, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -179,9 +179,9 @@ _WORKERTASK = _descriptor.Descriptor(
 )
 
 
-_TASKNULL = _descriptor.Descriptor(
-  name='TaskNull',
-  full_name='TaskNull',
+_TASKNONE = _descriptor.Descriptor(
+  name='TaskNone',
+  full_name='TaskNone',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -404,12 +404,12 @@ _SSHACCESS = _descriptor.Descriptor(
   serialized_end=689,
 )
 
-_WORKERTASK.fields_by_name['task_null'].message_type = _TASKNULL
+_WORKERTASK.fields_by_name['task_none'].message_type = _TASKNONE
 _WORKERTASK.fields_by_name['task_collect_disk'].message_type = _TASKCOLLECTDISK
 _WORKERTASK.fields_by_name['task_collect_memory'].message_type = _TASKCOLLECTMEMORY
 _WORKERTASK.oneofs_by_name['task'].fields.append(
-  _WORKERTASK.fields_by_name['task_null'])
-_WORKERTASK.fields_by_name['task_null'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
+  _WORKERTASK.fields_by_name['task_none'])
+_WORKERTASK.fields_by_name['task_none'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
 _WORKERTASK.oneofs_by_name['task'].fields.append(
   _WORKERTASK.fields_by_name['task_collect_disk'])
 _WORKERTASK.fields_by_name['task_collect_disk'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
@@ -428,7 +428,7 @@ _TARGET.fields_by_name['ssh'].containing_oneof = _TARGET.oneofs_by_name['access'
 DESCRIPTOR.message_types_by_name['WorkerRegistration'] = _WORKERREGISTRATION
 DESCRIPTOR.message_types_by_name['WorkerAcceptance'] = _WORKERACCEPTANCE
 DESCRIPTOR.message_types_by_name['WorkerTask'] = _WORKERTASK
-DESCRIPTOR.message_types_by_name['TaskNull'] = _TASKNULL
+DESCRIPTOR.message_types_by_name['TaskNone'] = _TASKNONE
 DESCRIPTOR.message_types_by_name['TaskCollectDisk'] = _TASKCOLLECTDISK
 DESCRIPTOR.message_types_by_name['DiskSelector'] = _DISKSELECTOR
 DESCRIPTOR.message_types_by_name['TaskCollectMemory'] = _TASKCOLLECTMEMORY
@@ -457,12 +457,12 @@ WorkerTask = _reflection.GeneratedProtocolMessageType('WorkerTask', (_message.Me
   })
 _sym_db.RegisterMessage(WorkerTask)
 
-TaskNull = _reflection.GeneratedProtocolMessageType('TaskNull', (_message.Message,), {
-  'DESCRIPTOR' : _TASKNULL,
+TaskNone = _reflection.GeneratedProtocolMessageType('TaskNone', (_message.Message,), {
+  'DESCRIPTOR' : _TASKNONE,
   '__module__' : 'fact.controller_pb2'
-  # @@protoc_insertion_point(class_scope:TaskNull)
+  # @@protoc_insertion_point(class_scope:TaskNone)
   })
-_sym_db.RegisterMessage(TaskNull)
+_sym_db.RegisterMessage(TaskNone)
 
 TaskCollectDisk = _reflection.GeneratedProtocolMessageType('TaskCollectDisk', (_message.Message,), {
   'DESCRIPTOR' : _TASKCOLLECTDISK,

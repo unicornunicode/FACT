@@ -18,13 +18,13 @@ message WorkerAcceptance {
 
 message WorkerTask {
     oneof task {
-        TaskNull task_null = 1;
+        TaskNone task_none = 1;
         TaskCollectDisk task_collect_disk = 2;
         TaskCollectMemory task_collect_memory = 3;
     }
 }
 
-message TaskNull {
+message TaskNone {
 
 }
 
