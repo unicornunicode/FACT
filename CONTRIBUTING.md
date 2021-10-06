@@ -10,6 +10,7 @@ If you haven't already, clone the repository.
 Install development dependencies using:
 
 ```sh
+# Set up virtual environment and install dependencies
 poetry install --no-root
 # Enter virtual environment
 poetry shell
