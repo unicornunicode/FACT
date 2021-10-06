@@ -21,8 +21,7 @@ jobs:
         with:
           node-version: 14.x
           cache: 'npm'
-          # Peg to ui so that we can purge cache occasionally
-          cache-dependency-path: ui/package-lock.json
+          cache-dependency-path: .github/workflows/markdown.yml
       - name: Install prettier
         run: npm install --no-save prettier@2
       - name: Format
