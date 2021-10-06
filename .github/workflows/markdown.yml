@@ -11,18 +11,18 @@ on:
 jobs:
   format:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
 
     steps:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.head_ref }}
-      - name: Set up Node.js ${{ matrix.node-version }}
+      - name: Set up Node.js 14.x
         uses: actions/setup-node@v2
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 14.x
+          cache: 'npm'
+          # Peg to ui so that we can purge cache occasionally
+          cache-dependency-path: ui/package-lock.json
       - name: Install prettier
         run: npm install --no-save prettier@2
       - name: Format
