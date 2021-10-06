@@ -1,10 +1,21 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
 service WorkerTasks {
-    rpc Register(WorkerRegistration) returns (WorkerAcceptance);
-    rpc GetTask(google.protobuf.Empty) returns (WorkerTask);
+    rpc Session(stream SessionResults) returns (stream SessionEvents);
+}
+
+message SessionResults {
+    oneof result {
+        WorkerRegistration worker_registration = 1;
+        WorkerTaskResult worker_task_result = 2;
+    }
+}
+
+message SessionEvents {
+    oneof event {
+        WorkerAcceptance worker_acceptance = 1;
+        WorkerTask worker_task = 2;
+    }
 }
 
 message WorkerRegistration {
@@ -24,13 +35,29 @@ message WorkerTask {
     }
 }
 
+message WorkerTaskResult {
+    oneof task {
+        TaskNoneResult task_none = 1;
+        TaskCollectDiskResult task_collect_disk = 2;
+        TaskCollectMemoryResult task_collect_memory = 3;
+    }
+}
+
 message TaskNone {
+
+}
+
+message TaskNoneResult {
 
 }
 
 message TaskCollectDisk {
     Target target = 1;
     DiskSelector disk_selector = 2;
+}
+
+message TaskCollectDiskResult {
+
 }
 
 message DiskSelector {
@@ -44,6 +71,10 @@ message DiskSelector {
 
 message TaskCollectMemory {
     Target target = 1;
+}
+
+message TaskCollectMemoryResult {
+
 }
 
 message Target {
