@@ -15,7 +15,7 @@ from ..utils.itertools import chain
 from .stream import Stream
 
 
-log = logging.getLogger("worker")
+log = logging.getLogger(__name__)
 
 
 class Worker:
