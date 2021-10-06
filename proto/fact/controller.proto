@@ -1,15 +1,54 @@
 syntax = "proto3";
 
-service Greeter {
-    rpc SayHello (HelloRequest) returns (HelloReply) {}
+import "google/protobuf/empty.proto";
+
+service WorkerTasks {
+    rpc Register(WorkerRegistration) returns (WorkerAcceptance);
+    rpc GetTask(google.protobuf.Empty) returns (WorkerTask);
 }
 
-message HelloRequest {
+message WorkerRegistration {
+    bytes previous_uuid = 1;
+    string hostname = 2;
+}
+
+message WorkerAcceptance {
+    bytes uuid = 1;
+}
+
+message WorkerTask {
+    oneof task {
+        TaskNull task_null = 1;
+        TaskCollectDisk task_collect_disk = 2;
+        TaskCollectMemory task_collect_memory = 3;
+    }
+}
+
+message TaskNull {
+
+}
+
+message TaskCollectDisk {
+    Target target = 1;
+    string disk_selector = 2;
+}
+
+message TaskCollectMemory {
+    Target target = 1;
+    string memory_selector = 2;
+}
+
+message Target {
     string name = 1;
+    oneof access {
+        SSHAccess ssh = 2;
+    }
 }
 
-message HelloReply {
-    string message = 1;
+message SSHAccess {
+    string host = 1;
+    string user = 2;
+    string privateKey = 3;
 }
 
 // vim: set et ts=4 sw=4:

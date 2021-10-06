@@ -11,6 +11,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -19,23 +20,31 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\"\x1c\n\x0cHelloRequest\x12\x0c\n\x04name\x18\x01 \x01(\t\"\x1d\n\nHelloReply\x12\x0f\n\x07message\x18\x01 \x01(\t23\n\x07Greeter\x12(\n\x08SayHello\x12\r.HelloRequest\x1a\x0b.HelloReply\"\x00\x62\x06proto3'
-)
+  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\x1a\x1bgoogle/protobuf/empty.proto\"=\n\x12WorkerRegistration\x12\x15\n\rprevious_uuid\x18\x01 \x01(\x0c\x12\x10\n\x08hostname\x18\x02 \x01(\t\" \n\x10WorkerAcceptance\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x96\x01\n\nWorkerTask\x12\x1e\n\ttask_null\x18\x01 \x01(\x0b\x32\t.TaskNullH\x00\x12-\n\x11task_collect_disk\x18\x02 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x03 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x42\x06\n\x04task\"\n\n\x08TaskNull\"A\n\x0fTaskCollectDisk\x12\x17\n\x06target\x18\x01 \x01(\x0b\x32\x07.Target\x12\x15\n\rdisk_selector\x18\x02 \x01(\t\"E\n\x11TaskCollectMemory\x12\x17\n\x06target\x18\x01 \x01(\x0b\x32\x07.Target\x12\x17\n\x0fmemory_selector\x18\x02 \x01(\t\";\n\x06Target\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\";\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x12\n\nprivateKey\x18\x03 \x01(\t2q\n\x0bWorkerTasks\x12\x32\n\x08Register\x12\x13.WorkerRegistration\x1a\x11.WorkerAcceptance\x12.\n\x07GetTask\x12\x16.google.protobuf.Empty\x1a\x0b.WorkerTaskb\x06proto3'
+  ,
+  dependencies=[google_dot_protobuf_dot_empty__pb2.DESCRIPTOR,])
 
 
 
 
-_HELLOREQUEST = _descriptor.Descriptor(
-  name='HelloRequest',
-  full_name='HelloRequest',
+_WORKERREGISTRATION = _descriptor.Descriptor(
+  name='WorkerRegistration',
+  full_name='WorkerRegistration',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='HelloRequest.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      name='previous_uuid', full_name='WorkerRegistration.previous_uuid', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='hostname', full_name='WorkerRegistration.hostname', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -52,22 +61,137 @@ _HELLOREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=25,
-  serialized_end=53,
+  serialized_start=54,
+  serialized_end=115,
 )
 
 
-_HELLOREPLY = _descriptor.Descriptor(
-  name='HelloReply',
-  full_name='HelloReply',
+_WORKERACCEPTANCE = _descriptor.Descriptor(
+  name='WorkerAcceptance',
+  full_name='WorkerAcceptance',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='message', full_name='HelloReply.message', index=0,
-      number=1, type=9, cpp_type=9, label=1,
+      name='uuid', full_name='WorkerAcceptance.uuid', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=117,
+  serialized_end=149,
+)
+
+
+_WORKERTASK = _descriptor.Descriptor(
+  name='WorkerTask',
+  full_name='WorkerTask',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='task_null', full_name='WorkerTask.task_null', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_collect_disk', full_name='WorkerTask.task_collect_disk', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_collect_memory', full_name='WorkerTask.task_collect_memory', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='task', full_name='WorkerTask.task',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=152,
+  serialized_end=302,
+)
+
+
+_TASKNULL = _descriptor.Descriptor(
+  name='TaskNull',
+  full_name='TaskNull',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=304,
+  serialized_end=314,
+)
+
+
+_TASKCOLLECTDISK = _descriptor.Descriptor(
+  name='TaskCollectDisk',
+  full_name='TaskCollectDisk',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='target', full_name='TaskCollectDisk.target', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='disk_selector', full_name='TaskCollectDisk.disk_selector', index=1,
+      number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -84,53 +208,258 @@ _HELLOREPLY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=55,
-  serialized_end=84,
+  serialized_start=316,
+  serialized_end=381,
 )
 
-DESCRIPTOR.message_types_by_name['HelloRequest'] = _HELLOREQUEST
-DESCRIPTOR.message_types_by_name['HelloReply'] = _HELLOREPLY
+
+_TASKCOLLECTMEMORY = _descriptor.Descriptor(
+  name='TaskCollectMemory',
+  full_name='TaskCollectMemory',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='target', full_name='TaskCollectMemory.target', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='memory_selector', full_name='TaskCollectMemory.memory_selector', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=383,
+  serialized_end=452,
+)
+
+
+_TARGET = _descriptor.Descriptor(
+  name='Target',
+  full_name='Target',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='name', full_name='Target.name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='ssh', full_name='Target.ssh', index=1,
+      number=2, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='access', full_name='Target.access',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=454,
+  serialized_end=513,
+)
+
+
+_SSHACCESS = _descriptor.Descriptor(
+  name='SSHAccess',
+  full_name='SSHAccess',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='host', full_name='SSHAccess.host', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='user', full_name='SSHAccess.user', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='privateKey', full_name='SSHAccess.privateKey', index=2,
+      number=3, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=515,
+  serialized_end=574,
+)
+
+_WORKERTASK.fields_by_name['task_null'].message_type = _TASKNULL
+_WORKERTASK.fields_by_name['task_collect_disk'].message_type = _TASKCOLLECTDISK
+_WORKERTASK.fields_by_name['task_collect_memory'].message_type = _TASKCOLLECTMEMORY
+_WORKERTASK.oneofs_by_name['task'].fields.append(
+  _WORKERTASK.fields_by_name['task_null'])
+_WORKERTASK.fields_by_name['task_null'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
+_WORKERTASK.oneofs_by_name['task'].fields.append(
+  _WORKERTASK.fields_by_name['task_collect_disk'])
+_WORKERTASK.fields_by_name['task_collect_disk'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
+_WORKERTASK.oneofs_by_name['task'].fields.append(
+  _WORKERTASK.fields_by_name['task_collect_memory'])
+_WORKERTASK.fields_by_name['task_collect_memory'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
+_TASKCOLLECTDISK.fields_by_name['target'].message_type = _TARGET
+_TASKCOLLECTMEMORY.fields_by_name['target'].message_type = _TARGET
+_TARGET.fields_by_name['ssh'].message_type = _SSHACCESS
+_TARGET.oneofs_by_name['access'].fields.append(
+  _TARGET.fields_by_name['ssh'])
+_TARGET.fields_by_name['ssh'].containing_oneof = _TARGET.oneofs_by_name['access']
+DESCRIPTOR.message_types_by_name['WorkerRegistration'] = _WORKERREGISTRATION
+DESCRIPTOR.message_types_by_name['WorkerAcceptance'] = _WORKERACCEPTANCE
+DESCRIPTOR.message_types_by_name['WorkerTask'] = _WORKERTASK
+DESCRIPTOR.message_types_by_name['TaskNull'] = _TASKNULL
+DESCRIPTOR.message_types_by_name['TaskCollectDisk'] = _TASKCOLLECTDISK
+DESCRIPTOR.message_types_by_name['TaskCollectMemory'] = _TASKCOLLECTMEMORY
+DESCRIPTOR.message_types_by_name['Target'] = _TARGET
+DESCRIPTOR.message_types_by_name['SSHAccess'] = _SSHACCESS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
-HelloRequest = _reflection.GeneratedProtocolMessageType('HelloRequest', (_message.Message,), {
-  'DESCRIPTOR' : _HELLOREQUEST,
+WorkerRegistration = _reflection.GeneratedProtocolMessageType('WorkerRegistration', (_message.Message,), {
+  'DESCRIPTOR' : _WORKERREGISTRATION,
   '__module__' : 'fact.controller_pb2'
-  # @@protoc_insertion_point(class_scope:HelloRequest)
+  # @@protoc_insertion_point(class_scope:WorkerRegistration)
   })
-_sym_db.RegisterMessage(HelloRequest)
+_sym_db.RegisterMessage(WorkerRegistration)
 
-HelloReply = _reflection.GeneratedProtocolMessageType('HelloReply', (_message.Message,), {
-  'DESCRIPTOR' : _HELLOREPLY,
+WorkerAcceptance = _reflection.GeneratedProtocolMessageType('WorkerAcceptance', (_message.Message,), {
+  'DESCRIPTOR' : _WORKERACCEPTANCE,
   '__module__' : 'fact.controller_pb2'
-  # @@protoc_insertion_point(class_scope:HelloReply)
+  # @@protoc_insertion_point(class_scope:WorkerAcceptance)
   })
-_sym_db.RegisterMessage(HelloReply)
+_sym_db.RegisterMessage(WorkerAcceptance)
+
+WorkerTask = _reflection.GeneratedProtocolMessageType('WorkerTask', (_message.Message,), {
+  'DESCRIPTOR' : _WORKERTASK,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:WorkerTask)
+  })
+_sym_db.RegisterMessage(WorkerTask)
+
+TaskNull = _reflection.GeneratedProtocolMessageType('TaskNull', (_message.Message,), {
+  'DESCRIPTOR' : _TASKNULL,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:TaskNull)
+  })
+_sym_db.RegisterMessage(TaskNull)
+
+TaskCollectDisk = _reflection.GeneratedProtocolMessageType('TaskCollectDisk', (_message.Message,), {
+  'DESCRIPTOR' : _TASKCOLLECTDISK,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:TaskCollectDisk)
+  })
+_sym_db.RegisterMessage(TaskCollectDisk)
+
+TaskCollectMemory = _reflection.GeneratedProtocolMessageType('TaskCollectMemory', (_message.Message,), {
+  'DESCRIPTOR' : _TASKCOLLECTMEMORY,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:TaskCollectMemory)
+  })
+_sym_db.RegisterMessage(TaskCollectMemory)
+
+Target = _reflection.GeneratedProtocolMessageType('Target', (_message.Message,), {
+  'DESCRIPTOR' : _TARGET,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:Target)
+  })
+_sym_db.RegisterMessage(Target)
+
+SSHAccess = _reflection.GeneratedProtocolMessageType('SSHAccess', (_message.Message,), {
+  'DESCRIPTOR' : _SSHACCESS,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:SSHAccess)
+  })
+_sym_db.RegisterMessage(SSHAccess)
 
 
 
-_GREETER = _descriptor.ServiceDescriptor(
-  name='Greeter',
-  full_name='Greeter',
+_WORKERTASKS = _descriptor.ServiceDescriptor(
+  name='WorkerTasks',
+  full_name='WorkerTasks',
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=86,
-  serialized_end=137,
+  serialized_start=576,
+  serialized_end=689,
   methods=[
   _descriptor.MethodDescriptor(
-    name='SayHello',
-    full_name='Greeter.SayHello',
+    name='Register',
+    full_name='WorkerTasks.Register',
     index=0,
     containing_service=None,
-    input_type=_HELLOREQUEST,
-    output_type=_HELLOREPLY,
+    input_type=_WORKERREGISTRATION,
+    output_type=_WORKERACCEPTANCE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='GetTask',
+    full_name='WorkerTasks.GetTask',
+    index=1,
+    containing_service=None,
+    input_type=google_dot_protobuf_dot_empty__pb2._EMPTY,
+    output_type=_WORKERTASK,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),
 ])
-_sym_db.RegisterServiceDescriptor(_GREETER)
+_sym_db.RegisterServiceDescriptor(_WORKERTASKS)
 
-DESCRIPTOR.services_by_name['Greeter'] = _GREETER
+DESCRIPTOR.services_by_name['WorkerTasks'] = _WORKERTASKS
 
 # @@protoc_insertion_point(module_scope)
