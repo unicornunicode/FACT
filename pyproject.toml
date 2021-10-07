@@ -16,7 +16,7 @@ flake8-bugbear = "^21.9.2"
 mypy = "^0.910"
 black = "^21.9b0"
 pytest = "^6.2.5"
-mkcommit = "^1.0.2"
+mkcommit = "^1.0.3"
 grpcio-tools = "^1.41.0"
 # Type stubs
 mypy-protobuf = "^2.10"
