@@ -31,7 +31,7 @@ module = ["grpc.aio"]
 ignore_missing_imports = true
 
 [tool.black]
-extend-exclude = """
+force-exclude = """
 (
   .*_pb2.py
   | .*_pb2_grpc.py
