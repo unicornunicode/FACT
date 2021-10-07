@@ -14,22 +14,29 @@ Install development dependencies using:
 poetry install --no-root
 # Enter virtual environment
 poetry shell
+# Optional: Install Git hooks to check your code and commit messages
+python tools/hooks.py install
 ```
 
 # Checks
 
-Before submitting commits or pull requests, consider running the following
-checks:
+Before submitting commits or pull requests, consider running the code formatter,
+linter, type checks and tests:
 
 ```sh
-# Enter virtual environment if you haven't already
-poetry shell
-# Linting
-flake8 .
-# Type-check
-mypy .
-# Run unit tests
-python -m pytest
+# With Git hooks installed
+git commit
+# Without Git hooks installed
+python tools/pre-commit.py
+```
+
+If you wish to skip the linter, type checks and tests:
+
+```sh
+# With Git hooks installed
+SKIP_CHECKS=y git commit
+# Without Git hooks installed
+SKIP_CHECKS=y python tools/pre-commit.py
 ```
 
 # Writing Messages
@@ -57,8 +64,11 @@ To help you write commit messages, you can use:
 
 ```sh
 # Asks you a series of questions about your commit
-mkcommit
+mkcommit --autoselect
 ```
+
+With Git hooks installed, your commit messages will automatically be checked
+upon commit.
 
 # Updating gRPC Protocol
 
