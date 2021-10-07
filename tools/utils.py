@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 from pathlib import Path
+from shlex import quote
 from sys import exit, stderr
 from subprocess import run, CalledProcessError
 
@@ -20,6 +21,21 @@ def check(
         run(command, cwd=cwd, shell=True, check=check)
     except CalledProcessError as e:
         exit(e.returncode)
+
+
+def args(files: List[str]) -> str:
+    return " ".join(map(quote, files))
+
+
+def git_staged() -> List[str]:
+    git_diff = run(
+        "git diff --staged --diff-filter=ACMR --name-only -z",
+        shell=True,
+        check=True,
+        capture_output=True,
+        encoding="utf8",
+    )
+    return git_diff.stdout.rstrip("\00").split("\00")
 
 
 # vim: set et ts=4 sw=4:
