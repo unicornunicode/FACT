@@ -5,8 +5,7 @@ from utils import check
 
 
 if __name__ == "__main__":
-    skip_checks = getenv("SKIP_CHECKS") or ""
-    skip_checks = skip_checks.lower() == "y"
+    skip_checks = getenv("SKIP_CHECKS", "").lower() == "y"
 
     check("poetry run black .")
     if not skip_checks:
