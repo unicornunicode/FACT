@@ -30,6 +30,10 @@ build-backend = "poetry.core.masonry.api"
 module = ["grpc.aio"]
 ignore_missing_imports = true
 
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+testpaths = ["fact", "test", "tools"]
+
 [tool.black]
 force-exclude = """
 (

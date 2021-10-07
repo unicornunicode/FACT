@@ -51,6 +51,12 @@ class WorkerTasks(WorkerTasksServicer):
 
 
 class Controller:
+    """
+    The Controller gets tasks from the UI and schedules them onto workers
+
+    >>> c = Controller("localhost:5123")
+    """
+
     listen_addr: str
     server: Server
 
