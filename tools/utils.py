@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, Iterable
 from pathlib import Path
 from shlex import quote
 from sys import exit, stderr
@@ -23,11 +23,11 @@ def check(
         exit(e.returncode)
 
 
-def args(files: List[str]) -> str:
+def args(files: Iterable[str]) -> str:
     return " ".join(map(quote, files))
 
 
-def git_staged() -> List[str]:
+def git_staged() -> Iterable[str]:
     git_diff = run(
         "git diff --staged --diff-filter=ACMR --name-only -z",
         shell=True,
@@ -35,7 +35,7 @@ def git_staged() -> List[str]:
         capture_output=True,
         encoding="utf8",
     )
-    return git_diff.stdout.rstrip("\00").split("\00")
+    return filter(bool, git_diff.stdout.split("\00"))
 
 
 # vim: set et ts=4 sw=4:
