@@ -8,7 +8,7 @@ on:
     paths:
       - 'fact/**'
       - 'test/**'
-      - 'proto/**'
+      - 'tools/**'
 
 jobs:
   format:
