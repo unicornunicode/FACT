@@ -9,6 +9,7 @@ license = "MIT"
 python = "^3.9"
 parallel-ssh = "^2.6.0"
 grpcio = "^1.41.0"
+SQLAlchemy = "^1.4.25"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
