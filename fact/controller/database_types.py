@@ -1,5 +1,5 @@
 """
-Derived from sqlalchemy_utils/types/scalar_coercible.py
+Derived from sqlalchemy_utils/types/{scalar_coercible,uuid}.py
 
 Copyright (c) 2012, Konsta Vesterinen
 MIT License
