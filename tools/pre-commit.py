@@ -8,7 +8,7 @@ from utils import check, args, git_staged
 
 if __name__ == "__main__":
     skip_checks = getenv("SKIP_CHECKS", "").lower() == "y"
-    staged = git_staged()
+    staged = list(git_staged())
 
     staged_py = [f for f in staged if f.endswith(".py")]
 
