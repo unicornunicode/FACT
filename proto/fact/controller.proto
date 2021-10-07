@@ -89,6 +89,9 @@ message SSHAccess {
     string user = 2;
     uint32 port = 3;
     string privateKey = 4;
+    // sudo
+    bool become = 5;
+    string becomePassword = 6;
 }
 
 // vim: set et ts=4 sw=4:
