@@ -2,6 +2,7 @@
 
 - [Python](https://www.python.org/downloads/)
 - [Poetry](https://python-poetry.org)
+- [Node.js](https://nodejs.org)
 
 # Setup
 
@@ -16,6 +17,9 @@ poetry install --no-root
 poetry shell
 # Optional: Install Git hooks to check your code and commit messages
 python tools/hooks.py install
+# Optional: When working on the UI
+cd ui
+npm install
 ```
 
 # Checks
@@ -38,6 +42,10 @@ SKIP_CHECKS=y git commit
 # Without Git hooks installed
 SKIP_CHECKS=y python tools/pre-commit.py
 ```
+
+# Tools
+
+All the tools in `tools/` must be run from the project root.
 
 # Writing Messages
 
@@ -99,6 +107,13 @@ communicating on the loopback interface can be used:
 poetry shell
 # Start the development instance
 python -m fact.dev
+```
+
+And the UI can be run with
+
+```sh
+cd ui
+npm run dev
 ```
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
