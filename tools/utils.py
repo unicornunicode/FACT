@@ -5,7 +5,11 @@ from subprocess import run, CalledProcessError
 
 
 def check(
-    command: str, cwd: Path = None, hide: bool = False, truncate: Optional[int] = None
+    command: str,
+    cwd: Path = None,
+    check: bool = True,
+    hide: bool = False,
+    truncate: Optional[int] = None,
 ) -> None:
     show_command = command
     if truncate is not None and len(command) > truncate:
@@ -13,7 +17,7 @@ def check(
     if not hide:
         print(f"> {show_command}", file=stderr)
     try:
-        run(command, cwd=cwd, shell=True, check=True)
+        run(command, cwd=cwd, shell=True, check=check)
     except CalledProcessError as e:
         exit(e.returncode)
 

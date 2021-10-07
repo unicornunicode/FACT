@@ -16,9 +16,10 @@ if __name__ == "__main__":
         check("poetry run python -m pytest")
 
     ui = Path("ui")
-    if which("npm") is not None:
-        check("npm run format", cwd=ui)
-        check("npm run type-check", cwd=ui)
+    if which("npm") is not None and (ui / "node_modules").exists():
+        check("npm run format", cwd=ui, check=not skip_checks)
+        if not skip_checks:
+            check("npm run type-check", cwd=ui)
 
 
 # vim: set et ts=4 sw=4:
