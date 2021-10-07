@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
+from argparse import ArgumentParser
 from pathlib import Path
-from sys import argv, exit
 
 hooks = (
     "commit-msg",
@@ -9,27 +9,17 @@ hooks = (
 )
 
 
-def usage() -> None:
-    print("Usage: tools/hooks.py (install|uninstall)")
-    exit(1)
-
-
 if __name__ == "__main__":
-    if len(argv) != 2:
-        usage()
-
-    if argv[1] == "install":
-        uninstall = False
-    elif argv[1] == "uninstall":
-        uninstall = True
-    else:
-        usage()
+    parser = ArgumentParser()
+    parser.add_argument("action", choices=("install", "uninstall"))
+    parser.add_argument("--hooks", choices=hooks, nargs="*", default=hooks)
+    args = parser.parse_args()
 
     git_hooks = Path(".git") / "hooks"
     tools = Path("tools")
-    for hook in hooks:
+    for hook in args.hooks:
         git_hook = git_hooks / hook
-        if not uninstall:
+        if args.action == "uninstall":
             script = tools / f"{hook}.py"
             if git_hook.exists():
                 print(f"A hook already exists at {git_hook}, skipping")
