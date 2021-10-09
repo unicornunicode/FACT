@@ -11,6 +11,7 @@ from time import time
 
 DEFAULT_PATH = Path("/var/lib/fact")
 
+
 class DataType(Enum):
     full = 1
     partition = 2
@@ -53,6 +54,14 @@ class Timecapsule:
     def add_memory(self, memory_path: Path, dst_path: Path, file_type: DataType):
         memory = Memory(memory_path, dst_path, file_type)
         self.memories.append(memory)
+
+    def get_artifacts(self):
+        timecapsule = {"disks": [], "memories": []}
+        for disk in self.disks:
+            timecapsule["disks"].append(disk.file_name)
+        for mem in self.memories:
+            timecapsule["memories"].append(mem.file_name)
+        return timecapsule
 
 
 class Target:
@@ -99,12 +108,7 @@ class Storage:
         for t in self.targets:
             target = dict()
             for tc in t.timecapsules:
-                timecapsule = {"disks": [], "memories": []}
-                for dk in tc.disks:
-                    timecapsule["disks"].append(dk.file_name)
-                for mem in tc.memories:
-                    timecapsule["memories"].append(mem.file_name)
-                target[tc.timestamp] = timecapsule
+                target[tc.timestamp] = tc.get_artifacts()
             fs[t.target_uuid] = target
         return fs
 
