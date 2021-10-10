@@ -40,7 +40,7 @@ class WorkerTasks(WorkerTasksServicer):
 
         while True:
             # Send request
-            worker_task = WorkerTask(task_none=TaskNone())
+            worker_task = WorkerTask(uuid=b"", task_none=TaskNone())
             yield SessionEvents(worker_task=worker_task)
 
             # Read subsequent results
