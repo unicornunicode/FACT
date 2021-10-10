@@ -113,5 +113,5 @@ class Storage:
         return fs
 
     @classmethod
-    def duplicate_storage_from_dict(cls, storage_dict: dict):
+    def duplicate_storage_from_dict(cls, storage_dict: dict, new_data_dir: Path):
         pass
