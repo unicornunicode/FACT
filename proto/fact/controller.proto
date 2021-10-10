@@ -28,18 +28,20 @@ message WorkerAcceptance {
 }
 
 message WorkerTask {
+    bytes uuid = 1;
     oneof task {
-        TaskNone task_none = 1;
-        TaskCollectDisk task_collect_disk = 2;
-        TaskCollectMemory task_collect_memory = 3;
+        TaskNone task_none = 2;
+        TaskCollectDisk task_collect_disk = 3;
+        TaskCollectMemory task_collect_memory = 4;
     }
 }
 
 message WorkerTaskResult {
+    bytes uuid = 1;
     oneof task {
-        TaskNoneResult task_none = 1;
-        TaskCollectDiskResult task_collect_disk = 2;
-        TaskCollectMemoryResult task_collect_memory = 3;
+        TaskNoneResult task_none = 2;
+        TaskCollectDiskResult task_collect_disk = 3;
+        TaskCollectMemoryResult task_collect_memory = 4;
     }
 }
 
@@ -78,7 +80,7 @@ message TaskCollectMemoryResult {
 }
 
 message Target {
-    string name = 1;
+    bytes uuid = 1;
     oneof access {
         SSHAccess ssh = 2;
     }
@@ -88,10 +90,10 @@ message SSHAccess {
     string host = 1;
     string user = 2;
     uint32 port = 3;
-    string privateKey = 4;
+    string private_key = 4;
     // sudo
     bool become = 5;
-    string becomePassword = 6;
+    string become_password = 6;
 }
 
 // vim: set et ts=4 sw=4:
