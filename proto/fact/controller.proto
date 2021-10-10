@@ -55,14 +55,14 @@ message TaskNoneResult {
 
 message TaskCollectDisk {
     Target target = 1;
-    DiskSelector disk_selector = 2;
+    DiskSelector selector = 2;
 }
 
 message TaskCollectDiskResult {
 
 }
 
-message DiskSelector {
+message CollectDiskSelector {
     enum Group {
         ALL_DISKS = 0;
         ROOT_DISK = 1;
