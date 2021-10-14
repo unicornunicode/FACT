@@ -3,65 +3,9 @@ import os
 import errno
 
 from pathlib import Path
-
-from enum import Enum
 from uuid import UUID
 
-DEFAULT_PATH = Path("/var/lib/fact")
-
-
-class ArtifactType(Enum):
-    unknown = 0
-    disk = 1
-    memory = 2
-
-
-class DataType(Enum):
-    unknown = 0
-    full = 1
-    partition = 2
-    process = 3
-
-
-class Artifact:
-    def __init__(
-        self,
-        artifact_name: str,
-        artifact_type: ArtifactType = ArtifactType.unknown,
-        sub_type: DataType = DataType.unknown,
-    ):
-        self.artifact_name = artifact_name
-        self.artifact_type = artifact_type
-        self.sub_type = sub_type
-
-    def get_artifact_type(self):
-        return self.artifact_type.name
-
-    def get_sub_type(self):
-        return self.sub_type.name
-
-    def get_artifact_path(self):
-        artifact_type = self.get_artifact_type()
-        sub_type = self.get_sub_type()
-        return Path(artifact_type) / Path(sub_type) / Path(self.artifact_name)
-
-    def get_artifact_info(self):
-        sub_type = self.get_sub_type()
-        return {"artifact_name": self.artifact_name, "sub_type": sub_type}
-
-
-class Disk(Artifact):
-    artifact_type: ArtifactType = ArtifactType.disk
-
-    def __init__(self, artifact_name: str, sub_type: DataType = DataType.unknown):
-        super().__init__(artifact_name, Disk.artifact_type, sub_type)
-
-
-class Memory(Artifact):
-    artifact_type: ArtifactType = ArtifactType.memory
-
-    def __init__(self, artifact_name: str, sub_type: DataType = DataType.unknown):
-        super().__init__(artifact_name, Memory.artifact_type, sub_type)
+from artifact import DataType, Disk, Memory
 
 
 class Task:
@@ -70,19 +14,19 @@ class Task:
         self.disks: list[Disk] = []
         self.memories: list[Memory] = []
 
+    def add_disk(self, disk_name: str, sub_type: DataType):
+        disk = Disk(disk_name, sub_type)
+        self.disks.append(disk)
+
+    def add_memory(self, disk_name: str, sub_type: DataType):
+        memory = Memory(disk_name, sub_type)
+        self.memories.append(memory)
+
     def get_task_uuid(self):
         return str(self.task_uuid)
 
-    def add_disk(self, disk_name: str, artifact_type: DataType):
-        disk = Disk(disk_name, artifact_type)
-        self.disks.append(disk)
-
-    def add_memory(self, disk_name: str, artifact_type: DataType):
-        memory = Memory(disk_name, artifact_type)
-        self.memories.append(memory)
-
     def get_task_path(self):
-        task_uuid = self.get_task_uuid()
+        task_uuid: str = self.get_task_uuid()
         return Path(task_uuid)
 
     def _get_artifacts(self):
@@ -100,6 +44,8 @@ class Task:
 
 
 class Storage:
+    DEFAULT_PATH = Path("/var/lib/fact")
+
     def __init__(self, data_dir: Path = DEFAULT_PATH):
         if not data_dir.exists():
             data_dir.mkdir(parents=True, exist_ok=True)
