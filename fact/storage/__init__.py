@@ -18,8 +18,8 @@ class Task:
         disk = Disk(disk_name, sub_type)
         self.disks.append(disk)
 
-    def add_memory(self, disk_name: str, sub_type: DataType):
-        memory = Memory(disk_name, sub_type)
+    def add_memory(self, memory_name: str, sub_type: DataType):
+        memory = Memory(memory_name, sub_type)
         self.memories.append(memory)
 
     def get_task_uuid(self):
