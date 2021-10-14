@@ -42,6 +42,33 @@ class Task:
         artifacts = self._get_artifacts()
         return {"task_uuid": task_uuid, "artifacts": artifacts}
 
+    @classmethod
+    def _recreate_task(cls, **kwargs: dict[str, dict[str, list]]):
+        task_uuid_str: str = kwargs.get("task_uuid")
+        try:
+            task_uuid = UUID(task_uuid_str)
+        except ValueError:
+            return  # Raise custom exception
+        task: Task = cls(task_uuid)
+
+        artifacts: dict[str, list] = kwargs.get("artifacts")
+
+        disk_artifacts: list[dict] = artifacts.get("disk")
+        for d in disk_artifacts:
+            d_name = d.get("artifact_name")  # Need to check for empty str
+            d_sub_type_str = d.get("sub_type")
+            d_sub_type = DataType[d_sub_type_str]  # Need to check val
+            task.add_disk(disk_name=d_name, sub_type=d_sub_type)
+
+        memory_artifacts: list[dict] = artifacts.get("memory")
+        for m in memory_artifacts:
+            m_name = m.get("artifact_name")  # Need to check for empty str
+            m_sub_type_str = m.get("sub_type")
+            m_sub_type = DataType[m_sub_type_str]  # Need to check val
+            task.add_memory(memory_name=m_name, sub_type=m_sub_type)
+
+        return task
+
 
 class Storage:
     DEFAULT_PATH = Path("/var/lib/fact")
@@ -72,5 +99,15 @@ class Storage:
         return {"data_dir": self.data_dir, "tasks": tasks}
 
     @classmethod
-    def duplicate_storage_from_dict(cls, storage_dict: dict, new_data_dir: Path):
-        pass
+    def duplicate_storage(cls, storage_dict: dict, new_data_dir: Path):
+        old_data_dir: Path = storage_dict.get("data_dir", Storage.DEFAULT_PATH)
+        if old_data_dir == new_data_dir:
+            pass  # Raise custom exception
+        storage: Storage = cls(new_data_dir)
+
+        tasks: list[dict[str, dict[str, list]]] = storage_dict.get("tasks", [])
+        for t in tasks:
+            task: Task = Task._recreate_task(t)
+            storage.add_task(task)
+
+        return storage
