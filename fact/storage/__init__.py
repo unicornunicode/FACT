@@ -81,7 +81,7 @@ class Storage:
         return {"data_dir": self.data_dir, "tasks": tasks}
 
     @classmethod
-    def duplicate_storage(cls, storage_dict: dict, new_data_dir: Path):
+    def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
         old_data_dir: Path = storage_dict.get("data_dir", Storage.DEFAULT_PATH)
         if old_data_dir == new_data_dir:
             pass  # Raise custom exception
