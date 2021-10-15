@@ -39,18 +39,32 @@ class Artifact:
 
     def get_artifact_info(self):
         sub_type = self.get_sub_type()
-        return {"artifact_name": self.artifact_name, "sub_type": sub_type}
+        return {
+            "artifact_name": self.artifact_name,
+            "artifact_type": self.artifact_type,
+            "sub_type": sub_type,
+        }
 
+    @classmethod
+    def create_artifact(cls, **kwargs: str):
+        name, artifact_type, sub_type = Artifact.extract_info(kwargs)
+        if Artifact.verify_info(name, artifact_type, sub_type):
+            return cls(name, ArtifactType[artifact_type], DataType[sub_type])
+        return None
 
-class Disk(Artifact):
-    artifact_type: ArtifactType = ArtifactType.disk
+    @staticmethod
+    def extract_info(**kwargs: str):
+        name = kwargs.get("artifact_name", "")
+        artifact_type = kwargs.get("artifact_type", "")
+        sub_type = kwargs.get("sub_type", "")
+        return name, artifact_type, sub_type
 
-    def __init__(self, artifact_name: str, sub_type: DataType = DataType.unknown):
-        super().__init__(artifact_name, Disk.artifact_type, sub_type)
-
-
-class Memory(Artifact):
-    artifact_type: ArtifactType = ArtifactType.memory
-
-    def __init__(self, artifact_name: str, sub_type: DataType = DataType.unknown):
-        super().__init__(artifact_name, Memory.artifact_type, sub_type)
+    @staticmethod
+    def verify_info(name: str, artifact_type: str, sub_type: str):
+        if (
+            not name
+            and artifact_type in ArtifactType.__members__
+            and sub_type in DataType.__members__
+        ):
+            return True
+        return False
