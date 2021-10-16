@@ -18,13 +18,28 @@ class StorageExistsError(StorageModuleException):
 
 
 class TaskExistsError(StorageModuleException):
-    def __init__(self, message: str, task_id: str):
-        super().__init__(message, task_id)
+    def __init__(self, message: str, task_uuid: str):
+        super().__init__(message, task_uuid)
+
+
+class TaskNotFoundError(StorageModuleException):
+    def __init__(self, message: str, task_uuid: str):
+        super().__init__(message, task_uuid)
 
 
 class TaskInvalidUUID(StorageModuleException):
     def __init__(self, message: str, task_uuid: str):
         super().__init__(message, task_uuid)
+
+
+class ArtifactExistsError(StorageModuleException):
+    def __init__(self, message: str, artifact_info: dict):
+        super().__init__(message, str(artifact_info))
+
+
+class ArtifactNotFoundError(StorageModuleException):
+    def __init__(self, message: str, artifact_info: dict):
+        super().__init__(message, str(artifact_info))
 
 
 class ArtifactInvalidName(StorageModuleException):

@@ -2,7 +2,10 @@ from fact.exceptions import (
     DirectoryExistsError,
     StorageExistsError,
     TaskExistsError,
+    TaskNotFoundError,
     TaskInvalidUUID,
+    ArtifactExistsError,
+    ArtifactNotFoundError,
     ArtifactInvalidName,
     ArtifactInvalidType,
     ArtifactInvalidSubType,
@@ -58,10 +61,11 @@ class Artifact:
         return artifact_path / Path(self.artifact_name)
 
     def get_artifact_info(self):
-        sub_type = self.get_sub_type()
+        artifact_type: str = self.get_artifact_type()
+        sub_type: str = self.get_sub_type()
         return {
             "artifact_name": self.artifact_name,
-            "artifact_type": self.artifact_type,
+            "artifact_type": artifact_type,
             "sub_type": sub_type,
         }
 
@@ -103,7 +107,25 @@ class Task:
         self.task_uuid = UUID(task_uuid_str)
         self.artifacts: list[Artifact] = []
 
+    def get_artifact(self, artifact_info: dict):
+        for a in self.artifacts:
+            if a.get_artifact_info() == artifact_info:
+                return a
+        task_uuid = self.get_task_uuid()
+        raise ArtifactNotFoundError(
+            f"Artifact does not exist in {task_uuid}", artifact_info
+        )
+
+    def is_artifact_exists(self, artifact_info: dict):
+        artifact: Artifact = self.get_artifact(artifact_info)
+        if artifact is not None:
+            return True
+        return False
+
     def add_artifact(self, artifact: Artifact):
+        artifact_info: dict = artifact.get_artifact_info()
+        if self.is_artifact_exists(artifact_info):
+            raise ArtifactExistsError("Artifact exists already", artifact_info)
         self.artifacts.append(artifact)
 
     def get_task_uuid(self):
@@ -162,17 +184,47 @@ class Storage:
         self.data_dir = data_dir
         self.tasks: list[Task] = []
 
-    def is_task_exists(self, task: Task):
-        task_uuid = task.task_uuid
+    def get_task(self, task_uuid: str):
         for t in self.tasks:
             if t.task_uuid == task_uuid:
-                return True
+                return t
+        storage_path = str(self.get_storage_path())
+        raise TaskNotFoundError(f"Task does not exists in {storage_path}", task_uuid)
+
+    def is_task_uuid_exists(self, task_uuid: str):
+        task: Task = self.get_task(task_uuid)
+        if task is not None:
+            return True
         return False
 
     def add_task(self, task: Task):
-        if self.is_task_exists(task):
+        task_uuid: str = task.get_task_uuid()
+        if self.is_task_uuid_exists(task_uuid):
             raise TaskExistsError("Task exists already", task.get_task_uuid())
         self.tasks.append(task)
+
+    def add_task_artifact(self, task_uuid: str, artifact: Artifact):
+        task: Task = self.get_task(task_uuid)
+        task.add_artifact(artifact)
+
+        artifact_path: Path = (
+            self.get_storage_path()
+            / task.get_task_path()
+            / artifact.get_artifact_path()
+        )
+        return artifact_path
+
+    def get_task_artifact_path(self, task_uuid: str, artifact: Artifact):
+        task: Task = self.get_task(task_uuid)
+        artifact_info = artifact.get_artifact_info()
+        task_artifact: Artifact = task.get_artifact(artifact_info)
+
+        artifact_path: Path = (
+            self.get_storage_path()
+            / task.get_task_path()
+            / task_artifact.get_artifact_path()
+        )
+        return artifact_path
 
     def get_storage_path(self):
         return self.data_dir
