@@ -10,7 +10,7 @@ from fact.controller.database import Base, Worker, Task, Target
 
 @pytest.fixture
 def engine():
-    engine = create_engine("sqlite+pysqlite:///:memory:", echo=True, future=True)
+    engine = create_engine("sqlite:///:memory:", echo=True, future=True)
     Base.metadata.create_all(engine)
     return engine
 
