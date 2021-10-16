@@ -76,17 +76,17 @@ class Worker:
         """
         return platform.node()
 
-    async def handle_task_collect_disk(
+    async def _handle_task_collect_disk(
         self, task_uuid: UUID, task: TaskCollectDisk
     ) -> None:
         log.error("Task collect_disk not implemented")
 
-    async def handle_task_collect_memory(
+    async def _handle_task_collect_memory(
         self, task_uuid: UUID, task: TaskCollectMemory
     ) -> None:
         log.error("Task collect_memory not implemented")
 
-    async def handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
+    async def _handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
         """
         Handle one incoming worker task, returning the result
         """
@@ -97,18 +97,18 @@ class Worker:
             await asyncio.sleep(1)
             return WorkerTaskResult(uuid=task_uuid.bytes, task_none=TaskNoneResult())
         if task_type == "task_collect_disk":
-            await self.handle_task_collect_disk(task_uuid, task.task_collect_disk)
+            await self._handle_task_collect_disk(task_uuid, task.task_collect_disk)
             return WorkerTaskResult(
                 uuid=task_uuid.bytes, task_collect_disk=TaskCollectDiskResult()
             )
         if task_type == "task_collect_memory":
-            await self.handle_task_collect_memory(task_uuid, task.task_collect_memory)
+            await self._handle_task_collect_memory(task_uuid, task.task_collect_memory)
             return WorkerTaskResult(
                 uuid=task_uuid.bytes, task_collect_memory=TaskCollectMemoryResult()
             )
         raise Exception("Unreachable: Invalid task type")
 
-    async def exchange_handshake(
+    async def _exchange_handshake(
         self, responses: Stream[SessionResults], events: AsyncIterator[SessionEvents]
     ) -> None:
         """
@@ -139,7 +139,7 @@ class Worker:
             events: AsyncIterator[SessionEvents] = stub.Session(responses).__aiter__()
 
             try:
-                await self.exchange_handshake(responses, events)
+                await self._exchange_handshake(responses, events)
             except Exception as e:
                 log.warn(e)
                 return
@@ -148,7 +148,7 @@ class Worker:
                 # For now, synchronously and sequentially handle incoming tasks
                 # TODO: Handle tasks in parallel
                 try:
-                    result = await self.handle_worker_task(event.worker_task)
+                    result = await self._handle_worker_task(event.worker_task)
                 except Exception as e:
                     log.warn(e)
                     return
