@@ -61,11 +61,21 @@ class Controller:
             )
             self.session.execute(stmt_update_hostname)
 
+    async def _process_incoming_tasks(self) -> None:
+        await asyncio.sleep(100_000_000)
+
     async def start(self) -> None:
         log.info(f"Starting server on {self.listen_addr}")
         self.server.add_insecure_port(self.listen_addr)
         await self.server.start()
-        await self.server.wait_for_termination()
+        tasks = [
+            asyncio.create_task(t)
+            for t in (
+                self.server.wait_for_termination(),
+                self._process_incoming_tasks(),
+            )
+        ]
+        await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
 
     async def stop(self, grace: float) -> None:
         await self.server.stop(grace)
@@ -92,11 +102,11 @@ class WorkerTasks(WorkerTasksServicer):
         if registration.previous_uuid == b"":
             # New worker
             uuid = uuid4()
-            self.controller._create_worker(uuid, registration.hostname)
+            await self.controller._create_worker(uuid, registration.hostname)
         else:
             # Existing worker
             uuid = UUID(bytes=registration.previous_uuid)
-            self.controller._update_worker(uuid, registration.hostname)
+            await self.controller._update_worker(uuid, registration.hostname)
         yield SessionEvents(worker_acceptance=WorkerAcceptance(uuid=uuid.bytes))
 
     async def Session(
@@ -112,7 +122,7 @@ class WorkerTasks(WorkerTasksServicer):
 
         while True:
             # Send request
-            worker_task = WorkerTask(uuid=b"", task_none=TaskNone())
+            worker_task = WorkerTask(uuid=uuid4().bytes, task_none=TaskNone())
             yield SessionEvents(worker_task=worker_task)
 
             # Read subsequent results
