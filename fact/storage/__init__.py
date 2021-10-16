@@ -143,9 +143,10 @@ class Storage:
     def get_storage_path(self):
         return self.data_dir
 
-    def get_filesystem_info(self):
+    def get_storage_info(self):
+        data_dir: str = str(self.get_storage_path())
         tasks = [task.get_task_info() for task in self.tasks]
-        return {"data_dir": self.data_dir, "tasks": tasks}
+        return {"data_dir": data_dir, "tasks": tasks}
 
     @classmethod
     def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
