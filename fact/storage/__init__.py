@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from uuid import UUID
 
-from exception import StorageExistsError, TaskExistsError, TaskInvalidUUID
+from fact.exceptions import StorageExistsError, TaskExistsError, TaskInvalidUUID
 from artifact import Artifact
 
 
