@@ -1,5 +1,3 @@
-import logging
-
 from fact.exceptions import (
     DirectoryExistsError,
     StorageExistsError,
@@ -100,11 +98,9 @@ class Artifact:
 
 class Task:
     def __init__(self, task_uuid_str: str = ""):
-        try:
-            task_uuid = UUID(task_uuid_str)
-        except ValueError as e:
-            raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str) from e
-        self.task_uuid = task_uuid
+        if not Task.is_valid_uuid(task_uuid_str):
+            raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str)
+        self.task_uuid = UUID(task_uuid_str)
         self.artifacts: list[Artifact] = []
 
     def add_artifact(self, artifact: Artifact):
@@ -131,10 +127,8 @@ class Task:
     @classmethod
     def _recreate_task(cls, task_info: dict):
         task_uuid_str: str = task_info.get("task_uuid", "")
-        try:
-            UUID(task_uuid_str)
-        except ValueError as e:
-            raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str) from e
+        if not Task.is_valid_uuid(task_uuid_str):
+            raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str)
         task: Task = cls(task_uuid_str)
 
         artifacts: list[dict] = task_info.get("artifacts", [])
@@ -144,6 +138,15 @@ class Task:
                 task.add_artifact(artifact)
 
         return task
+
+    @staticmethod
+    def is_valid_uuid(uuid_str: str):
+        try:
+            UUID(uuid_str)
+        except ValueError:
+            return False
+        else:
+            return True
 
 
 class Storage:
