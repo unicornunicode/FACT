@@ -45,12 +45,12 @@ class Controller:
         worker_tasks = WorkerTasks(controller=self)
         add_WorkerTasksServicer_to_server(worker_tasks, self.server)
 
-    async def create_worker(self, uuid: UUID, hostname: str) -> None:
+    async def _create_worker(self, uuid: UUID, hostname: str) -> None:
         with self.session.begin():
             worker = Worker(uuid=uuid, hostname=hostname)
             self.session.add(worker)
 
-    async def update_worker(self, uuid: UUID, hostname: str) -> None:
+    async def _update_worker(self, uuid: UUID, hostname: str) -> None:
         with self.session.begin():
             stmt_find = select(Worker).where(Worker.uuid == uuid)
             worker_found: Optional[Worker] = self.session.execute(stmt_find).scalar()
@@ -77,7 +77,7 @@ class WorkerTasks(WorkerTasksServicer):
     def __init__(self, controller: Controller):
         self.controller = controller
 
-    async def exchange_handshake(
+    async def _exchange_handshake(
         self, results: AsyncIterator[SessionResults]
     ) -> AsyncGenerator[SessionEvents, None]:
         # Read in the first request
@@ -92,18 +92,18 @@ class WorkerTasks(WorkerTasksServicer):
         if registration.previous_uuid == b"":
             # New worker
             uuid = uuid4()
-            self.controller.create_worker(uuid, registration.hostname)
+            self.controller._create_worker(uuid, registration.hostname)
         else:
             # Existing worker
             uuid = UUID(bytes=registration.previous_uuid)
-            self.controller.update_worker(uuid, registration.hostname)
+            self.controller._update_worker(uuid, registration.hostname)
         yield SessionEvents(worker_acceptance=WorkerAcceptance(uuid=uuid.bytes))
 
     async def Session(
         self, request: AsyncIterator[SessionResults], context: ServicerContext
     ) -> AsyncGenerator[SessionEvents, None]:
         try:
-            async for response in self.exchange_handshake(request):
+            async for response in self._exchange_handshake(request):
                 yield response
         except Exception as e:
             log.warn(e)
