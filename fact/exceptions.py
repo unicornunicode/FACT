@@ -1,25 +1,42 @@
-class StorageExistsError(Exception):
+class StorageModuleException(Exception):
+    def __init__(self, message: str, field: str):
+        self.message = message
+        self.field = field
+
+    def __str__(self):
+        return f"{self.field} -> {self.message}"
+
+
+class DirectoryExistsError(StorageModuleException):
     def __init__(self, message: str, storage_path: str):
-        self.message = message
-        self.storage_path = storage_path
-
-    def __str__(self):
-        return f"{self.storage_path} -> {self.message}"
+        super().__init__(message, storage_path)
 
 
-class TaskExistsError(Exception):
+class StorageExistsError(StorageModuleException):
+    def __init__(self, message: str, storage_path: str):
+        super().__init__(message, storage_path)
+
+
+class TaskExistsError(StorageModuleException):
     def __init__(self, message: str, task_id: str):
-        self.message = message
-        self.task_id = task_id
-
-    def __str__(self):
-        return f"{self.task_id} -> {self.message}"
+        super().__init__(message, task_id)
 
 
-class TaskInvalidUUID(Exception):
+class TaskInvalidUUID(StorageModuleException):
     def __init__(self, message: str, task_uuid: str):
-        self.message = message
-        self.task_uuid = task_uuid
+        super().__init__(message, task_uuid)
 
-    def __str__(self):
-        return f"{self.task_uuid} -> {self.message}"
+
+class ArtifactInvalidName(StorageModuleException):
+    def __init__(self, message: str, artifact_name: str):
+        super().__init__(message, artifact_name)
+
+
+class ArtifactInvalidType(StorageModuleException):
+    def __init__(self, message: str, artifact_type: str):
+        super().__init__(message, artifact_type)
+
+
+class ArtifactInvalidSubType(StorageModuleException):
+    def __init__(self, message: str, sub_type: str):
+        super().__init__(message, sub_type)

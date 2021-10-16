@@ -6,6 +6,8 @@ from fact.exceptions import (
     TaskExistsError,
     TaskInvalidUUID,
     ArtifactInvalidName,
+    ArtifactInvalidType,
+    ArtifactInvalidSubType,
 )
 from .enumerate import ArtifactType, DataType
 
@@ -15,14 +17,30 @@ from uuid import UUID
 
 class Artifact:
     def __init__(
-        self,
-        artifact_name: str,
-        artifact_type: ArtifactType = ArtifactType.unknown,
-        sub_type: DataType = DataType.unknown,
+        self, artifact_name: str = "", artifact_type: str = "", sub_type: str = ""
     ):
+        if not artifact_name:
+            raise ArtifactInvalidName("Invalid empty name", artifact_name)
+
+        if not artifact_type:
+            artifact_type = ArtifactType.unknown.name
+        elif not Artifact.is_valid_artifact_type(artifact_type):
+            err_msg = "Invalid artifact type"
+            valid_types = ", ".join(ArtifactType.__members__.keys())
+            err_msg += ". Select from: {" + valid_types + "}"
+            raise ArtifactInvalidType(err_msg, artifact_type)
+
+        if not sub_type:
+            sub_type = DataType.unknown.name
+        elif not Artifact.is_valid_sub_type(sub_type):
+            err_msg = "Invalid sub type"
+            valid_types = ", ".join(DataType.__members__.keys())
+            err_msg += ". Select from: {" + valid_types + "}"
+            raise ArtifactInvalidSubType(err_msg, sub_type)
+
         self.artifact_name = artifact_name
-        self.artifact_type = artifact_type
-        self.sub_type = sub_type
+        self.artifact_type = ArtifactType[artifact_type]
+        self.sub_type = DataType[sub_type]
 
     def get_artifact_type(self):
         return self.artifact_type.name
@@ -33,7 +51,13 @@ class Artifact:
     def get_artifact_path(self):
         artifact_type = self.get_artifact_type()
         sub_type = self.get_sub_type()
-        return Path(artifact_type) / Path(sub_type) / Path(self.artifact_name)
+        artifact_path = Path(artifact_type) / Path(sub_type)
+        if not artifact_path.exists():
+            try:
+                artifact_path.mkdir(parents=True, exist_ok=True)
+            except PermissionError as e:
+                raise e
+        return artifact_path / Path(self.artifact_name)
 
     def get_artifact_info(self):
         sub_type = self.get_sub_type()
@@ -45,9 +69,13 @@ class Artifact:
 
     @classmethod
     def create_artifact(cls, artifact_info: dict):
-        name, artifact_type, sub_type = Artifact.extract_info(artifact_info)
-        if Artifact.verify_info(name, artifact_type, sub_type):
-            return cls(name, ArtifactType[artifact_type], DataType[sub_type])
+        artifact_name, artifact_type, sub_type = Artifact.extract_info(artifact_info)
+        if (
+            Artifact.is_valid_artifact_name(artifact_name)
+            and Artifact.is_valid_artifact_type(artifact_type)
+            and Artifact.is_valid_sub_type(sub_type)
+        ):
+            return cls(artifact_name, ArtifactType[artifact_type], DataType[sub_type])
         return None
 
     @staticmethod
@@ -58,18 +86,24 @@ class Artifact:
         return name, artifact_type, sub_type
 
     @staticmethod
-    def verify_info(name: str, artifact_type: str, sub_type: str):
-        if (
-            not name
-            and artifact_type in ArtifactType.__members__
-            and sub_type in DataType.__members__
-        ):
-            return True
-        return False
+    def is_valid_artifact_name(artifact_name: str):
+        return bool(artifact_name)
+
+    @staticmethod
+    def is_valid_artifact_type(artifact_type: str):
+        return artifact_type in ArtifactType.__members__
+
+    @staticmethod
+    def is_valid_sub_type(sub_type: str):
+        return sub_type in DataType.__members__
 
 
 class Task:
-    def __init__(self, task_uuid: UUID):
+    def __init__(self, task_uuid_str: str = ""):
+        try:
+            task_uuid = UUID(task_uuid_str)
+        except ValueError as e:
+            raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str) from e
         self.task_uuid = task_uuid
         self.artifacts: list[Artifact] = []
 
@@ -116,8 +150,12 @@ class Storage:
     DEFAULT_PATH = Path("/var/lib/fact")
 
     def __init__(self, data_dir: Path = DEFAULT_PATH):
-        if not data_dir.exists():
-            data_dir.mkdir(parents=True, exist_ok=True)
+        if data_dir.exists():
+            raise DirectoryExistsError("Directory exists already", str(data_dir))
+        try:
+            data_dir.mkdir(parents=True, exist_ok=False)
+        except PermissionError as e:
+            raise e
         self.data_dir = data_dir
         self.tasks: list[Task] = []
 
