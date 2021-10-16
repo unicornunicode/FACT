@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from pathlib import Path
 from argparse import ArgumentParser
 
 from . import Worker
@@ -15,11 +16,18 @@ if __name__ == "__main__":
         help="Address and port of the controller for the worker to connect to "
         "(Default: localhost:5123)",
     )
+    parser.add_argument(
+        "--storage-dir",
+        default=Path("/var/lib/fact"),
+        type=Path,
+        help="Folder to store collected disk images, memory snapshots and other data "
+        "(Default: /var/lib/fact)",
+    )
     args = parser.parse_args()
 
     loop = asyncio.get_event_loop()
 
-    w = Worker(controller_addr=args.controller_addr)
+    w = Worker(controller_addr=args.controller_addr, storage_dir=args.storage_dir)
     try:
         loop.run_until_complete(w.start())
     except KeyboardInterrupt:

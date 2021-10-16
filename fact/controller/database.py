@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import uuid4
 import enum
 
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey, Enum
@@ -25,7 +26,7 @@ class CollectDiskSelectorGroup(enum.Enum):
 class Task(Base):
     __tablename__ = "task"
 
-    uuid = Column(UUID, primary_key=True, nullable=False)
+    uuid = Column(UUID, default=uuid4, primary_key=True, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.utcnow(), nullable=False)
     completed_at = Column(DateTime, default=None, nullable=True)
 

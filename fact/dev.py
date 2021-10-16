@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from pathlib import Path
 from argparse import ArgumentParser
 
 from .controller import Controller
@@ -25,8 +26,8 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
 
-    c = Controller(listen_addr="localhost:5123")
-    w = Worker(controller_addr="localhost:5123")
+    c = Controller(listen_addr="localhost:5123", database_addr="sqlite:///:memory:")
+    w = Worker(controller_addr="localhost:5123", storage_dir=Path("/tmp/fact"))
     try:
         loop.run_until_complete(start_all(c, w))
     except KeyboardInterrupt:
