@@ -1,5 +1,44 @@
 syntax = "proto3";
 
+service Management {
+    rpc CreateTask(CreateTaskRequest) returns (CreateTaskResult);
+    rpc ListTask(ListTaskRequest) returns (ListTaskResult);
+    rpc ListWorker(ListWorkerRequest) returns (ListWorkerResult);
+}
+
+message CreateTaskRequest {
+    TargetSelector selector = 1;
+    oneof task {
+        TaskCollectDisk task_collect_disk = 4;
+        TaskCollectMemory task_collect_memory = 5;
+    }
+}
+
+message TargetSelector {
+
+}
+
+message CreateTaskResult {
+    bytes uuid = 1;
+}
+
+message ListTaskRequest {
+
+}
+
+message ListTaskResult {
+    string selector = 1;
+}
+
+message ListWorkerRequest {
+
+}
+
+message ListWorkerResult {
+    bytes uuid = 1;
+    string hostname = 2;
+}
+
 service WorkerTasks {
     rpc Session(stream SessionResults) returns (stream SessionEvents);
 }
@@ -19,7 +58,7 @@ message SessionEvents {
 }
 
 message WorkerRegistration {
-    bytes previous_uuid = 1;
+    optional bytes previous_uuid = 1;
     string hostname = 2;
 }
 
@@ -29,11 +68,29 @@ message WorkerAcceptance {
 
 message WorkerTask {
     bytes uuid = 1;
+    optional Target target = 2;
     oneof task {
-        TaskNone task_none = 2;
-        TaskCollectDisk task_collect_disk = 3;
-        TaskCollectMemory task_collect_memory = 4;
+        TaskNone task_none = 3;
+        TaskCollectDisk task_collect_disk = 4;
+        TaskCollectMemory task_collect_memory = 5;
     }
+}
+
+message Target {
+    bytes uuid = 1;
+    oneof access {
+        SSHAccess ssh = 2;
+    }
+}
+
+message SSHAccess {
+    string host = 1;
+    string user = 2;
+    uint32 port = 3;
+    string private_key = 4;
+    // sudo
+    bool become = 5;
+    string become_password = 6;
 }
 
 message WorkerTaskResult {
@@ -54,7 +111,6 @@ message TaskNoneResult {
 }
 
 message TaskCollectDisk {
-    Target target = 1;
     DiskSelector selector = 2;
 }
 
@@ -62,7 +118,7 @@ message TaskCollectDiskResult {
 
 }
 
-message CollectDiskSelector {
+message DiskSelector {
     enum Group {
         ALL_DISKS = 0;
         ROOT_DISK = 1;
@@ -72,28 +128,11 @@ message CollectDiskSelector {
 }
 
 message TaskCollectMemory {
-    Target target = 1;
+
 }
 
 message TaskCollectMemoryResult {
 
-}
-
-message Target {
-    bytes uuid = 1;
-    oneof access {
-        SSHAccess ssh = 2;
-    }
-}
-
-message SSHAccess {
-    string host = 1;
-    string user = 2;
-    uint32 port = 3;
-    string private_key = 4;
-    // sudo
-    bool become = 5;
-    string become_password = 6;
 }
 
 // vim: set et ts=4 sw=4:

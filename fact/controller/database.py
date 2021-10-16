@@ -17,16 +17,21 @@ class Worker(Base):
     hostname = Column(String, nullable=False)
 
 
+class TaskStatus(enum.Enum):
+    WAITING = 0
+    RUNNING = 1
+    COMPLETE = 2
+
+
+class TaskType(enum.Enum):
+    task_collect_disk = 1
+    task_collect_memory = 2
+
+
 class CollectDiskSelectorGroup(enum.Enum):
     ALL_DISKS = 0
     ROOT_DISK = 1
     ROOT_PARTITION = 2
-
-
-class TaskStatus(enum.Enum):
-    WAITING = 0
-    RUNNING = 1
-    COMPLETE = 1
 
 
 class Task(Base):
@@ -38,10 +43,11 @@ class Task(Base):
     assigned_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
 
-    none = Column(Boolean, nullable=True)
-    collect_disk_target = Column(UUID, ForeignKey("target.uuid"), nullable=True)
-    collect_disk_selector_group = Column(Enum(CollectDiskSelectorGroup), nullable=True)
-    collect_memory_target = Column(UUID, ForeignKey("target.uuid"), nullable=True)
+    type = Column(Enum(TaskType), nullable=False)
+    target = Column(UUID, ForeignKey("target.uuid"), nullable=True)
+    task_collect_disk_selector_group = Column(
+        Enum(CollectDiskSelectorGroup), nullable=True
+    )
 
     worker = Column(UUID, ForeignKey("worker.uuid"), nullable=True)
 

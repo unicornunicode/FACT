@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
-from fact.controller.database import Base, Worker, Task, Target
+from fact.controller.database import Base, Worker, Task, TaskType, Target
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ def test_database_create_task(engine):
         # Perform entire test within a transaction
         with session.begin():
             now = datetime.utcnow()
-            task = Task(uuid=UUID(int=0))
+            task = Task(uuid=UUID(int=0), type=TaskType.task_collect_disk)
             session.add(task)
 
             rows_all_tasks = session.execute(select(Task)).scalars()
