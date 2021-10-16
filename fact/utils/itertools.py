@@ -7,9 +7,9 @@ async def chain(*iterables: Union[Iterable, AsyncIterable]) -> AsyncIterable:
 
     >>> from typing import List
     >>> from asyncio import run
-    >>> async def read_all(c: AsyncIterable) -> List:
+    >>> async def read_all(i: AsyncIterable) -> List:
     ...     l = []
-    ...     async for a in c:
+    ...     async for a in i:
     ...         l.append(a)
     ...     return l
     >>> run(read_all(chain([1, 2], [3])))
