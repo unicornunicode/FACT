@@ -155,7 +155,7 @@ class Storage:
             raise StorageExistsError("Storage exists already", str(new_data_dir))
         storage: Storage = cls(new_data_dir)
 
-        tasks: list[dict[str, dict[str, list]]] = storage_dict.get("tasks", [])
+        tasks: list[dict] = storage_dict.get("tasks", [])
         for t in tasks:
             task: Task = Task._recreate_task(t)
             storage.add_task(task)
