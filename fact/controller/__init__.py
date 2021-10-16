@@ -93,16 +93,16 @@ class Controller:
     """
     The Controller gets tasks from the UI and schedules them onto workers
 
-    >>> c = Controller("localhost:5123")
+    >>> c = Controller("localhost:5123", "sqlite:///:memory:")
     """
 
     listen_addr: str
     server: Server
 
-    def __init__(self, listen_addr: str, database_addr: str):
+    def __init__(self, listen_addr: str, database_addr: str, database_echo=False):
         self.listen_addr = listen_addr
         self.server = grpc_server()
-        engine = create_engine(database_addr, echo=True, future=True)
+        engine = create_engine(database_addr, echo=database_echo, future=True)
         Base.metadata.create_all(engine)
         session = Session(engine)
         # Services

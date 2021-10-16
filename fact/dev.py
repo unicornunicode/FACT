@@ -32,6 +32,7 @@ if __name__ == "__main__":
     c = Controller(
         listen_addr="localhost:5123",
         database_addr="sqlite:///file:/tmp/fact/controller.db?mode=rwc&uri=true",
+        database_echo=True,
     )
     w = Worker(controller_addr="localhost:5123", storage_dir=Path("/tmp/fact"))
     try:
