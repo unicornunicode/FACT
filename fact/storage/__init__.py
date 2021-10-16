@@ -1,17 +1,9 @@
 import logging
-<<<<<<< HEAD
-=======
-import os
-import errno
->>>>>>> 4e34807c976666b4c0762ece43aeb60e9e8dbe23
 
 from pathlib import Path
 from uuid import UUID
 
-<<<<<<< HEAD
 from exception import StorageExistsError, TaskExistsError, TaskInvalidUUID
-=======
->>>>>>> 4e34807c976666b4c0762ece43aeb60e9e8dbe23
 from artifact import Artifact
 
 
@@ -20,11 +12,7 @@ class Task:
         self.task_uuid = task_uuid
         self.artifacts: list[Artifact] = []
 
-<<<<<<< HEAD
     def add_artifact(self, artifact: Artifact):
-=======
-    def add_artifact(self, artifact):
->>>>>>> 4e34807c976666b4c0762ece43aeb60e9e8dbe23
         self.artifacts.append(artifact)
 
     def get_task_uuid(self):
@@ -50,13 +38,8 @@ class Task:
         task_uuid_str: str = kwargs.get("task_uuid")
         try:
             task_uuid = UUID(task_uuid_str)
-<<<<<<< HEAD
         except ValueError as e:
             raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str) from e
-=======
-        except ValueError:
-            return  # Raise custom exception
->>>>>>> 4e34807c976666b4c0762ece43aeb60e9e8dbe23
         task: Task = cls(task_uuid)
 
         artifacts: list[dict] = kwargs.get("artifacts")
@@ -86,11 +69,7 @@ class Storage:
 
     def add_task(self, task: Task):
         if self.is_task_exists(task):
-<<<<<<< HEAD
             raise TaskExistsError("Task exists already", task.get_task_uuid())
-=======
-            pass  # Raise custom exception
->>>>>>> 4e34807c976666b4c0762ece43aeb60e9e8dbe23
         self.tasks.append(task)
 
     def get_storage_path(self):
@@ -104,11 +83,7 @@ class Storage:
     def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
         old_data_dir: Path = storage_dict.get("data_dir", Storage.DEFAULT_PATH)
         if old_data_dir == new_data_dir:
-<<<<<<< HEAD
             raise StorageExistsError("Storage exists already", new_data_dir)
-=======
-            pass  # Raise custom exception
->>>>>>> 4e34807c976666b4c0762ece43aeb60e9e8dbe23
         storage: Storage = cls(new_data_dir)
 
         tasks: list[dict[str, dict[str, list]]] = storage_dict.get("tasks", [])
