@@ -51,17 +51,17 @@ class Artifact:
         }
 
     @classmethod
-    def create_artifact(cls, **kwargs: str):
-        name, artifact_type, sub_type = Artifact.extract_info(kwargs)
+    def create_artifact(cls, artifact_info: dict):
+        name, artifact_type, sub_type = Artifact.extract_info(artifact_info)
         if Artifact.verify_info(name, artifact_type, sub_type):
             return cls(name, ArtifactType[artifact_type], DataType[sub_type])
         return None
 
     @staticmethod
-    def extract_info(**kwargs: str):
-        name = kwargs.get("artifact_name", "")
-        artifact_type = kwargs.get("artifact_type", "")
-        sub_type = kwargs.get("sub_type", "")
+    def extract_info(artifact_info: dict):
+        name = artifact_info.get("artifact_name", "")
+        artifact_type = artifact_info.get("artifact_type", "")
+        sub_type = artifact_info.get("sub_type", "")
         return name, artifact_type, sub_type
 
     @staticmethod
@@ -102,15 +102,15 @@ class Task:
         return {"task_uuid": task_uuid, "artifacts": artifacts}
 
     @classmethod
-    def _recreate_task(cls, **kwargs: str):
-        task_uuid_str: str = kwargs.get("task_uuid")
+    def _recreate_task(cls, task_info: dict):
+        task_uuid_str: str = task_info.get("task_uuid", "")
         try:
             task_uuid = UUID(task_uuid_str)
         except ValueError as e:
             raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str) from e
         task: Task = cls(task_uuid)
 
-        artifacts: list[dict] = kwargs.get("artifacts")
+        artifacts: list[dict] = task_info.get("artifacts", [])
         for a in artifacts:
             artifact: Artifact = Artifact.create_artifact(a)
             if artifact:
@@ -151,7 +151,7 @@ class Storage:
     def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
         old_data_dir: Path = storage_dict.get("data_dir", Storage.DEFAULT_PATH)
         if old_data_dir == new_data_dir:
-            raise StorageExistsError("Storage exists already", new_data_dir)
+            raise StorageExistsError("Storage exists already", str(new_data_dir))
         storage: Storage = cls(new_data_dir)
 
         tasks: list[dict[str, dict[str, list]]] = storage_dict.get("tasks", [])
