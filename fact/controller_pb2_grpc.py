@@ -5,6 +5,133 @@ import grpc
 from fact import controller_pb2 as fact_dot_controller__pb2
 
 
+class ManagementStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.CreateTask = channel.unary_unary(
+                '/Management/CreateTask',
+                request_serializer=fact_dot_controller__pb2.CreateTaskRequest.SerializeToString,
+                response_deserializer=fact_dot_controller__pb2.CreateTaskResult.FromString,
+                )
+        self.ListTask = channel.unary_unary(
+                '/Management/ListTask',
+                request_serializer=fact_dot_controller__pb2.ListTaskRequest.SerializeToString,
+                response_deserializer=fact_dot_controller__pb2.ListTaskResult.FromString,
+                )
+        self.ListWorker = channel.unary_unary(
+                '/Management/ListWorker',
+                request_serializer=fact_dot_controller__pb2.ListWorkerRequest.SerializeToString,
+                response_deserializer=fact_dot_controller__pb2.ListWorkerResult.FromString,
+                )
+
+
+class ManagementServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def CreateTask(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTask(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListWorker(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_ManagementServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'CreateTask': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateTask,
+                    request_deserializer=fact_dot_controller__pb2.CreateTaskRequest.FromString,
+                    response_serializer=fact_dot_controller__pb2.CreateTaskResult.SerializeToString,
+            ),
+            'ListTask': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTask,
+                    request_deserializer=fact_dot_controller__pb2.ListTaskRequest.FromString,
+                    response_serializer=fact_dot_controller__pb2.ListTaskResult.SerializeToString,
+            ),
+            'ListWorker': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListWorker,
+                    request_deserializer=fact_dot_controller__pb2.ListWorkerRequest.FromString,
+                    response_serializer=fact_dot_controller__pb2.ListWorkerResult.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'Management', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+
+
+ # This class is part of an EXPERIMENTAL API.
+class Management(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def CreateTask(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Management/CreateTask',
+            fact_dot_controller__pb2.CreateTaskRequest.SerializeToString,
+            fact_dot_controller__pb2.CreateTaskResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ListTask(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Management/ListTask',
+            fact_dot_controller__pb2.ListTaskRequest.SerializeToString,
+            fact_dot_controller__pb2.ListTaskResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ListWorker(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Management/ListWorker',
+            fact_dot_controller__pb2.ListWorkerRequest.SerializeToString,
+            fact_dot_controller__pb2.ListWorkerResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+
 class WorkerTasksStub(object):
     """Missing associated documentation comment in .proto file."""
 

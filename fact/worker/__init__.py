@@ -10,6 +10,7 @@ from ..controller_pb2 import (
     SessionEvents,
     WorkerRegistration,
     WorkerTask,
+    Target,
     WorkerTaskResult,
     TaskNoneResult,
     TaskCollectDisk,
@@ -77,12 +78,12 @@ class Worker:
         return platform.node()
 
     async def _handle_task_collect_disk(
-        self, task_uuid: UUID, task: TaskCollectDisk
+        self, task_uuid: UUID, target: Target, task: TaskCollectDisk
     ) -> None:
         log.error("Task collect_disk not implemented")
 
     async def _handle_task_collect_memory(
-        self, task_uuid: UUID, task: TaskCollectMemory
+        self, task_uuid: UUID, target: Target, task: TaskCollectMemory
     ) -> None:
         log.error("Task collect_memory not implemented")
 
@@ -97,12 +98,16 @@ class Worker:
             await asyncio.sleep(1)
             return WorkerTaskResult(uuid=task_uuid.bytes, task_none=TaskNoneResult())
         if task_type == "task_collect_disk":
-            await self._handle_task_collect_disk(task_uuid, task.task_collect_disk)
+            await self._handle_task_collect_disk(
+                task_uuid, task.target, task.task_collect_disk
+            )
             return WorkerTaskResult(
                 uuid=task_uuid.bytes, task_collect_disk=TaskCollectDiskResult()
             )
         if task_type == "task_collect_memory":
-            await self._handle_task_collect_memory(task_uuid, task.task_collect_memory)
+            await self._handle_task_collect_memory(
+                task_uuid, task.target, task.task_collect_memory
+            )
             return WorkerTaskResult(
                 uuid=task_uuid.bytes, task_collect_memory=TaskCollectMemoryResult()
             )
@@ -115,13 +120,12 @@ class Worker:
         Register this worker with the database
         """
         if self._uuid is None:
-            previous_uuid = b""
+            registration = WorkerRegistration(hostname=self.hostname)
         else:
-            previous_uuid = self._uuid.bytes
+            registration = WorkerRegistration(
+                previous_uuid=self._uuid.bytes, hostname=self.hostname
+            )
         # Send the first request
-        registration = WorkerRegistration(
-            previous_uuid=previous_uuid, hostname=self.hostname
-        )
         await responses.add(SessionResults(worker_registration=registration))
         # Read the first event
         first_event = await events.__anext__()
