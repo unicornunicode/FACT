@@ -75,14 +75,14 @@ class Artifact:
             and Artifact.is_valid_artifact_type(artifact_type)
             and Artifact.is_valid_sub_type(sub_type)
         ):
-            return cls(artifact_name, ArtifactType[artifact_type], DataType[sub_type])
+            return cls(artifact_name, artifact_type, sub_type)
         return None
 
     @staticmethod
     def extract_info(artifact_info: dict):
-        name = artifact_info.get("artifact_name", "")
-        artifact_type = artifact_info.get("artifact_type", "")
-        sub_type = artifact_info.get("sub_type", "")
+        name: str = artifact_info.get("artifact_name", "")
+        artifact_type: str = artifact_info.get("artifact_type", "")
+        sub_type: str = artifact_info.get("sub_type", "")
         return name, artifact_type, sub_type
 
     @staticmethod
@@ -132,10 +132,10 @@ class Task:
     def _recreate_task(cls, task_info: dict):
         task_uuid_str: str = task_info.get("task_uuid", "")
         try:
-            task_uuid = UUID(task_uuid_str)
+            UUID(task_uuid_str)
         except ValueError as e:
             raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str) from e
-        task: Task = cls(task_uuid)
+        task: Task = cls(task_uuid_str)
 
         artifacts: list[dict] = task_info.get("artifacts", [])
         for a in artifacts:
