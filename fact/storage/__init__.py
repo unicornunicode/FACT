@@ -1,10 +1,9 @@
 import logging
-import os
-import errno
 
 from pathlib import Path
 from uuid import UUID
 
+from exception import StorageExistsError, TaskExistsError, TaskInvalidUUID
 from artifact import Artifact
 
 
@@ -13,7 +12,7 @@ class Task:
         self.task_uuid = task_uuid
         self.artifacts: list[Artifact] = []
 
-    def add_artifact(self, artifact):
+    def add_artifact(self, artifact: Artifact):
         self.artifacts.append(artifact)
 
     def get_task_uuid(self):
