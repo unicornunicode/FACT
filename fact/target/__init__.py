@@ -117,7 +117,6 @@ class TargetEndpoint:
         except PKeyFileError as e:
             raise SSHInfoError("Error finding private key") from e
 
-
     def collect_image(
         self, remote_path_of_image: str, path_to_save: str, decompress: bool = True
     ):
