@@ -24,11 +24,58 @@ from .database import Base, Worker
 log = logging.getLogger(__name__)
 
 
-class WorkerTasks(WorkerTasksServicer):
-    session: Session
+class Controller:
+    """
+    The Controller gets tasks from the UI and schedules them onto workers
 
-    def __init__(self, session: Session):
-        self.session = session
+    >>> c = Controller("localhost:5123", "sqlite:///:memory:")
+    """
+
+    listen_addr: str
+    server: Server
+
+    def __init__(self, listen_addr: str, database_addr: str, database_echo=False):
+        self.listen_addr = listen_addr
+        self.server = grpc_server()
+        # Database
+        engine = create_engine(database_addr, echo=database_echo, future=True)
+        Base.metadata.create_all(engine)
+        self.session = Session(engine)
+        # Services
+        worker_tasks = WorkerTasks(controller=self)
+        add_WorkerTasksServicer_to_server(worker_tasks, self.server)
+
+    async def create_worker(self, uuid: UUID, hostname: str) -> None:
+        with self.session.begin():
+            worker = Worker(uuid=uuid, hostname=hostname)
+            self.session.add(worker)
+
+    async def update_worker(self, uuid: UUID, hostname: str) -> None:
+        with self.session.begin():
+            stmt_find = select(Worker).where(Worker.uuid == uuid)
+            worker_found: Optional[Worker] = self.session.execute(stmt_find).scalar()
+            if worker_found is None:
+                raise Exception(f"Worker with UUID {uuid} not found")
+            stmt_update_hostname = (
+                update(Worker).where(Worker.uuid == uuid).values(hostname=hostname)
+            )
+            self.session.execute(stmt_update_hostname)
+
+    async def start(self) -> None:
+        log.info(f"Starting server on {self.listen_addr}")
+        self.server.add_insecure_port(self.listen_addr)
+        await self.server.start()
+        await self.server.wait_for_termination()
+
+    async def stop(self, grace: float) -> None:
+        await self.server.stop(grace)
+
+
+class WorkerTasks(WorkerTasksServicer):
+    controller: Controller
+
+    def __init__(self, controller: Controller):
+        self.controller = controller
 
     async def exchange_handshake(
         self, results: AsyncIterator[SessionResults]
@@ -45,25 +92,11 @@ class WorkerTasks(WorkerTasksServicer):
         if registration.previous_uuid == b"":
             # New worker
             uuid = uuid4()
-            with self.session.begin():
-                worker = Worker(uuid=uuid, hostname=registration.hostname)
-                self.session.add(worker)
+            self.controller.create_worker(uuid, registration.hostname)
         else:
             # Existing worker
             uuid = UUID(bytes=registration.previous_uuid)
-            with self.session.begin():
-                stmt_find = select(Worker).where(Worker.uuid == uuid)
-                worker_found: Optional[Worker] = self.session.execute(
-                    stmt_find
-                ).scalar()
-                if worker_found is None:
-                    raise Exception(f"Worker with UUID {uuid} not found")
-                stmt_update_hostname = (
-                    update(Worker)
-                    .where(Worker.uuid == uuid)
-                    .values(hostname=registration.hostname)
-                )
-                self.session.execute(stmt_update_hostname)
+            self.controller.update_worker(uuid, registration.hostname)
         yield SessionEvents(worker_acceptance=WorkerAcceptance(uuid=uuid.bytes))
 
     async def Session(
@@ -87,36 +120,6 @@ class WorkerTasks(WorkerTasksServicer):
             log.debug(worker_task_result)
 
             await asyncio.sleep(10)
-
-
-class Controller:
-    """
-    The Controller gets tasks from the UI and schedules them onto workers
-
-    >>> c = Controller("localhost:5123", "sqlite:///:memory:")
-    """
-
-    listen_addr: str
-    server: Server
-
-    def __init__(self, listen_addr: str, database_addr: str, database_echo=False):
-        self.listen_addr = listen_addr
-        self.server = grpc_server()
-        engine = create_engine(database_addr, echo=database_echo, future=True)
-        Base.metadata.create_all(engine)
-        session = Session(engine)
-        # Services
-        worker_tasks = WorkerTasks(session=session)
-        add_WorkerTasksServicer_to_server(worker_tasks, self.server)
-
-    async def start(self):
-        log.info(f"Starting server on {self.listen_addr}")
-        self.server.add_insecure_port(self.listen_addr)
-        await self.server.start()
-        await self.server.wait_for_termination()
-
-    async def stop(self, grace: float):
-        await self.server.stop(grace)
 
 
 # vim: set et ts=4 sw=4:
