@@ -30,15 +30,16 @@ class WorkerTasks(WorkerTasksServicer):
     def __init__(self, session: Session):
         self.session = session
 
-    async def Session(
-        self, request: AsyncIterator[SessionResults], context: ServicerContext
+    async def exchange_handshake(
+        self, results: AsyncIterator[SessionResults]
     ) -> AsyncGenerator[SessionEvents, None]:
         # Read in the first request
-        first_result: SessionResults = await request.__anext__()
+        first_result: SessionResults = await results.__anext__()
         # First request must be a worker_registration
         if first_result.WhichOneof("result") != "worker_registration":
-            context.abort(StatusCode.FAILED_PRECONDITION)
-            return
+            raise Exception(
+                "First result received was not a worker_registration result"
+            )
         # Register the worker
         registration = first_result.worker_registration
         if registration.previous_uuid == b"":
@@ -47,7 +48,6 @@ class WorkerTasks(WorkerTasksServicer):
             with self.session.begin():
                 worker = Worker(uuid=uuid, hostname=registration.hostname)
                 self.session.add(worker)
-            yield SessionEvents(worker_acceptance=WorkerAcceptance(uuid=uuid.bytes))
         else:
             # Existing worker
             uuid = UUID(bytes=registration.previous_uuid)
@@ -57,18 +57,25 @@ class WorkerTasks(WorkerTasksServicer):
                     stmt_find
                 ).scalar()
                 if worker_found is None:
-                    log.warn("Worker connected but UUID not found")
-                    return
-                if worker_found.hostname != registration.hostname:
-                    stmt_update_hostname = (
-                        update(Worker)
-                        .where(Worker.uuid == uuid)
-                        .values(hostname=registration.hostname)
-                    )
-                    self.session.execute(stmt_update_hostname)
-            yield SessionEvents(
-                worker_acceptance=WorkerAcceptance(uuid=registration.previous_uuid)
-            )
+                    raise Exception(f"Worker with UUID {uuid} not found")
+                stmt_update_hostname = (
+                    update(Worker)
+                    .where(Worker.uuid == uuid)
+                    .values(hostname=registration.hostname)
+                )
+                self.session.execute(stmt_update_hostname)
+        yield SessionEvents(worker_acceptance=WorkerAcceptance(uuid=uuid.bytes))
+
+    async def Session(
+        self, request: AsyncIterator[SessionResults], context: ServicerContext
+    ) -> AsyncGenerator[SessionEvents, None]:
+        try:
+            async for response in self.exchange_handshake(request):
+                yield response
+        except Exception as e:
+            log.warn(e)
+            context.abort(StatusCode.FAILED_PRECONDITION)
+            return
 
         while True:
             # Send request

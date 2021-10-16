@@ -26,7 +26,13 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
 
-    c = Controller(listen_addr="localhost:5123", database_addr="sqlite:///:memory:")
+    # Ensure /tmp/fact is created
+    Path("/tmp/fact").mkdir(exist_ok=True)
+
+    c = Controller(
+        listen_addr="localhost:5123",
+        database_addr="sqlite:///file:/tmp/fact/controller.db?mode=rwc&uri=true",
+    )
     w = Worker(controller_addr="localhost:5123", storage_dir=Path("/tmp/fact"))
     try:
         loop.run_until_complete(start_all(c, w))

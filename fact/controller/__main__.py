@@ -18,9 +18,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--database-addr",
-        default="sqlite:////var/lib/fact/controller",
+        default="sqlite:///file:/var/lib/fact/controller.db?mode=rwc&uri=true",
         help="Database address (SQLAlchemy URL) to store the workers and tasks "
-        "(Default: sqlite:////var/lib/fact/controller.db)",
+        "(Default: sqlite:///file:/var/lib/fact/controller.db?mode=rwc&uri=true)",
     )
     args = parser.parse_args()
 
