@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional, AsyncIterable
+from typing import Optional, AsyncIterator
 
 # Protocol
 from grpc.aio import insecure_channel
@@ -13,8 +13,7 @@ from ..controller_pb2 import (
     TaskNoneResult,
 )
 from ..controller_pb2_grpc import WorkerTasksStub
-from ..utils.itertools import chain
-from .stream import Stream
+from ..utils.stream import Stream
 
 # Data
 from uuid import UUID
@@ -39,12 +38,12 @@ class Worker:
             self.storage_dir.mkdir(parents=True)
 
         # Read uuid
-        self.uuid_file = storage_dir / "uuid"
+        self.uuid_file = storage_dir / "worker.uuid"
         if self.uuid_file.is_file():
             self.uuid = UUID(bytes=self.uuid_file.read_bytes())
             self.uuid_file.touch()
 
-    def write_uuid(self, uuid: UUID):
+    def set_uuid(self, uuid: UUID):
         self.uuid = uuid
         self.uuid_file.write_bytes(uuid.bytes)
 
@@ -52,41 +51,46 @@ class Worker:
     def hostname(self):
         return platform.node()
 
+    async def exchange_handshake(
+        self, responses: Stream[SessionResults], events: AsyncIterator[SessionEvents]
+    ):
+        if self.uuid is None:
+            previous_uuid = b""
+        else:
+            previous_uuid = self.uuid.bytes
+        # Send the first request
+        registration = WorkerRegistration(
+            previous_uuid=previous_uuid, hostname=self.hostname
+        )
+        await responses.add(SessionResults(worker_registration=registration))
+        # Read the first event
+        first_event = await events.__anext__()
+        # First event must be a worker_acceptance
+        if first_event.WhichOneof("event") != "worker_acceptance":
+            raise Exception("First event received was not a worker_acceptance event")
+        # Preserve assigned UUID
+        if self.uuid is None:
+            self.set_uuid(UUID(bytes=first_event.worker_acceptance.uuid))
+
     async def start(self):
         async with insecure_channel(self.controller_addr) as channel:
             stub = WorkerTasksStub(channel)
+            responses: Stream[SessionResults] = Stream()
+            events: AsyncIterator[SessionEvents] = stub.Session(responses).__aiter__()
 
-            if self.uuid is None:
-                first_result = SessionResults(
-                    worker_registration=WorkerRegistration(hostname=self.hostname)
-                )
-            else:
-                first_result = SessionResults(
-                    worker_registration=WorkerRegistration(
-                        uuid=self.uuid.bytes, hostname=self.hostname
-                    )
-                )
-
-            response_stream: Stream[SessionResults] = Stream()
-            responses: AsyncIterable[SessionResults] = chain(
-                [
-                    first_result,
-                ],
-                response_stream,
-            )
-            session_events: AsyncIterable[SessionEvents] = stub.Session(responses)
-
-            first_event = await session_events.__aiter__().__anext__()
-            if first_event.WhichOneof("event") != "worker_acceptance":
+            try:
+                await self.exchange_handshake(responses, events)
+            except Exception as e:
+                log.warn(e)
                 return
 
-            async for session_event in session_events:
-                worker_task = session_event.worker_task
+            async for event in events:
+                worker_task = event.worker_task
                 log.debug(worker_task)
 
                 await asyncio.sleep(1)
 
-                await response_stream.add(
+                await responses.add(
                     SessionResults(
                         worker_task_result=WorkerTaskResult(task_none=TaskNoneResult())
                     )
