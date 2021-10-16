@@ -34,6 +34,8 @@ class Task(Base):
     collect_disk_selector_group = Column(Enum(CollectDiskSelectorGroup), nullable=True)
     collect_memory_target = Column(UUID, ForeignKey("target.uuid"), nullable=True)
 
+    worker = Column(UUID, ForeignKey("worker.uuid"), nullable=True)
+
 
 class Target(Base):
     __tablename__ = "target"
