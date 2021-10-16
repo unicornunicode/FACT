@@ -29,6 +29,10 @@ log = logging.getLogger(__name__)
 
 
 class Worker:
+    """
+    The Worker gets tasks from the controller and executes them
+    """
+
     controller_addr: str
     storage_dir: Path
     uuid_file: Path
