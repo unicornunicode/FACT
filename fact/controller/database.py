@@ -23,12 +23,20 @@ class CollectDiskSelectorGroup(enum.Enum):
     ROOT_PARTITION = 2
 
 
+class TaskStatus(enum.Enum):
+    WAITING = 0
+    RUNNING = 1
+    COMPLETE = 1
+
+
 class Task(Base):
     __tablename__ = "task"
 
     uuid = Column(UUID, default=uuid4, primary_key=True, nullable=False)
-    created_at = Column(DateTime, default=lambda: datetime.utcnow(), nullable=False)
-    completed_at = Column(DateTime, default=None, nullable=True)
+    status = Column(Enum(TaskStatus), default=TaskStatus.WAITING, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    assigned_at = Column(DateTime, nullable=True)
+    completed_at = Column(DateTime, nullable=True)
 
     none = Column(Boolean, nullable=True)
     collect_disk_target = Column(UUID, ForeignKey("target.uuid"), nullable=True)

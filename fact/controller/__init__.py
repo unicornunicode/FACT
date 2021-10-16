@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Optional, AsyncIterator, AsyncGenerator
+from typing import List, AsyncIterator, AsyncGenerator
 
 # Protocol
 from grpc.aio import server as grpc_server, Server, ServicerContext
@@ -16,9 +16,9 @@ from ..controller_pb2_grpc import WorkerTasksServicer, add_WorkerTasksServicer_t
 
 # Data
 from uuid import UUID, uuid4
-from sqlalchemy import create_engine, select, update
+from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
-from .database import Base, Worker
+from .database import Base, Worker, Task, TaskStatus
 
 
 log = logging.getLogger(__name__)
@@ -38,6 +38,7 @@ class Controller:
         self.listen_addr = listen_addr
         self.server = grpc_server()
         # Database
+        # TODO: Switch to async_engine when there is sqlite support
         engine = create_engine(database_addr, echo=database_echo, future=True)
         Base.metadata.create_all(engine)
         self.session = Session(engine)
@@ -52,17 +53,37 @@ class Controller:
 
     async def _update_worker(self, uuid: UUID, hostname: str) -> None:
         with self.session.begin():
-            stmt_find = select(Worker).where(Worker.uuid == uuid)
-            worker_found: Optional[Worker] = self.session.execute(stmt_find).scalar()
-            if worker_found is None:
-                raise Exception(f"Worker with UUID {uuid} not found")
-            stmt_update_hostname = (
-                update(Worker).where(Worker.uuid == uuid).values(hostname=hostname)
-            )
-            self.session.execute(stmt_update_hostname)
+            stmt = select(Worker).where(Worker.uuid == uuid)
+            worker: Worker = self.session.execute(stmt).scalar_one()
+            worker.hostname = hostname
+
+    def _assign_task_to_worker(self, workers: List[Worker], task: Task) -> bool:
+        # TODO: Actually schedule across multiple workers
+        if len(workers) == 0:
+            return False
+        task.worker = workers[0].uuid
+        return True
 
     async def _process_incoming_tasks(self) -> None:
-        await asyncio.sleep(100_000_000)
+        assigned = False
+        while True:
+            with self.session.begin():
+                # Find all workers
+                stmt_workers = select(Worker)
+                rows_workers = self.session.execute(stmt_workers).scalars()
+                workers: List[Worker] = rows_workers.all()
+
+                # Find all waiting tasks
+                stmt = select(Task).where(Task.status == TaskStatus.WAITING).limit(5)
+                rows = self.session.execute(stmt).scalars()
+                tasks: List[Task] = rows.all()
+
+                assigned = False
+                for task in tasks:
+                    assigned = self._assign_task_to_worker(workers, task)
+
+            if not assigned:
+                await asyncio.sleep(10)
 
     async def start(self) -> None:
         log.info(f"Starting server on {self.listen_addr}")
@@ -129,7 +150,7 @@ class WorkerTasks(WorkerTasksServicer):
             worker_task_result = await request.__anext__()
             log.debug(worker_task_result)
 
-            await asyncio.sleep(10)
+            await asyncio.sleep(1_000)
 
 
 # vim: set et ts=4 sw=4:
