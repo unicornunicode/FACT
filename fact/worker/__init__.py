@@ -9,8 +9,13 @@ from ..controller_pb2 import (
     SessionResults,
     SessionEvents,
     WorkerRegistration,
+    WorkerTask,
     WorkerTaskResult,
     TaskNoneResult,
+    TaskCollectDisk,
+    TaskCollectDiskResult,
+    TaskCollectMemory,
+    TaskCollectMemoryResult,
 )
 from ..controller_pb2_grpc import WorkerTasksStub
 from ..utils.stream import Stream
@@ -51,6 +56,31 @@ class Worker:
     def hostname(self):
         return platform.node()
 
+    async def handle_task_collect_disk(
+        self, task_uuid: UUID, task: TaskCollectDisk
+    ) -> None:
+        log.error("Task collect_disk not implemented")
+
+    async def handle_task_collect_memory(
+        self, task_uuid: UUID, task: TaskCollectMemory
+    ) -> None:
+        log.error("Task collect_memory not implemented")
+
+    async def handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
+        log.debug(task)
+        task_type = task.WhichOneof("task")
+        task_uuid = UUID(bytes=task.uuid)
+        if task_type == "task_none":
+            await asyncio.sleep(1)
+            return WorkerTaskResult(task_none=TaskNoneResult())
+        if task_type == "task_collect_disk":
+            await self.handle_task_collect_disk(task_uuid, task.task_collect_disk)
+            return WorkerTaskResult(task_collect_disk=TaskCollectDiskResult())
+        if task_type == "task_collect_memory":
+            await self.handle_task_collect_memory(task_uuid, task.task_collect_memory)
+            return WorkerTaskResult(task_collect_memory=TaskCollectMemoryResult())
+        raise Exception("Unreachable: Invalid task type")
+
     async def exchange_handshake(
         self, responses: Stream[SessionResults], events: AsyncIterator[SessionEvents]
     ):
@@ -85,16 +115,8 @@ class Worker:
                 return
 
             async for event in events:
-                worker_task = event.worker_task
-                log.debug(worker_task)
-
-                await asyncio.sleep(1)
-
-                await responses.add(
-                    SessionResults(
-                        worker_task_result=WorkerTaskResult(task_none=TaskNoneResult())
-                    )
-                )
+                result = await self.handle_worker_task(event.worker_task)
+                await responses.add(SessionResults(worker_task_result=result))
 
     async def stop(self):
         pass
