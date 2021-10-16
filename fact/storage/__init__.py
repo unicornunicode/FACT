@@ -7,7 +7,7 @@ from fact.exceptions import (
     TaskInvalidUUID,
     ArtifactInvalidName,
 )
-from enumerate import ArtifactType, DataType
+from .enumerate import ArtifactType, DataType
 
 from pathlib import Path
 from uuid import UUID
