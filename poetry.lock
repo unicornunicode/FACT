@@ -533,7 +533,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "3.17.4"
+version = "3.18.0"
 description = "Typing stubs for protobuf"
 category = "dev"
 optional = false
@@ -586,7 +586,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "9b656b490de1a3f2e2d57b8e01d6445db64a5d4acf007119e15cddff9c85b751"
+content-hash = "3092e6e664b3fcb554bf7203664b6b119e18031664b246fa3d87e32de4bafe29"
 
 [metadata.files]
 atomicwrites = [
@@ -1102,8 +1102,8 @@ types-futures = [
     {file = "types_futures-3.3.0-py3-none-any.whl", hash = "sha256:dc69cb11201d8fa858b18301d792cadccd2f28858b70e2076e2518772294214d"},
 ]
 types-protobuf = [
-    {file = "types-protobuf-3.17.4.tar.gz", hash = "sha256:36cfec22f0096c9be2d9e44ad33480eb91969ffa72a51fa55842597cf59f8264"},
-    {file = "types_protobuf-3.17.4-py3-none-any.whl", hash = "sha256:b6f53af01ab19b6d19a979c00a06dc73723180f8bf0129761542cfadc46fdd34"},
+    {file = "types-protobuf-3.18.0.tar.gz", hash = "sha256:a391d1a9138fe53fe08aeb6aa15ca7f1a188659b9a6c12af5313c55730eccd6c"},
+    {file = "types_protobuf-3.18.0-py3-none-any.whl", hash = "sha256:6228bcbd43544eb4b8a8d7c64f0d5f3e9bccf1ebbc6df39e4102f0dcad602156"},
 ]
 typing-extensions = [
     {file = "typing_extensions-3.10.0.2-py2-none-any.whl", hash = "sha256:d8226d10bc02a29bcc81df19a26e56a9647f8b0a6d4a83924139f4a8b01f17b7"},

@@ -35,12 +35,12 @@ message ListTaskResult {
 
 message ListTask {
     bytes uuid = 1;
-    enum TaskStatus {
+    enum Status {
         WAITING = 0;
         RUNNING = 1;
         COMPLETE = 2;
     }
-    TaskStatus status = 2;
+    Status status = 2;
     google.protobuf.Timestamp created_at = 3;
     google.protobuf.Timestamp assigned_at = 4;
     google.protobuf.Timestamp completed_at = 5;

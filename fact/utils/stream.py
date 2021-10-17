@@ -47,7 +47,7 @@ class Stream(AsyncIterator[T], AsyncIterable[T], Generic[T]):
         >>> from asyncio import run
         >>> async def example_1():
         ...     s = Stream()
-        ...     s.add(1)
+        ...     await s.add(1)
         >>> run(example_1())
         """
         await self.queue.put(item)

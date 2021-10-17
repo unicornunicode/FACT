@@ -21,6 +21,7 @@ mkcommit = "^1.0.3"
 grpcio-tools = "^1.41.0"
 # Type stubs
 mypy-protobuf = "^2.10"
+types-protobuf = "^3.18.0"
 grpc-stubs = "^1.24.7"
 SQLAlchemy = {extras = ["mypy"], version = "^1.4.25"}
 

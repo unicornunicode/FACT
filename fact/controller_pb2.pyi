@@ -75,19 +75,19 @@ global___ListTaskResult = ListTaskResult
 
 class ListTask(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
-    class TaskStatus(_TaskStatus, metaclass=_TaskStatusEnumTypeWrapper):
+    class Status(_Status, metaclass=_StatusEnumTypeWrapper):
         pass
-    class _TaskStatus:
+    class _Status:
         V = typing.NewType('V', builtins.int)
-    class _TaskStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_TaskStatus.V], builtins.type):
+    class _StatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_Status.V], builtins.type):
         DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor = ...
-        WAITING = ListTask.TaskStatus.V(0)
-        RUNNING = ListTask.TaskStatus.V(1)
-        COMPLETE = ListTask.TaskStatus.V(2)
+        WAITING = ListTask.Status.V(0)
+        RUNNING = ListTask.Status.V(1)
+        COMPLETE = ListTask.Status.V(2)
 
-    WAITING = ListTask.TaskStatus.V(0)
-    RUNNING = ListTask.TaskStatus.V(1)
-    COMPLETE = ListTask.TaskStatus.V(2)
+    WAITING = ListTask.Status.V(0)
+    RUNNING = ListTask.Status.V(1)
+    COMPLETE = ListTask.Status.V(2)
 
     UUID_FIELD_NUMBER: builtins.int
     STATUS_FIELD_NUMBER: builtins.int
@@ -100,7 +100,7 @@ class ListTask(google.protobuf.message.Message):
     TASK_COLLECT_MEMORY_FIELD_NUMBER: builtins.int
     WORKER_FIELD_NUMBER: builtins.int
     uuid: builtins.bytes = ...
-    status: global___ListTask.TaskStatus.V = ...
+    status: global___ListTask.Status.V = ...
     @property
     def created_at(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
     @property
@@ -122,7 +122,7 @@ class ListTask(google.protobuf.message.Message):
     def __init__(self,
         *,
         uuid : builtins.bytes = ...,
-        status : global___ListTask.TaskStatus.V = ...,
+        status : global___ListTask.Status.V = ...,
         created_at : typing.Optional[google.protobuf.timestamp_pb2.Timestamp] = ...,
         assigned_at : typing.Optional[google.protobuf.timestamp_pb2.Timestamp] = ...,
         completed_at : typing.Optional[google.protobuf.timestamp_pb2.Timestamp] = ...,
