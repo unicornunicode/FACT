@@ -32,6 +32,9 @@ yarn-error.log*
 .env.test.local
 .env.production.local
 
+# grpcwebproxy
+/fact/grpcwebproxy/grpcwebproxy*
+
 # misc
 .DS_Store
 *.pem
