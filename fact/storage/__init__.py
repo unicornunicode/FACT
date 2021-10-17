@@ -26,17 +26,15 @@ class Artifact:
         if not artifact_type:
             artifact_type = ArtifactType.unknown.name
         elif not Artifact.is_valid_artifact_type(artifact_type):
-            err_msg = "Invalid artifact type"
-            valid_types = ", ".join(ArtifactType.__members__.keys())
-            err_msg += ". Select from: {" + valid_types + "}"
+            valid_types = "{" + ", ".join(ArtifactType.__members__.keys()) + "}"
+            err_msg = f"Invalid artifact type. Select from: {valid_types}"
             raise ArtifactInvalidType(err_msg, artifact_type)
 
         if not sub_type:
             sub_type = DataType.unknown.name
         elif not Artifact.is_valid_sub_type(sub_type):
-            err_msg = "Invalid sub type"
-            valid_types = ", ".join(DataType.__members__.keys())
-            err_msg += ". Select from: {" + valid_types + "}"
+            valid_types = "{" + ", ".join(DataType.__members__.keys()) + "}"
+            err_msg = f"Invalid sub type. Select from: {valid_types}"
             raise ArtifactInvalidSubType(err_msg, sub_type)
 
         self.artifact_name = artifact_name
@@ -72,13 +70,17 @@ class Artifact:
     @classmethod
     def create_artifact(cls, artifact_info: dict):
         artifact_name, artifact_type, sub_type = Artifact.extract_info(artifact_info)
-        if (
-            Artifact.is_valid_artifact_name(artifact_name)
-            and Artifact.is_valid_artifact_type(artifact_type)
-            and Artifact.is_valid_sub_type(sub_type)
-        ):
-            return cls(artifact_name, artifact_type, sub_type)
-        return None
+        if not Artifact.is_valid_artifact_name(artifact_name):
+            raise ArtifactInvalidName("Invalid empty name", artifact_name)
+        if not Artifact.is_valid_artifact_type(artifact_type):
+            valid_types = "{" + ", ".join(ArtifactType.__members__.keys()) + "}"
+            err_msg = f"Invalid artifact type. Select from: {valid_types}"
+            raise ArtifactInvalidType(err_msg, artifact_type)
+        if not Artifact.is_valid_sub_type(sub_type):
+            valid_types = "{" + ", ".join(DataType.__members__.keys()) + "}"
+            err_msg = f"Invalid sub type. Select from: {valid_types}"
+            raise ArtifactInvalidSubType(err_msg, sub_type)
+        return cls(artifact_name, artifact_type, sub_type)
 
     @staticmethod
     def extract_info(artifact_info: dict):
