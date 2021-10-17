@@ -9,13 +9,15 @@ from pssh.output import HostOutput
 
 log = logging.getLogger(__name__)
 
-def _write_remote_output(output:HostOutput, filepath:str):
+
+def _write_remote_output(output: HostOutput, filepath: str):
     try:
         with open(filepath, "wb") as f:
             for line in output.buffers.stdout.rw_buffer:
                 f.write(line)
     except OSError as e:
         raise TargetRuntimeError("Unable to open file for writing", e) from e
+
 
 class SSHAccessInfo:
     """Core information needed for SSH connection to the target. Refer to pssh documentation"""
@@ -144,7 +146,6 @@ class TargetEndpoint:
         # A single .gz path is enough since the output will come from one host only.
         for host_output in host_outputs:
             _write_remote_output(host_output, gz_path)
-
 
         if decompress:
             uncompress_gzip(gz_path)
