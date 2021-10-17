@@ -4,11 +4,7 @@ import * as Long from "long";
 import { grpc } from "@improbable-eng/grpc-web";
 import { BrowserHeaders } from "browser-headers";
 import { Timestamp } from "../google/protobuf/timestamp";
-import {
-  TaskNone,
-  TaskCollectDisk,
-  TaskCollectMemory,
-} from "../fact/controller";
+import { TaskNone, TaskCollectDisk, TaskCollectMemory } from "../fact/tasks";
 
 export const protobufPackage = "";
 

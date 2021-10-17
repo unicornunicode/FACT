@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "fact/controller.proto";
+import "fact/tasks.proto";
 
 service Management {
     rpc CreateTask(CreateTaskRequest) returns (CreateTaskResult);

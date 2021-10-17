@@ -10,8 +10,10 @@ from ..controller_pb2 import (
     SessionEvents,
     WorkerRegistration,
     WorkerTask,
-    Target,
     WorkerTaskResult,
+)
+from ..tasks_pb2 import (
+    Target,
     TaskNoneResult,
     TaskCollectDisk,
     TaskCollectDiskResult,

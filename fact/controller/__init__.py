@@ -11,10 +11,6 @@ from ..controller_pb2 import (
     SessionEvents,
     WorkerAcceptance,
     WorkerTask,
-    TaskNone,
-    TaskCollectDisk,
-    CollectDiskSelector,
-    TaskCollectMemory,
 )
 from ..management_pb2 import (
     CreateTaskRequest,
@@ -22,6 +18,12 @@ from ..management_pb2 import (
     ListTaskRequest,
     ListTaskResult,
     ListTask,
+)
+from ..tasks_pb2 import (
+    TaskNone,
+    TaskCollectDisk,
+    CollectDiskSelector,
+    TaskCollectMemory,
 )
 from ..controller_pb2_grpc import (
     WorkerTasksServicer,

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ..controller_pb2 import CollectDiskSelector
+from ..tasks_pb2 import CollectDiskSelector
 from ..management_pb2 import ListTask
 from .database import CollectDiskSelectorGroup, TaskStatus
 
@@ -9,7 +9,7 @@ def collect_disk_selector_group_from_proto(
     cdsg: CollectDiskSelector.Group.V,
 ) -> CollectDiskSelectorGroup:
     """
-    >>> from ..controller_pb2 import CollectDiskSelector
+    >>> from ..tasks_pb2 import CollectDiskSelector
     >>> from .database import CollectDiskSelectorGroup
     >>> assert (
     ...     collect_disk_selector_group_from_proto(CollectDiskSelector.Group.ALL_DISKS)
@@ -29,7 +29,7 @@ def collect_disk_selector_group_from_db(
     cdsg: CollectDiskSelectorGroup,
 ) -> CollectDiskSelector.Group.V:
     """
-    >>> from ..controller_pb2 import CollectDiskSelector
+    >>> from ..tasks_pb2 import CollectDiskSelector
     >>> from .database import CollectDiskSelectorGroup
     >>> assert (
     ...     collect_disk_selector_group_from_db(CollectDiskSelectorGroup.ALL_DISKS)

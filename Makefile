@@ -5,9 +5,11 @@ PROTO_OUT=fact
 PROTO_OUT_UI=ui/proto
 PROTOS= \
 	controller \
-	management
+	management \
+	tasks
 PROTOS_UI= \
-	management
+	management \
+	tasks
 
 .PHONY: all
 all:
