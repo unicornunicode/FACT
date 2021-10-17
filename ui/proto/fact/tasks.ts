@@ -1,6 +1,6 @@
 /* eslint-disable */
-import { util, configure, Writer, Reader } from "protobufjs/minimal";
-import * as Long from "long";
+import Long from "long";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "";
 
@@ -82,7 +82,10 @@ export interface TaskCollectMemoryResult {}
 const baseTarget: object = {};
 
 export const Target = {
-  encode(message: Target, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: Target,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.uuid.length !== 0) {
       writer.uint32(10).bytes(message.uuid);
     }
@@ -92,8 +95,8 @@ export const Target = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): Target {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): Target {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTarget } as Target;
     message.uuid = new Uint8Array();
@@ -165,7 +168,10 @@ const baseSSHAccess: object = {
 };
 
 export const SSHAccess = {
-  encode(message: SSHAccess, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: SSHAccess,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.host !== "") {
       writer.uint32(10).string(message.host);
     }
@@ -187,8 +193,8 @@ export const SSHAccess = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): SSHAccess {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): SSHAccess {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseSSHAccess } as SSHAccess;
     while (reader.pos < end) {
@@ -306,12 +312,12 @@ export const SSHAccess = {
 const baseTaskNone: object = {};
 
 export const TaskNone = {
-  encode(_: TaskNone, writer: Writer = Writer.create()): Writer {
+  encode(_: TaskNone, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TaskNone {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskNone {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTaskNone } as TaskNone;
     while (reader.pos < end) {
@@ -344,12 +350,15 @@ export const TaskNone = {
 const baseTaskNoneResult: object = {};
 
 export const TaskNoneResult = {
-  encode(_: TaskNoneResult, writer: Writer = Writer.create()): Writer {
+  encode(
+    _: TaskNoneResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TaskNoneResult {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskNoneResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTaskNoneResult } as TaskNoneResult;
     while (reader.pos < end) {
@@ -382,7 +391,10 @@ export const TaskNoneResult = {
 const baseTaskCollectDisk: object = {};
 
 export const TaskCollectDisk = {
-  encode(message: TaskCollectDisk, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: TaskCollectDisk,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.selector !== undefined) {
       CollectDiskSelector.encode(
         message.selector,
@@ -392,8 +404,8 @@ export const TaskCollectDisk = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TaskCollectDisk {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskCollectDisk {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTaskCollectDisk } as TaskCollectDisk;
     while (reader.pos < end) {
@@ -446,12 +458,18 @@ export const TaskCollectDisk = {
 const baseTaskCollectDiskResult: object = {};
 
 export const TaskCollectDiskResult = {
-  encode(_: TaskCollectDiskResult, writer: Writer = Writer.create()): Writer {
+  encode(
+    _: TaskCollectDiskResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TaskCollectDiskResult {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): TaskCollectDiskResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTaskCollectDiskResult } as TaskCollectDiskResult;
     while (reader.pos < end) {
@@ -486,16 +504,16 @@ const baseCollectDiskSelector: object = { group: 0 };
 export const CollectDiskSelector = {
   encode(
     message: CollectDiskSelector,
-    writer: Writer = Writer.create()
-  ): Writer {
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.group !== 0) {
       writer.uint32(8).int32(message.group);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): CollectDiskSelector {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): CollectDiskSelector {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseCollectDiskSelector } as CollectDiskSelector;
     while (reader.pos < end) {
@@ -543,12 +561,15 @@ export const CollectDiskSelector = {
 const baseTaskCollectMemory: object = {};
 
 export const TaskCollectMemory = {
-  encode(_: TaskCollectMemory, writer: Writer = Writer.create()): Writer {
+  encode(
+    _: TaskCollectMemory,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TaskCollectMemory {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskCollectMemory {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTaskCollectMemory } as TaskCollectMemory;
     while (reader.pos < end) {
@@ -581,12 +602,18 @@ export const TaskCollectMemory = {
 const baseTaskCollectMemoryResult: object = {};
 
 export const TaskCollectMemoryResult = {
-  encode(_: TaskCollectMemoryResult, writer: Writer = Writer.create()): Writer {
+  encode(
+    _: TaskCollectMemoryResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TaskCollectMemoryResult {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): TaskCollectMemoryResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = {
       ...baseTaskCollectMemoryResult,
@@ -676,9 +703,7 @@ export type DeepPartial<T> = T extends Builtin
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
-// If you get a compile-error about 'Constructor<Long> and ... have no overlap',
-// add '--ts_proto_opt=esModuleInterop=true' as a flag when calling 'protoc'.
-if (util.Long !== Long) {
-  util.Long = Long as any;
-  configure();
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
 }
