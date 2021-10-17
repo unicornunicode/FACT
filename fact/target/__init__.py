@@ -5,14 +5,17 @@ from fact.utils import uncompress_gzip
 
 from pssh.clients import ParallelSSHClient
 from pssh.exceptions import PKeyFileError
-
-# from pssh.utils import enable_logger
-# Increase default logging level to prevent unnecessary logging of remote command results to stdout/file due to pssh.utils implementation
-# enable_logger(logging.getLogger("pssh.host_logger"), level=logging.NOTSET)
-# ^^ TODO: Check when running, only a set of host-logger run. Understand what the purpose of this is. Able to direct to stderr???
+from pssh.output import HostOutput
 
 log = logging.getLogger(__name__)
 
+def _write_remote_output(output:HostOutput, filepath:str):
+    try:
+        with open(filepath, "wb") as f:
+            for line in output.buffers.stdout.rw_buffer:
+                f.write(line)
+    except OSError as e:
+        raise TargetRuntimeError("Unable to open file for writing", e) from e
 
 class SSHAccessInfo:
     """Core information needed for SSH connection to the target. Refer to pssh documentation"""
@@ -134,18 +137,14 @@ class TargetEndpoint:
         )
         log.info(f"Executing remote command: {remote_command}")
 
-        remote_output = self.client_session.run_command(
-            remote_command, sudo=True, encoding="iso-8859-1"
-        )
+        host_outputs = self.client_session.run_command(remote_command, sudo=True)
 
         gz_path = path_to_save + ".gz"
-        try:
-            with open(gz_path, "wb") as f:
-                for host_output in remote_output:
-                    for line in host_output.buffers.stdout.rw_buffer:
-                        f.write(line)
-        except OSError as e:
-            raise TargetRuntimeError("Unable to open file for writing", e) from e
+        # TODO: Show some form of status update on copying
+        # A single .gz path is enough since the output will come from one host only.
+        for host_output in host_outputs:
+            _write_remote_output(host_output, gz_path)
+
 
         if decompress:
             uncompress_gzip(gz_path)
