@@ -10,10 +10,11 @@ service Management {
 
 message CreateTaskRequest {
     oneof task {
-        TaskCollectDisk task_collect_disk = 4;
-        TaskCollectMemory task_collect_memory = 5;
+        TaskNone task_none = 1;
+        TaskCollectDisk task_collect_disk = 2;
+        TaskCollectMemory task_collect_memory = 3;
     }
-    bytes target = 1;
+    bytes target = 4;
 }
 
 message TargetSelector {
@@ -46,11 +47,12 @@ message ListTask {
 
     bytes target = 6; // Target UUID
     oneof task {
-        TaskCollectDisk task_collect_disk = 7;
-        TaskCollectMemory task_collect_memory = 8;
+        TaskNone task_none = 7;
+        TaskCollectDisk task_collect_disk = 8;
+        TaskCollectMemory task_collect_memory = 9;
     }
 
-    bytes worker = 9; // Worker UUID
+    bytes worker = 10; // Worker UUID
 }
 
 message ListWorkerRequest {

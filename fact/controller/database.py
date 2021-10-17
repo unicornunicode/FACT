@@ -24,6 +24,7 @@ class TaskStatus(enum.Enum):
 
 
 class TaskType(enum.Enum):
+    task_none = 0
     task_collect_disk = 1
     task_collect_memory = 2
 
