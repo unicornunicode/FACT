@@ -15,11 +15,11 @@ declare module '*.png' {
 
 declare module '*.svg' {
 	/**
-	 * Use `React.FC` to enable type checks and avoid `any`
+	 * Enable type checks and avoid `any`
 	 */
-	const component: React.FC<React.SVGProps<SVGSVGElement>>;
+	const content: StaticImageData;
 
-	export default component;
+	export default content;
 }
 
 declare module '*.jpg' {
