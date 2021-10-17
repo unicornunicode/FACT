@@ -49,7 +49,8 @@ def test_init_artifact():
     artf2 = Artifact(artf2_artifact_name)
     artf2_artifact_type = artf2.get_artifact_type()
     artf2_sub_type = artf2.get_sub_type()
-    artf2_artifact_path = artf2.get_artifact_path()
+    artf2_info_path, artf2_name = artf2.get_artifact_path()
+    artf2_artifact_path = artf2_info_path / artf2_name
     assert artf2.artifact_name == artf2_artifact_name
     assert type(artf2.artifact_type) == ArtifactType
     assert type(artf2.sub_type) == DataType

@@ -1,4 +1,5 @@
 import pytest
+from shutil import rmtree
 
 from fact.storage import Storage, Task, Artifact
 from fact.storage import ArtifactType, DataType
@@ -86,7 +87,8 @@ def test_storage_task_artifact(init_artifacts, init_tasks, init_storage):
 
     tsk1_in_storage = storage.get_task(tsk1_uuid)
     tsk1_in_storage_path = tsk1_in_storage.get_task_path()
-    artf3_path = artf3.get_artifact_path()
+    artf3_info_path, artf3_name = artf3.get_artifact_path()
+    artf3_path = artf3_info_path / artf3_name
     artf3_full_path = storage_path / tsk1_in_storage_path / artf3_path
     assert storage.add_task_artifact(tsk1_uuid, artf3) == artf3_full_path
     with pytest.raises(TaskNotFoundError):
@@ -98,4 +100,4 @@ def test_storage_task_artifact(init_artifacts, init_tasks, init_storage):
     with pytest.raises(TaskNotFoundError):
         storage.get_task_artifact_path(tsk3_uuid, artf1)
 
-    storage_path.rmdir()
+    rmtree(storage_path)
