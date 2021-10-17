@@ -14,6 +14,7 @@ from .enumerate import ArtifactType, DataType
 
 from pathlib import Path
 from uuid import UUID
+from typing import Union
 
 
 class Artifact:
@@ -113,13 +114,10 @@ class Task:
         for a in self.artifacts:
             if a.get_artifact_info() == artifact_info:
                 return a
-        task_uuid = self.get_task_uuid()
-        raise ArtifactNotFoundError(
-            f"Artifact does not exist in {task_uuid}", artifact_info
-        )
+        return None
 
     def is_artifact_exists(self, artifact_info: dict):
-        artifact: Artifact = self.get_artifact(artifact_info)
+        artifact: Union[Artifact, None] = self.get_artifact(artifact_info)
         if artifact is not None:
             return True
         return False
@@ -188,13 +186,12 @@ class Storage:
 
     def get_task(self, task_uuid: str):
         for t in self.tasks:
-            if t.task_uuid == task_uuid:
+            if t.get_task_uuid() == task_uuid:
                 return t
-        storage_path = str(self.get_storage_path())
-        raise TaskNotFoundError(f"Task does not exists in {storage_path}", task_uuid)
+        return None
 
     def is_task_uuid_exists(self, task_uuid: str):
-        task: Task = self.get_task(task_uuid)
+        task: Union[Task, None] = self.get_task(task_uuid)
         if task is not None:
             return True
         return False
@@ -206,7 +203,12 @@ class Storage:
         self.tasks.append(task)
 
     def add_task_artifact(self, task_uuid: str, artifact: Artifact):
-        task: Task = self.get_task(task_uuid)
+        task: Union[Task, None] = self.get_task(task_uuid)
+        if task is None:
+            storage_path = str(self.get_storage_path())
+            raise TaskNotFoundError(
+                f"Task does not exists in {storage_path}", task_uuid
+            )
         task.add_artifact(artifact)
 
         artifact_path: Path = (
@@ -217,9 +219,18 @@ class Storage:
         return artifact_path
 
     def get_task_artifact_path(self, task_uuid: str, artifact: Artifact):
-        task: Task = self.get_task(task_uuid)
+        task: Union[Task, None] = self.get_task(task_uuid)
+        if task is None:
+            storage_path = str(self.get_storage_path())
+            raise TaskNotFoundError(
+                f"Task does not exists in {storage_path}", task_uuid
+            )
         artifact_info = artifact.get_artifact_info()
-        task_artifact: Artifact = task.get_artifact(artifact_info)
+        task_artifact: Union[Artifact, None] = task.get_artifact(artifact_info)
+        if task_artifact is None:
+            raise ArtifactNotFoundError(
+                f"Artifact does not exist in {task_uuid}", artifact_info
+            )
 
         artifact_path: Path = (
             self.get_storage_path()
