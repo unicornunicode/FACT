@@ -15,6 +15,8 @@ from ..controller_pb2 import (
     TaskCollectDisk,
     CollectDiskSelector,
     TaskCollectMemory,
+)
+from ..management_pb2 import (
     CreateTaskRequest,
     CreateTaskResult,
     ListTaskRequest,
@@ -24,6 +26,8 @@ from ..controller_pb2 import (
 from ..controller_pb2_grpc import (
     WorkerTasksServicer,
     add_WorkerTasksServicer_to_server,
+)
+from ..management_pb2_grpc import (
     ManagementServicer,
     add_ManagementServicer_to_server,
 )

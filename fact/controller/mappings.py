@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from ..controller_pb2 import CollectDiskSelector, ListTask
+from ..controller_pb2 import CollectDiskSelector
+from ..management_pb2 import ListTask
 from .database import CollectDiskSelectorGroup, TaskStatus
 
 
@@ -46,7 +47,7 @@ def collect_disk_selector_group_from_db(
 
 def task_status_from_db(ts: TaskStatus) -> ListTask.Status.V:
     """
-    >>> from ..controller_pb2 import ListTask
+    >>> from ..management_pb2 import ListTask
     >>> from .database import TaskStatus
     >>> assert (
     ...     task_status_from_db(TaskStatus.COMPLETE)
