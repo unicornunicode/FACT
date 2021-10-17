@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "fact/controller.proto";
+
+service Management {
+    rpc CreateTask(CreateTaskRequest) returns (CreateTaskResult);
+    rpc ListTask(ListTaskRequest) returns (ListTaskResult);
+    rpc ListWorker(ListWorkerRequest) returns (ListWorkerResult);
+}
+
+message CreateTaskRequest {
+    oneof task {
+        TaskNone task_none = 1;
+        TaskCollectDisk task_collect_disk = 2;
+        TaskCollectMemory task_collect_memory = 3;
+    }
+    bytes target = 4;
+}
+
+message TargetSelector {
+
+}
+
+message CreateTaskResult {
+    bytes uuid = 1;
+}
+
+message ListTaskRequest {
+
+}
+
+message ListTaskResult {
+    repeated ListTask tasks = 1;
+}
+
+message ListTask {
+    bytes uuid = 1;
+    enum Status {
+        WAITING = 0;
+        RUNNING = 1;
+        COMPLETE = 2;
+    }
+    Status status = 2;
+    google.protobuf.Timestamp created_at = 3;
+    google.protobuf.Timestamp assigned_at = 4;
+    google.protobuf.Timestamp completed_at = 5;
+
+    bytes target = 6; // Target UUID
+    oneof task {
+        TaskNone task_none = 7;
+        TaskCollectDisk task_collect_disk = 8;
+        TaskCollectMemory task_collect_memory = 9;
+    }
+
+    bytes worker = 10; // Worker UUID
+}
+
+message ListWorkerRequest {
+
+}
+
+message ListWorkerResult {
+    bytes uuid = 1;
+    string hostname = 2;
+}
