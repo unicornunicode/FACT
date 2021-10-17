@@ -76,12 +76,7 @@ class Artifact:
         artifact_type = self.get_artifact_type()
         sub_type = self.get_sub_type()
         artifact_path = Path(artifact_type) / Path(sub_type)
-        if not artifact_path.exists():
-            try:
-                artifact_path.mkdir(parents=True, exist_ok=True)
-            except PermissionError as e:
-                raise e
-        return artifact_path / Path(self.artifact_name)
+        return artifact_path, Path(self.artifact_name)
 
     def get_artifact_info(self) -> dict[str, str]:
         """Gets artifact info of instance
@@ -341,12 +336,18 @@ class Storage:
             )
         task.add_artifact(artifact)
 
+        artifact_info_path, artifact_name = artifact.get_artifact_path()
         artifact_path: Path = (
-            self.get_storage_path()
-            / task.get_task_path()
-            / artifact.get_artifact_path()
+            self.get_storage_path() / task.get_task_path() / artifact_info_path
         )
-        return artifact_path
+        if not artifact_path.exists():
+            try:
+                artifact_path.mkdir(parents=True, exist_ok=True)
+            except PermissionError as e:
+                raise e
+
+        artifact_full_path: Path = artifact_path / artifact_name
+        return artifact_full_path
 
     def get_task_artifact_path(self, task_uuid: str, artifact: Artifact) -> Path:
         """Gets path to where artifact of task in instance is stored on file system
@@ -371,10 +372,12 @@ class Storage:
                 f"Artifact does not exist in {task_uuid}", artifact_info
             )
 
+        artifact_info_path, artifact_name = task_artifact.get_artifact_path()
         artifact_path: Path = (
             self.get_storage_path()
             / task.get_task_path()
-            / task_artifact.get_artifact_path()
+            / artifact_info_path
+            / artifact_name
         )
         return artifact_path
 
