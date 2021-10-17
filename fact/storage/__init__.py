@@ -1,6 +1,6 @@
 from fact.exceptions import (
     DirectoryExistsError,
-    StorageExistsError,
+    # StorageExistsError,
     TaskExistsError,
     TaskNotFoundError,
     TaskInvalidUUID,
@@ -90,27 +90,27 @@ class Artifact:
             "sub_type": sub_type,
         }
 
-    @classmethod
-    def create_artifact(cls, artifact_info: dict):
-        artifact_name, artifact_type, sub_type = Artifact.extract_info(artifact_info)
-        if not Artifact.is_valid_artifact_name(artifact_name):
-            raise ArtifactInvalidName("Invalid empty name", artifact_name)
-        if not Artifact.is_valid_artifact_type(artifact_type):
-            valid_types = "{" + ", ".join(ArtifactType.__members__.keys()) + "}"
-            err_msg = f"Invalid artifact type. Select from: {valid_types}"
-            raise ArtifactInvalidType(err_msg, artifact_type)
-        if not Artifact.is_valid_sub_type(sub_type):
-            valid_types = "{" + ", ".join(DataType.__members__.keys()) + "}"
-            err_msg = f"Invalid sub type. Select from: {valid_types}"
-            raise ArtifactInvalidSubType(err_msg, sub_type)
-        return cls(artifact_name, artifact_type, sub_type)
+    # @classmethod
+    # def create_artifact(cls, artifact_info: dict):
+    #     artifact_name, artifact_type, sub_type = Artifact.extract_info(artifact_info)
+    #     if not Artifact.is_valid_artifact_name(artifact_name):
+    #         raise ArtifactInvalidName("Invalid empty name", artifact_name)
+    #     if not Artifact.is_valid_artifact_type(artifact_type):
+    #         valid_types = "{" + ", ".join(ArtifactType.__members__.keys()) + "}"
+    #         err_msg = f"Invalid artifact type. Select from: {valid_types}"
+    #         raise ArtifactInvalidType(err_msg, artifact_type)
+    #     if not Artifact.is_valid_sub_type(sub_type):
+    #         valid_types = "{" + ", ".join(DataType.__members__.keys()) + "}"
+    #         err_msg = f"Invalid sub type. Select from: {valid_types}"
+    #         raise ArtifactInvalidSubType(err_msg, sub_type)
+    #     return cls(artifact_name, artifact_type, sub_type)
 
-    @staticmethod
-    def extract_info(artifact_info: dict):
-        name: str = artifact_info.get("artifact_name", "")
-        artifact_type: str = artifact_info.get("artifact_type", "")
-        sub_type: str = artifact_info.get("sub_type", "")
-        return name, artifact_type, sub_type
+    # @staticmethod
+    # def extract_info(artifact_info: dict):
+    #     name: str = artifact_info.get("artifact_name", "")
+    #     artifact_type: str = artifact_info.get("artifact_type", "")
+    #     sub_type: str = artifact_info.get("sub_type", "")
+    #     return name, artifact_type, sub_type
 
     @staticmethod
     def is_valid_artifact_name(artifact_name: str) -> bool:
@@ -222,20 +222,20 @@ class Task:
         artifacts = self._get_artifacts()
         return {"task_uuid": task_uuid, "artifacts": artifacts}
 
-    @classmethod
-    def _recreate_task(cls, task_info: dict):
-        task_uuid_str: str = task_info.get("task_uuid", "")
-        if not Task.is_valid_uuid(task_uuid_str):
-            raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str)
-        task: Task = cls(task_uuid_str)
+    # @classmethod
+    # def _recreate_task(cls, task_info: dict):
+    #     task_uuid_str: str = task_info.get("task_uuid", "")
+    #     if not Task.is_valid_uuid(task_uuid_str):
+    #         raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str)
+    #     task: Task = cls(task_uuid_str)
 
-        artifacts: list[dict] = task_info.get("artifacts", [])
-        for a in artifacts:
-            artifact: Artifact = Artifact.create_artifact(a)
-            if artifact:
-                task.add_artifact(artifact)
+    #     artifacts: list[dict] = task_info.get("artifacts", [])
+    #     for a in artifacts:
+    #         artifact: Artifact = Artifact.create_artifact(a)
+    #         if artifact:
+    #             task.add_artifact(artifact)
 
-        return task
+    #     return task
 
     @staticmethod
     def is_valid_uuid(uuid_str: str) -> bool:
@@ -397,16 +397,16 @@ class Storage:
         tasks = [task.get_task_info() for task in self.tasks]
         return {"data_dir": data_dir, "tasks": tasks}
 
-    @classmethod
-    def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
-        old_data_dir: Path = storage_dict.get("data_dir", Storage.DEFAULT_PATH)
-        if old_data_dir == new_data_dir:
-            raise StorageExistsError("Storage exists already", str(new_data_dir))
-        storage: Storage = cls(new_data_dir)
+    # @classmethod
+    # def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
+    #     old_data_dir: Path = storage_dict.get("data_dir", Storage.DEFAULT_PATH)
+    #     if old_data_dir == new_data_dir:
+    #         raise StorageExistsError("Storage exists already", str(new_data_dir))
+    #     storage: Storage = cls(new_data_dir)
 
-        tasks: list[dict] = storage_dict.get("tasks", [])
-        for t in tasks:
-            task: Task = Task._recreate_task(t)
-            storage.add_task(task)
+    #     tasks: list[dict] = storage_dict.get("tasks", [])
+    #     for t in tasks:
+    #         task: Task = Task._recreate_task(t)
+    #         storage.add_task(task)
 
-        return storage
+    #     return storage
