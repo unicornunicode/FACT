@@ -10,7 +10,13 @@ if __name__ == "__main__":
     skip_checks = getenv("SKIP_CHECKS", "").lower() == "y"
     staged = list(git_staged())
 
-    staged_py = [f for f in staged if f.endswith(".py")]
+    staged_py = [
+        f
+        for f in staged
+        if f.endswith(".py")
+        and not f.endswith("_pb2.py")
+        and not f.endswith("_pb2_grpc.py")
+    ]
 
     if staged_py:
         check(f"poetry run black {args(staged_py)}")
