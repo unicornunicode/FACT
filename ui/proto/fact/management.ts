@@ -1,7 +1,7 @@
 /* eslint-disable */
-import { util, configure, Writer, Reader } from "protobufjs/minimal";
-import * as Long from "long";
+import Long from "long";
 import { grpc } from "@improbable-eng/grpc-web";
+import _m0 from "protobufjs/minimal";
 import { BrowserHeaders } from "browser-headers";
 import { Timestamp } from "../google/protobuf/timestamp";
 import { TaskNone, TaskCollectDisk, TaskCollectMemory } from "../fact/tasks";
@@ -90,7 +90,10 @@ export interface ListWorkerResult {
 const baseCreateTaskRequest: object = {};
 
 export const CreateTaskRequest = {
-  encode(message: CreateTaskRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: CreateTaskRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.taskNone !== undefined) {
       TaskNone.encode(message.taskNone, writer.uint32(10).fork()).ldelim();
     }
@@ -112,8 +115,8 @@ export const CreateTaskRequest = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): CreateTaskRequest {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateTaskRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseCreateTaskRequest } as CreateTaskRequest;
     message.target = new Uint8Array();
@@ -240,12 +243,15 @@ export const CreateTaskRequest = {
 const baseTargetSelector: object = {};
 
 export const TargetSelector = {
-  encode(_: TargetSelector, writer: Writer = Writer.create()): Writer {
+  encode(
+    _: TargetSelector,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): TargetSelector {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): TargetSelector {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseTargetSelector } as TargetSelector;
     while (reader.pos < end) {
@@ -278,15 +284,18 @@ export const TargetSelector = {
 const baseCreateTaskResult: object = {};
 
 export const CreateTaskResult = {
-  encode(message: CreateTaskResult, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: CreateTaskResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.uuid.length !== 0) {
       writer.uint32(10).bytes(message.uuid);
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): CreateTaskResult {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateTaskResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseCreateTaskResult } as CreateTaskResult;
     message.uuid = new Uint8Array();
@@ -336,12 +345,15 @@ export const CreateTaskResult = {
 const baseListTaskRequest: object = {};
 
 export const ListTaskRequest = {
-  encode(_: ListTaskRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    _: ListTaskRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): ListTaskRequest {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListTaskRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListTaskRequest } as ListTaskRequest;
     while (reader.pos < end) {
@@ -374,15 +386,18 @@ export const ListTaskRequest = {
 const baseListTaskResult: object = {};
 
 export const ListTaskResult = {
-  encode(message: ListTaskResult, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: ListTaskResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     for (const v of message.tasks) {
       ListTask.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): ListTaskResult {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListTaskResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListTaskResult } as ListTaskResult;
     message.tasks = [];
@@ -438,7 +453,10 @@ export const ListTaskResult = {
 const baseListTask: object = { status: 0 };
 
 export const ListTask = {
-  encode(message: ListTask, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: ListTask,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.uuid.length !== 0) {
       writer.uint32(10).bytes(message.uuid);
     }
@@ -487,8 +505,8 @@ export const ListTask = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): ListTask {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListTask {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListTask } as ListTask;
     message.uuid = new Uint8Array();
@@ -715,12 +733,15 @@ export const ListTask = {
 const baseListWorkerRequest: object = {};
 
 export const ListWorkerRequest = {
-  encode(_: ListWorkerRequest, writer: Writer = Writer.create()): Writer {
+  encode(
+    _: ListWorkerRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): ListWorkerRequest {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListWorkerRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListWorkerRequest } as ListWorkerRequest;
     while (reader.pos < end) {
@@ -753,7 +774,10 @@ export const ListWorkerRequest = {
 const baseListWorkerResult: object = { hostname: "" };
 
 export const ListWorkerResult = {
-  encode(message: ListWorkerResult, writer: Writer = Writer.create()): Writer {
+  encode(
+    message: ListWorkerResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.uuid.length !== 0) {
       writer.uint32(10).bytes(message.uuid);
     }
@@ -763,8 +787,8 @@ export const ListWorkerResult = {
     return writer;
   },
 
-  decode(input: Reader | Uint8Array, length?: number): ListWorkerResult {
-    const reader = input instanceof Reader ? input : new Reader(input);
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListWorkerResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListWorkerResult } as ListWorkerResult;
     message.uuid = new Uint8Array();
@@ -1101,9 +1125,7 @@ function fromJsonTimestamp(o: any): Date {
   }
 }
 
-// If you get a compile-error about 'Constructor<Long> and ... have no overlap',
-// add '--ts_proto_opt=esModuleInterop=true' as a flag when calling 'protoc'.
-if (util.Long !== Long) {
-  util.Long = Long as any;
-  configure();
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
 }
