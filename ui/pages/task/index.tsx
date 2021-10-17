@@ -9,12 +9,12 @@ interface Props {
 	tasks: ListTask[];
 }
 
-const ListTaskPage: NextPage = ({tasks}: Props) => (
+const ListTaskPage: NextPage<Props> = ({tasks}: Props) => (
 	<main>
 		<Head>
 			<title>Tasks</title>
 		</Head>
-		<pre><code>{JSON.stringify(tasks, 2)}</code></pre>
+		<pre><code>{JSON.stringify(tasks, null, 2)}</code></pre>
 	</main>
 );
 
