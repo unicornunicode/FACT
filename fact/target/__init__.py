@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 
 from fact.exceptions import SSHInfoError, TargetRuntimeError, FileExistsError
 from fact.utils import uncompress_gzip
@@ -16,10 +17,53 @@ def _write_remote_output(output: HostOutput, filepath: str):
         raise FileExistsError("File to be written already exists.", filepath)
     try:
         with open(filepath, "wb") as f:
-            for line in output.buffers.stdout.rw_buffer:
-                f.write(line)
+            for data in output.buffers.stdout.rw_buffer:
+                f.write(data)
     except OSError as e:
         raise TargetRuntimeError("Unable to open file for writing", e) from e
+
+
+def _parse_lsblk_output(raw_lsblk_data: bytes) -> dict:
+    """
+    Converts the lsblk_data from commandline and save relevant info in a dict
+    Assumes the "lsblk -lb" returns in the following format:
+        NAME  MAJ:MIN  RM  SIZE  RO  TYPE  MOUNTPOINT
+
+    example = {
+        "disk_info" = [
+            {
+                dev_name: sda2
+                size: 200000
+                type: part
+                mountpoint: /
+            },
+            {
+                ......
+            }
+        ]
+    }
+    """
+
+    lsblk_data = raw_lsblk_data.decode("utf-8")
+    # Remove header
+    split_lsblk_data = lsblk_data.split("\n")[1:]
+
+    entries = []
+    for entry in split_lsblk_data:
+        if entry == "":
+            continue
+
+        dict_entry = dict()
+        cleaned_entry = re.split("[ ]+", entry)
+        dict_entry["dev_name"] = cleaned_entry[0]
+        dict_entry["size"] = cleaned_entry[3]
+        dict_entry["type"] = cleaned_entry[5]
+        dict_entry["mountpoint"] = cleaned_entry[6]
+        entries.append(dict_entry)
+
+    output = dict()
+    output["disk_info"] = entries
+    return output
 
 
 class SSHAccessInfo:
@@ -152,3 +196,21 @@ class TargetEndpoint:
 
         if decompress:
             uncompress_gzip(gz_path)
+
+    def get_all_available_disk(self) -> dict:
+        """
+        Gets a list of availale disks on the remote machine
+        :return: lsblk information in dictionary form
+        """
+        remote_command = "lsblk -lb"
+        log.info(f"Executing remote command: {remote_command}")
+
+        remote_output = self.client_session.run_command(remote_command)
+
+        raw_lsblk_data = b""
+        for host_output in remote_output:
+            for data in host_output.buffers.stdout.rw_buffer:
+                raw_lsblk_data += data
+
+        lsblk_dict = _parse_lsblk_output(raw_lsblk_data)
+        return lsblk_dict
