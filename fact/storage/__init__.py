@@ -10,7 +10,7 @@ from fact.exceptions import (
     ArtifactInvalidType,
     ArtifactInvalidSubType,
 )
-from .enumerate import ArtifactType, DataType
+from .custom_enum import ArtifactType, DataType
 
 from pathlib import Path
 from uuid import UUID
