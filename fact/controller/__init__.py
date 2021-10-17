@@ -1,18 +1,25 @@
 import asyncio
 import logging
-from typing import Optional, List, AsyncIterator, AsyncGenerator
+from typing import Optional, Iterable, List, AsyncIterator, AsyncGenerator
 
 # Protocol
 from grpc.aio import server as grpc_server, Server, ServicerContext
 from grpc import StatusCode
+from google.protobuf.timestamp_pb2 import Timestamp
 from ..controller_pb2 import (
     SessionResults,
     SessionEvents,
     WorkerAcceptance,
     WorkerTask,
     TaskNone,
+    TaskCollectDisk,
+    CollectDiskSelector,
+    TaskCollectMemory,
     CreateTaskRequest,
     CreateTaskResult,
+    ListTaskRequest,
+    ListTaskResult,
+    ListTask,
 )
 from ..controller_pb2_grpc import (
     WorkerTasksServicer,
@@ -26,7 +33,11 @@ from uuid import UUID, uuid4
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from .database import Base, Worker, Task, TaskType, TaskStatus, CollectDiskSelectorGroup
-from .mappings import collect_disk_selector_group_proto
+from .mappings import (
+    collect_disk_selector_group_from_proto,
+    collect_disk_selector_group_from_db,
+    task_status_from_db,
+)
 
 
 log = logging.getLogger(__name__)
@@ -72,6 +83,16 @@ class Controller:
             )
             self.session.add(task)
         return uuid
+
+    async def _list_task(self) -> Iterable[Task]:
+        with self.session.begin():
+            stmt = select(Task)
+            return self.session.execute(stmt).scalars().all()
+
+    async def _list_worker(self) -> Iterable[Worker]:
+        with self.session.begin():
+            stmt = select(Worker)
+            return self.session.execute(stmt).scalars().all()
 
     async def _create_worker(self, uuid: UUID, hostname: str) -> None:
         with self.session.begin():
@@ -138,33 +159,77 @@ class Management(ManagementServicer):
     async def CreateTask(
         self, request: CreateTaskRequest, context: ServicerContext
     ) -> Optional[CreateTaskResult]:
-        try:
-            target_uuid = UUID(bytes=request.target)
-            task_type = request.WhichOneof("task")
-            if task_type == "task_none":
-                uuid = await self.controller._create_task(
-                    target_uuid=target_uuid, task_type=TaskType.task_none
-                )
-            elif task_type == "task_collect_disk":
-                selector_group = collect_disk_selector_group_proto(
-                    request.task_collect_disk.selector.group
-                )
-                uuid = await self.controller._create_task(
-                    target_uuid=target_uuid,
-                    task_type=TaskType.task_none,
-                    task_collect_disk_selector_group=selector_group,
-                )
-            elif task_type == "task_collect_memory":
-                uuid = await self.controller._create_task(
-                    target_uuid=target_uuid, task_type=TaskType.task_none
-                )
-            else:
-                raise Exception("Unreachable: Invalid task type")
-            return CreateTaskResult(uuid=uuid.bytes)
-        except Exception as e:
-            log.warn(e)
+        target_uuid = UUID(bytes=request.target)
+        task_type = request.WhichOneof("task")
+        if task_type == "task_none":
+            uuid = await self.controller._create_task(
+                target_uuid=target_uuid, task_type=TaskType.task_none
+            )
+        elif task_type == "task_collect_disk":
+            selector_group = collect_disk_selector_group_from_proto(
+                request.task_collect_disk.selector.group
+            )
+            uuid = await self.controller._create_task(
+                target_uuid=target_uuid,
+                task_type=TaskType.task_none,
+                task_collect_disk_selector_group=selector_group,
+            )
+        elif task_type == "task_collect_memory":
+            uuid = await self.controller._create_task(
+                target_uuid=target_uuid, task_type=TaskType.task_none
+            )
+        else:
             context.abort(StatusCode.INVALID_ARGUMENT)
-            return None
+            raise Exception("Unreachable: Invalid task type")
+        return CreateTaskResult(uuid=uuid.bytes)
+
+    async def ListTask(
+        self, request: ListTaskRequest, context: ServicerContext
+    ) -> ListTaskResult:
+        list_tasks = []
+        tasks = await self.controller._list_task()
+        for task in tasks:
+            task_none = TaskNone() if task.type == TaskType.task_none else None
+            task_collect_disk = (
+                TaskCollectDisk(
+                    selector=CollectDiskSelector(
+                        group=collect_disk_selector_group_from_db(
+                            task.task_collect_disk_selector_group
+                        )
+                    )
+                )
+                if task.type == TaskType.task_collect_disk
+                and task.task_collect_disk_selector_group is not None
+                else None
+            )
+            task_collect_memory = (
+                TaskCollectMemory()
+                if task.type == TaskType.task_collect_memory
+                else None
+            )
+            list_tasks.append(
+                ListTask(
+                    uuid=task.uuid.bytes if task.uuid is not None else None,
+                    status=task_status_from_db(task.status)
+                    if task.status is not None
+                    else ListTask.Status.WAITING,
+                    created_at=Timestamp(seconds=int(task.created_at.timestamp()))
+                    if task.created_at is not None
+                    else None,
+                    assigned_at=Timestamp(seconds=int(task.assigned_at.timestamp()))
+                    if task.assigned_at is not None
+                    else None,
+                    completed_at=Timestamp(seconds=int(task.completed_at.timestamp()))
+                    if task.completed_at is not None
+                    else None,
+                    target=task.target.bytes if task.target is not None else None,
+                    task_none=task_none,
+                    task_collect_disk=task_collect_disk,
+                    task_collect_memory=task_collect_memory,
+                    worker=task.worker.bytes if task.worker is not None else None,
+                )
+            )
+        return ListTaskResult(tasks=list_tasks)
 
 
 class WorkerTasks(WorkerTasksServicer):
