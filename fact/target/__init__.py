@@ -1,6 +1,7 @@
 import logging
+import os
 
-from fact.exceptions import SSHInfoError, TargetRuntimeError
+from fact.exceptions import SSHInfoError, TargetRuntimeError, FileExistsError
 from fact.utils import uncompress_gzip
 
 from pssh.clients import ParallelSSHClient
@@ -11,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 def _write_remote_output(output: HostOutput, filepath: str):
+    if os.path.exists(filepath):
+        raise FileExistsError("File to be written already exists.", filepath)
     try:
         with open(filepath, "wb") as f:
             for line in output.buffers.stdout.rw_buffer:

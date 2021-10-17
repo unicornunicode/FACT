@@ -42,3 +42,14 @@ class GzipDecompressionError(MiscError):
 
     def __str__(self):
         return f"{self.message}: {self.field}"
+
+
+class FileExistsError(MiscError):
+    """Raised when a file already exists and should not be overwritten"""
+
+    def __init__(self, message: str, field: Any = ""):
+        self.message = message
+        self.field = field
+
+    def __str__(self):
+        return f"{self.message}: {self.field}"
