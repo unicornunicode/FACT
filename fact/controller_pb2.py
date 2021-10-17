@@ -11,6 +11,7 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -19,14 +20,45 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\"\xa0\x01\n\x11\x43reateTaskRequest\x12!\n\x08selector\x18\x01 \x01(\x0b\x32\x0f.TargetSelector\x12-\n\x11task_collect_disk\x18\x04 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x05 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x42\x06\n\x04task\"\x10\n\x0eTargetSelector\" \n\x10\x43reateTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x11\n\x0fListTaskRequest\"\"\n\x0eListTaskResult\x12\x10\n\x08selector\x18\x01 \x01(\t\"\x13\n\x11ListWorkerRequest\"2\n\x10ListWorkerResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x10\n\x08hostname\x18\x02 \x01(\t\"\x7f\n\x0eSessionResults\x12\x32\n\x13worker_registration\x18\x01 \x01(\x0b\x32\x13.WorkerRegistrationH\x00\x12/\n\x12worker_task_result\x18\x02 \x01(\x0b\x32\x11.WorkerTaskResultH\x00\x42\x08\n\x06result\"l\n\rSessionEvents\x12.\n\x11worker_acceptance\x18\x01 \x01(\x0b\x32\x11.WorkerAcceptanceH\x00\x12\"\n\x0bworker_task\x18\x02 \x01(\x0b\x32\x0b.WorkerTaskH\x00\x42\x07\n\x05\x65vent\"T\n\x12WorkerRegistration\x12\x1a\n\rprevious_uuid\x18\x01 \x01(\x0cH\x00\x88\x01\x01\x12\x10\n\x08hostname\x18\x02 \x01(\tB\x10\n\x0e_previous_uuid\" \n\x10WorkerAcceptance\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\xcd\x01\n\nWorkerTask\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1c\n\x06target\x18\x02 \x01(\x0b\x32\x07.TargetH\x01\x88\x01\x01\x12\x1e\n\ttask_none\x18\x03 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x04 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x05 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x42\x06\n\x04taskB\t\n\x07_target\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"\xbc\x01\n\x10WorkerTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12$\n\ttask_none\x18\x02 \x01(\x0b\x32\x0f.TaskNoneResultH\x00\x12\x33\n\x11task_collect_disk\x18\x03 \x01(\x0b\x32\x16.TaskCollectDiskResultH\x00\x12\x37\n\x13task_collect_memory\x18\x04 \x01(\x0b\x32\x18.TaskCollectMemoryResultH\x00\x42\x06\n\x04task\"\n\n\x08TaskNone\"\x10\n\x0eTaskNoneResult\"2\n\x0fTaskCollectDisk\x12\x1f\n\x08selector\x18\x02 \x01(\x0b\x32\r.DiskSelector\"\x17\n\x15TaskCollectDiskResult\"m\n\x0c\x44iskSelector\x12\"\n\x05group\x18\x01 \x01(\x0e\x32\x13.DiskSelector.Group\"9\n\x05Group\x12\r\n\tALL_DISKS\x10\x00\x12\r\n\tROOT_DISK\x10\x01\x12\x12\n\x0eROOT_PARTITION\x10\x02\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult2\xa5\x01\n\nManagement\x12\x33\n\nCreateTask\x12\x12.CreateTaskRequest\x1a\x11.CreateTaskResult\x12-\n\x08ListTask\x12\x10.ListTaskRequest\x1a\x0f.ListTaskResult\x12\x33\n\nListWorker\x12\x12.ListWorkerRequest\x1a\x11.ListWorkerResult2=\n\x0bWorkerTasks\x12.\n\x07Session\x12\x0f.SessionResults\x1a\x0e.SessionEvents(\x01\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8d\x01\n\x11\x43reateTaskRequest\x12-\n\x11task_collect_disk\x18\x04 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x05 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12\x0e\n\x06target\x18\x01 \x01(\x0c\x42\x06\n\x04task\"\x10\n\x0eTargetSelector\" \n\x10\x43reateTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x11\n\x0fListTaskRequest\"*\n\x0eListTaskResult\x12\x18\n\x05tasks\x18\x01 \x03(\x0b\x32\t.ListTask\"\x91\x03\n\x08ListTask\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12$\n\x06status\x18\x02 \x01(\x0e\x32\x14.ListTask.TaskStatus\x12.\n\ncreated_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12/\n\x0b\x61ssigned_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x30\n\x0c\x63ompleted_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06target\x18\x06 \x01(\x0c\x12-\n\x11task_collect_disk\x18\x07 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x08 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12\x0e\n\x06worker\x18\t \x01(\x0c\"4\n\nTaskStatus\x12\x0b\n\x07WAITING\x10\x00\x12\x0b\n\x07RUNNING\x10\x01\x12\x0c\n\x08\x43OMPLETE\x10\x02\x42\x06\n\x04task\"\x13\n\x11ListWorkerRequest\"2\n\x10ListWorkerResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x10\n\x08hostname\x18\x02 \x01(\t\"\x7f\n\x0eSessionResults\x12\x32\n\x13worker_registration\x18\x01 \x01(\x0b\x32\x13.WorkerRegistrationH\x00\x12/\n\x12worker_task_result\x18\x02 \x01(\x0b\x32\x11.WorkerTaskResultH\x00\x42\x08\n\x06result\"l\n\rSessionEvents\x12.\n\x11worker_acceptance\x18\x01 \x01(\x0b\x32\x11.WorkerAcceptanceH\x00\x12\"\n\x0bworker_task\x18\x02 \x01(\x0b\x32\x0b.WorkerTaskH\x00\x42\x07\n\x05\x65vent\"T\n\x12WorkerRegistration\x12\x1a\n\rprevious_uuid\x18\x01 \x01(\x0cH\x00\x88\x01\x01\x12\x10\n\x08hostname\x18\x02 \x01(\tB\x10\n\x0e_previous_uuid\" \n\x10WorkerAcceptance\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\xcd\x01\n\nWorkerTask\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1c\n\x06target\x18\x02 \x01(\x0b\x32\x07.TargetH\x01\x88\x01\x01\x12\x1e\n\ttask_none\x18\x03 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x04 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x05 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x42\x06\n\x04taskB\t\n\x07_target\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"\xbc\x01\n\x10WorkerTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12$\n\ttask_none\x18\x02 \x01(\x0b\x32\x0f.TaskNoneResultH\x00\x12\x33\n\x11task_collect_disk\x18\x03 \x01(\x0b\x32\x16.TaskCollectDiskResultH\x00\x12\x37\n\x13task_collect_memory\x18\x04 \x01(\x0b\x32\x18.TaskCollectMemoryResultH\x00\x42\x06\n\x04task\"\n\n\x08TaskNone\"\x10\n\x0eTaskNoneResult\"9\n\x0fTaskCollectDisk\x12&\n\x08selector\x18\x02 \x01(\x0b\x32\x14.CollectDiskSelector\"\x17\n\x15TaskCollectDiskResult\"{\n\x13\x43ollectDiskSelector\x12)\n\x05group\x18\x01 \x01(\x0e\x32\x1a.CollectDiskSelector.Group\"9\n\x05Group\x12\r\n\tALL_DISKS\x10\x00\x12\r\n\tROOT_DISK\x10\x01\x12\x12\n\x0eROOT_PARTITION\x10\x02\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult2\xa5\x01\n\nManagement\x12\x33\n\nCreateTask\x12\x12.CreateTaskRequest\x1a\x11.CreateTaskResult\x12-\n\x08ListTask\x12\x10.ListTaskRequest\x1a\x0f.ListTaskResult\x12\x33\n\nListWorker\x12\x12.ListWorkerRequest\x1a\x11.ListWorkerResult2=\n\x0bWorkerTasks\x12.\n\x07Session\x12\x0f.SessionResults\x1a\x0e.SessionEvents(\x01\x30\x01\x62\x06proto3'
+  ,
+  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
+
+
+
+_LISTTASK_TASKSTATUS = _descriptor.EnumDescriptor(
+  name='TaskStatus',
+  full_name='ListTask.TaskStatus',
+  filename=None,
+  file=DESCRIPTOR,
+  create_key=_descriptor._internal_create_key,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='WAITING', index=0, number=0,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='RUNNING', index=1, number=1,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+    _descriptor.EnumValueDescriptor(
+      name='COMPLETE', index=2, number=2,
+      serialized_options=None,
+      type=None,
+      create_key=_descriptor._internal_create_key),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=659,
+  serialized_end=711,
 )
+_sym_db.RegisterEnumDescriptor(_LISTTASK_TASKSTATUS)
 
-
-
-_DISKSELECTOR_GROUP = _descriptor.EnumDescriptor(
+_COLLECTDISKSELECTOR_GROUP = _descriptor.EnumDescriptor(
   name='Group',
-  full_name='DiskSelector.Group',
+  full_name='CollectDiskSelector.Group',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -49,10 +81,10 @@ _DISKSELECTOR_GROUP = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=1463,
-  serialized_end=1520,
+  serialized_start=1910,
+  serialized_end=1967,
 )
-_sym_db.RegisterEnumDescriptor(_DISKSELECTOR_GROUP)
+_sym_db.RegisterEnumDescriptor(_COLLECTDISKSELECTOR_GROUP)
 
 
 _CREATETASKREQUEST = _descriptor.Descriptor(
@@ -64,23 +96,23 @@ _CREATETASKREQUEST = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='selector', full_name='CreateTaskRequest.selector', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='task_collect_disk', full_name='CreateTaskRequest.task_collect_disk', index=1,
+      name='task_collect_disk', full_name='CreateTaskRequest.task_collect_disk', index=0,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='task_collect_memory', full_name='CreateTaskRequest.task_collect_memory', index=2,
+      name='task_collect_memory', full_name='CreateTaskRequest.task_collect_memory', index=1,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='target', full_name='CreateTaskRequest.target', index=2,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -101,8 +133,8 @@ _CREATETASKREQUEST = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=26,
-  serialized_end=186,
+  serialized_start=59,
+  serialized_end=200,
 )
 
 
@@ -126,8 +158,8 @@ _TARGETSELECTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=188,
-  serialized_end=204,
+  serialized_start=202,
+  serialized_end=218,
 )
 
 
@@ -158,8 +190,8 @@ _CREATETASKRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=206,
-  serialized_end=238,
+  serialized_start=220,
+  serialized_end=252,
 )
 
 
@@ -183,8 +215,8 @@ _LISTTASKREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=240,
-  serialized_end=257,
+  serialized_start=254,
+  serialized_end=271,
 )
 
 
@@ -197,9 +229,9 @@ _LISTTASKRESULT = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='selector', full_name='ListTaskResult.selector', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
+      name='tasks', full_name='ListTaskResult.tasks', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -215,8 +247,102 @@ _LISTTASKRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=259,
-  serialized_end=293,
+  serialized_start=273,
+  serialized_end=315,
+)
+
+
+_LISTTASK = _descriptor.Descriptor(
+  name='ListTask',
+  full_name='ListTask',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuid', full_name='ListTask.uuid', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='status', full_name='ListTask.status', index=1,
+      number=2, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='created_at', full_name='ListTask.created_at', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='assigned_at', full_name='ListTask.assigned_at', index=3,
+      number=4, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='completed_at', full_name='ListTask.completed_at', index=4,
+      number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='target', full_name='ListTask.target', index=5,
+      number=6, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_collect_disk', full_name='ListTask.task_collect_disk', index=6,
+      number=7, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_collect_memory', full_name='ListTask.task_collect_memory', index=7,
+      number=8, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='worker', full_name='ListTask.worker', index=8,
+      number=9, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+    _LISTTASK_TASKSTATUS,
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+    _descriptor.OneofDescriptor(
+      name='task', full_name='ListTask.task',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
+  ],
+  serialized_start=318,
+  serialized_end=719,
 )
 
 
@@ -240,8 +366,8 @@ _LISTWORKERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=295,
-  serialized_end=314,
+  serialized_start=721,
+  serialized_end=740,
 )
 
 
@@ -279,8 +405,8 @@ _LISTWORKERRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=316,
-  serialized_end=366,
+  serialized_start=742,
+  serialized_end=792,
 )
 
 
@@ -323,8 +449,8 @@ _SESSIONRESULTS = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=368,
-  serialized_end=495,
+  serialized_start=794,
+  serialized_end=921,
 )
 
 
@@ -367,8 +493,8 @@ _SESSIONEVENTS = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=497,
-  serialized_end=605,
+  serialized_start=923,
+  serialized_end=1031,
 )
 
 
@@ -411,8 +537,8 @@ _WORKERREGISTRATION = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=607,
-  serialized_end=691,
+  serialized_start=1033,
+  serialized_end=1117,
 )
 
 
@@ -443,8 +569,8 @@ _WORKERACCEPTANCE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=693,
-  serialized_end=725,
+  serialized_start=1119,
+  serialized_end=1151,
 )
 
 
@@ -513,8 +639,8 @@ _WORKERTASK = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=728,
-  serialized_end=933,
+  serialized_start=1154,
+  serialized_end=1359,
 )
 
 
@@ -557,8 +683,8 @@ _TARGET = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=935,
-  serialized_end=994,
+  serialized_start=1361,
+  serialized_end=1420,
 )
 
 
@@ -624,8 +750,8 @@ _SSHACCESS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=996,
-  serialized_end=1111,
+  serialized_start=1422,
+  serialized_end=1537,
 )
 
 
@@ -682,8 +808,8 @@ _WORKERTASKRESULT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1114,
-  serialized_end=1302,
+  serialized_start=1540,
+  serialized_end=1728,
 )
 
 
@@ -707,8 +833,8 @@ _TASKNONE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1304,
-  serialized_end=1314,
+  serialized_start=1730,
+  serialized_end=1740,
 )
 
 
@@ -732,8 +858,8 @@ _TASKNONERESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1316,
-  serialized_end=1332,
+  serialized_start=1742,
+  serialized_end=1758,
 )
 
 
@@ -764,8 +890,8 @@ _TASKCOLLECTDISK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1334,
-  serialized_end=1384,
+  serialized_start=1760,
+  serialized_end=1817,
 )
 
 
@@ -789,21 +915,21 @@ _TASKCOLLECTDISKRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1386,
-  serialized_end=1409,
+  serialized_start=1819,
+  serialized_end=1842,
 )
 
 
-_DISKSELECTOR = _descriptor.Descriptor(
-  name='DiskSelector',
-  full_name='DiskSelector',
+_COLLECTDISKSELECTOR = _descriptor.Descriptor(
+  name='CollectDiskSelector',
+  full_name='CollectDiskSelector',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='group', full_name='DiskSelector.group', index=0,
+      name='group', full_name='CollectDiskSelector.group', index=0,
       number=1, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -814,7 +940,7 @@ _DISKSELECTOR = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
-    _DISKSELECTOR_GROUP,
+    _COLLECTDISKSELECTOR_GROUP,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -822,8 +948,8 @@ _DISKSELECTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1411,
-  serialized_end=1520,
+  serialized_start=1844,
+  serialized_end=1967,
 )
 
 
@@ -847,8 +973,8 @@ _TASKCOLLECTMEMORY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1522,
-  serialized_end=1541,
+  serialized_start=1969,
+  serialized_end=1988,
 )
 
 
@@ -872,11 +998,10 @@ _TASKCOLLECTMEMORYRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1543,
-  serialized_end=1568,
+  serialized_start=1990,
+  serialized_end=2015,
 )
 
-_CREATETASKREQUEST.fields_by_name['selector'].message_type = _TARGETSELECTOR
 _CREATETASKREQUEST.fields_by_name['task_collect_disk'].message_type = _TASKCOLLECTDISK
 _CREATETASKREQUEST.fields_by_name['task_collect_memory'].message_type = _TASKCOLLECTMEMORY
 _CREATETASKREQUEST.oneofs_by_name['task'].fields.append(
@@ -885,6 +1010,20 @@ _CREATETASKREQUEST.fields_by_name['task_collect_disk'].containing_oneof = _CREAT
 _CREATETASKREQUEST.oneofs_by_name['task'].fields.append(
   _CREATETASKREQUEST.fields_by_name['task_collect_memory'])
 _CREATETASKREQUEST.fields_by_name['task_collect_memory'].containing_oneof = _CREATETASKREQUEST.oneofs_by_name['task']
+_LISTTASKRESULT.fields_by_name['tasks'].message_type = _LISTTASK
+_LISTTASK.fields_by_name['status'].enum_type = _LISTTASK_TASKSTATUS
+_LISTTASK.fields_by_name['created_at'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_LISTTASK.fields_by_name['assigned_at'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_LISTTASK.fields_by_name['completed_at'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
+_LISTTASK.fields_by_name['task_collect_disk'].message_type = _TASKCOLLECTDISK
+_LISTTASK.fields_by_name['task_collect_memory'].message_type = _TASKCOLLECTMEMORY
+_LISTTASK_TASKSTATUS.containing_type = _LISTTASK
+_LISTTASK.oneofs_by_name['task'].fields.append(
+  _LISTTASK.fields_by_name['task_collect_disk'])
+_LISTTASK.fields_by_name['task_collect_disk'].containing_oneof = _LISTTASK.oneofs_by_name['task']
+_LISTTASK.oneofs_by_name['task'].fields.append(
+  _LISTTASK.fields_by_name['task_collect_memory'])
+_LISTTASK.fields_by_name['task_collect_memory'].containing_oneof = _LISTTASK.oneofs_by_name['task']
 _SESSIONRESULTS.fields_by_name['worker_registration'].message_type = _WORKERREGISTRATION
 _SESSIONRESULTS.fields_by_name['worker_task_result'].message_type = _WORKERTASKRESULT
 _SESSIONRESULTS.oneofs_by_name['result'].fields.append(
@@ -936,14 +1075,15 @@ _WORKERTASKRESULT.fields_by_name['task_collect_disk'].containing_oneof = _WORKER
 _WORKERTASKRESULT.oneofs_by_name['task'].fields.append(
   _WORKERTASKRESULT.fields_by_name['task_collect_memory'])
 _WORKERTASKRESULT.fields_by_name['task_collect_memory'].containing_oneof = _WORKERTASKRESULT.oneofs_by_name['task']
-_TASKCOLLECTDISK.fields_by_name['selector'].message_type = _DISKSELECTOR
-_DISKSELECTOR.fields_by_name['group'].enum_type = _DISKSELECTOR_GROUP
-_DISKSELECTOR_GROUP.containing_type = _DISKSELECTOR
+_TASKCOLLECTDISK.fields_by_name['selector'].message_type = _COLLECTDISKSELECTOR
+_COLLECTDISKSELECTOR.fields_by_name['group'].enum_type = _COLLECTDISKSELECTOR_GROUP
+_COLLECTDISKSELECTOR_GROUP.containing_type = _COLLECTDISKSELECTOR
 DESCRIPTOR.message_types_by_name['CreateTaskRequest'] = _CREATETASKREQUEST
 DESCRIPTOR.message_types_by_name['TargetSelector'] = _TARGETSELECTOR
 DESCRIPTOR.message_types_by_name['CreateTaskResult'] = _CREATETASKRESULT
 DESCRIPTOR.message_types_by_name['ListTaskRequest'] = _LISTTASKREQUEST
 DESCRIPTOR.message_types_by_name['ListTaskResult'] = _LISTTASKRESULT
+DESCRIPTOR.message_types_by_name['ListTask'] = _LISTTASK
 DESCRIPTOR.message_types_by_name['ListWorkerRequest'] = _LISTWORKERREQUEST
 DESCRIPTOR.message_types_by_name['ListWorkerResult'] = _LISTWORKERRESULT
 DESCRIPTOR.message_types_by_name['SessionResults'] = _SESSIONRESULTS
@@ -958,7 +1098,7 @@ DESCRIPTOR.message_types_by_name['TaskNone'] = _TASKNONE
 DESCRIPTOR.message_types_by_name['TaskNoneResult'] = _TASKNONERESULT
 DESCRIPTOR.message_types_by_name['TaskCollectDisk'] = _TASKCOLLECTDISK
 DESCRIPTOR.message_types_by_name['TaskCollectDiskResult'] = _TASKCOLLECTDISKRESULT
-DESCRIPTOR.message_types_by_name['DiskSelector'] = _DISKSELECTOR
+DESCRIPTOR.message_types_by_name['CollectDiskSelector'] = _COLLECTDISKSELECTOR
 DESCRIPTOR.message_types_by_name['TaskCollectMemory'] = _TASKCOLLECTMEMORY
 DESCRIPTOR.message_types_by_name['TaskCollectMemoryResult'] = _TASKCOLLECTMEMORYRESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -997,6 +1137,13 @@ ListTaskResult = _reflection.GeneratedProtocolMessageType('ListTaskResult', (_me
   # @@protoc_insertion_point(class_scope:ListTaskResult)
   })
 _sym_db.RegisterMessage(ListTaskResult)
+
+ListTask = _reflection.GeneratedProtocolMessageType('ListTask', (_message.Message,), {
+  'DESCRIPTOR' : _LISTTASK,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:ListTask)
+  })
+_sym_db.RegisterMessage(ListTask)
 
 ListWorkerRequest = _reflection.GeneratedProtocolMessageType('ListWorkerRequest', (_message.Message,), {
   'DESCRIPTOR' : _LISTWORKERREQUEST,
@@ -1096,12 +1243,12 @@ TaskCollectDiskResult = _reflection.GeneratedProtocolMessageType('TaskCollectDis
   })
 _sym_db.RegisterMessage(TaskCollectDiskResult)
 
-DiskSelector = _reflection.GeneratedProtocolMessageType('DiskSelector', (_message.Message,), {
-  'DESCRIPTOR' : _DISKSELECTOR,
+CollectDiskSelector = _reflection.GeneratedProtocolMessageType('CollectDiskSelector', (_message.Message,), {
+  'DESCRIPTOR' : _COLLECTDISKSELECTOR,
   '__module__' : 'fact.controller_pb2'
-  # @@protoc_insertion_point(class_scope:DiskSelector)
+  # @@protoc_insertion_point(class_scope:CollectDiskSelector)
   })
-_sym_db.RegisterMessage(DiskSelector)
+_sym_db.RegisterMessage(CollectDiskSelector)
 
 TaskCollectMemory = _reflection.GeneratedProtocolMessageType('TaskCollectMemory', (_message.Message,), {
   'DESCRIPTOR' : _TASKCOLLECTMEMORY,
@@ -1126,8 +1273,8 @@ _MANAGEMENT = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1571,
-  serialized_end=1736,
+  serialized_start=2018,
+  serialized_end=2183,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTask',
@@ -1172,8 +1319,8 @@ _WORKERTASKS = _descriptor.ServiceDescriptor(
   index=1,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1738,
-  serialized_end=1799,
+  serialized_start=2185,
+  serialized_end=2246,
   methods=[
   _descriptor.MethodDescriptor(
     name='Session',

@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 service Management {
     rpc CreateTask(CreateTaskRequest) returns (CreateTaskResult);
     rpc ListTask(ListTaskRequest) returns (ListTaskResult);
@@ -7,11 +9,11 @@ service Management {
 }
 
 message CreateTaskRequest {
-    TargetSelector selector = 1;
     oneof task {
         TaskCollectDisk task_collect_disk = 4;
         TaskCollectMemory task_collect_memory = 5;
     }
+    bytes target = 1;
 }
 
 message TargetSelector {
@@ -27,7 +29,28 @@ message ListTaskRequest {
 }
 
 message ListTaskResult {
-    string selector = 1;
+    repeated ListTask tasks = 1;
+}
+
+message ListTask {
+    bytes uuid = 1;
+    enum TaskStatus {
+        WAITING = 0;
+        RUNNING = 1;
+        COMPLETE = 2;
+    }
+    TaskStatus status = 2;
+    google.protobuf.Timestamp created_at = 3;
+    google.protobuf.Timestamp assigned_at = 4;
+    google.protobuf.Timestamp completed_at = 5;
+
+    bytes target = 6; // Target UUID
+    oneof task {
+        TaskCollectDisk task_collect_disk = 7;
+        TaskCollectMemory task_collect_memory = 8;
+    }
+
+    bytes worker = 9; // Worker UUID
 }
 
 message ListWorkerRequest {
@@ -111,14 +134,14 @@ message TaskNoneResult {
 }
 
 message TaskCollectDisk {
-    DiskSelector selector = 2;
+    CollectDiskSelector selector = 2;
 }
 
 message TaskCollectDiskResult {
 
 }
 
-message DiskSelector {
+message CollectDiskSelector {
     enum Group {
         ALL_DISKS = 0;
         ROOT_DISK = 1;

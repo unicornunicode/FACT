@@ -4,8 +4,10 @@ isort:skip_file
 """
 import builtins
 import google.protobuf.descriptor
+import google.protobuf.internal.containers
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
+import google.protobuf.timestamp_pb2
 import typing
 import typing_extensions
 
@@ -13,23 +15,22 @@ DESCRIPTOR: google.protobuf.descriptor.FileDescriptor = ...
 
 class CreateTaskRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
-    SELECTOR_FIELD_NUMBER: builtins.int
     TASK_COLLECT_DISK_FIELD_NUMBER: builtins.int
     TASK_COLLECT_MEMORY_FIELD_NUMBER: builtins.int
-    @property
-    def selector(self) -> global___TargetSelector: ...
+    TARGET_FIELD_NUMBER: builtins.int
     @property
     def task_collect_disk(self) -> global___TaskCollectDisk: ...
     @property
     def task_collect_memory(self) -> global___TaskCollectMemory: ...
+    target: builtins.bytes = ...
     def __init__(self,
         *,
-        selector : typing.Optional[global___TargetSelector] = ...,
         task_collect_disk : typing.Optional[global___TaskCollectDisk] = ...,
         task_collect_memory : typing.Optional[global___TaskCollectMemory] = ...,
+        target : builtins.bytes = ...,
         ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal[u"selector",b"selector",u"task",b"task",u"task_collect_disk",b"task_collect_disk",u"task_collect_memory",b"task_collect_memory"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal[u"selector",b"selector",u"task",b"task",u"task_collect_disk",b"task_collect_disk",u"task_collect_memory",b"task_collect_memory"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal[u"task",b"task",u"task_collect_disk",b"task_collect_disk",u"task_collect_memory",b"task_collect_memory"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal[u"target",b"target",u"task",b"task",u"task_collect_disk",b"task_collect_disk",u"task_collect_memory",b"task_collect_memory"]) -> None: ...
     def WhichOneof(self, oneof_group: typing_extensions.Literal[u"task",b"task"]) -> typing.Optional[typing_extensions.Literal["task_collect_disk","task_collect_memory"]]: ...
 global___CreateTaskRequest = CreateTaskRequest
 
@@ -58,14 +59,75 @@ global___ListTaskRequest = ListTaskRequest
 
 class ListTaskResult(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
-    SELECTOR_FIELD_NUMBER: builtins.int
-    selector: typing.Text = ...
+    TASKS_FIELD_NUMBER: builtins.int
+    @property
+    def tasks(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___ListTask]: ...
     def __init__(self,
         *,
-        selector : typing.Text = ...,
+        tasks : typing.Optional[typing.Iterable[global___ListTask]] = ...,
         ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal[u"selector",b"selector"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal[u"tasks",b"tasks"]) -> None: ...
 global___ListTaskResult = ListTaskResult
+
+class ListTask(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    class TaskStatus(_TaskStatus, metaclass=_TaskStatusEnumTypeWrapper):
+        pass
+    class _TaskStatus:
+        V = typing.NewType('V', builtins.int)
+    class _TaskStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_TaskStatus.V], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor = ...
+        WAITING = ListTask.TaskStatus.V(0)
+        RUNNING = ListTask.TaskStatus.V(1)
+        COMPLETE = ListTask.TaskStatus.V(2)
+
+    WAITING = ListTask.TaskStatus.V(0)
+    RUNNING = ListTask.TaskStatus.V(1)
+    COMPLETE = ListTask.TaskStatus.V(2)
+
+    UUID_FIELD_NUMBER: builtins.int
+    STATUS_FIELD_NUMBER: builtins.int
+    CREATED_AT_FIELD_NUMBER: builtins.int
+    ASSIGNED_AT_FIELD_NUMBER: builtins.int
+    COMPLETED_AT_FIELD_NUMBER: builtins.int
+    TARGET_FIELD_NUMBER: builtins.int
+    TASK_COLLECT_DISK_FIELD_NUMBER: builtins.int
+    TASK_COLLECT_MEMORY_FIELD_NUMBER: builtins.int
+    WORKER_FIELD_NUMBER: builtins.int
+    uuid: builtins.bytes = ...
+    status: global___ListTask.TaskStatus.V = ...
+    @property
+    def created_at(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    @property
+    def assigned_at(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    @property
+    def completed_at(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    target: builtins.bytes = ...
+    """Target UUID"""
+
+    @property
+    def task_collect_disk(self) -> global___TaskCollectDisk: ...
+    @property
+    def task_collect_memory(self) -> global___TaskCollectMemory: ...
+    worker: builtins.bytes = ...
+    """Worker UUID"""
+
+    def __init__(self,
+        *,
+        uuid : builtins.bytes = ...,
+        status : global___ListTask.TaskStatus.V = ...,
+        created_at : typing.Optional[google.protobuf.timestamp_pb2.Timestamp] = ...,
+        assigned_at : typing.Optional[google.protobuf.timestamp_pb2.Timestamp] = ...,
+        completed_at : typing.Optional[google.protobuf.timestamp_pb2.Timestamp] = ...,
+        target : builtins.bytes = ...,
+        task_collect_disk : typing.Optional[global___TaskCollectDisk] = ...,
+        task_collect_memory : typing.Optional[global___TaskCollectMemory] = ...,
+        worker : builtins.bytes = ...,
+        ) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal[u"assigned_at",b"assigned_at",u"completed_at",b"completed_at",u"created_at",b"created_at",u"task",b"task",u"task_collect_disk",b"task_collect_disk",u"task_collect_memory",b"task_collect_memory"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal[u"assigned_at",b"assigned_at",u"completed_at",b"completed_at",u"created_at",b"created_at",u"status",b"status",u"target",b"target",u"task",b"task",u"task_collect_disk",b"task_collect_disk",u"task_collect_memory",b"task_collect_memory",u"uuid",b"uuid",u"worker",b"worker"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal[u"task",b"task"]) -> typing.Optional[typing_extensions.Literal["task_collect_disk","task_collect_memory"]]: ...
+global___ListTask = ListTask
 
 class ListWorkerRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
@@ -268,10 +330,10 @@ class TaskCollectDisk(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
     SELECTOR_FIELD_NUMBER: builtins.int
     @property
-    def selector(self) -> global___DiskSelector: ...
+    def selector(self) -> global___CollectDiskSelector: ...
     def __init__(self,
         *,
-        selector : typing.Optional[global___DiskSelector] = ...,
+        selector : typing.Optional[global___CollectDiskSelector] = ...,
         ) -> None: ...
     def HasField(self, field_name: typing_extensions.Literal[u"selector",b"selector"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing_extensions.Literal[u"selector",b"selector"]) -> None: ...
@@ -283,7 +345,7 @@ class TaskCollectDiskResult(google.protobuf.message.Message):
         ) -> None: ...
 global___TaskCollectDiskResult = TaskCollectDiskResult
 
-class DiskSelector(google.protobuf.message.Message):
+class CollectDiskSelector(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
     class Group(_Group, metaclass=_GroupEnumTypeWrapper):
         pass
@@ -291,22 +353,22 @@ class DiskSelector(google.protobuf.message.Message):
         V = typing.NewType('V', builtins.int)
     class _GroupEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_Group.V], builtins.type):
         DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor = ...
-        ALL_DISKS = DiskSelector.Group.V(0)
-        ROOT_DISK = DiskSelector.Group.V(1)
-        ROOT_PARTITION = DiskSelector.Group.V(2)
+        ALL_DISKS = CollectDiskSelector.Group.V(0)
+        ROOT_DISK = CollectDiskSelector.Group.V(1)
+        ROOT_PARTITION = CollectDiskSelector.Group.V(2)
 
-    ALL_DISKS = DiskSelector.Group.V(0)
-    ROOT_DISK = DiskSelector.Group.V(1)
-    ROOT_PARTITION = DiskSelector.Group.V(2)
+    ALL_DISKS = CollectDiskSelector.Group.V(0)
+    ROOT_DISK = CollectDiskSelector.Group.V(1)
+    ROOT_PARTITION = CollectDiskSelector.Group.V(2)
 
     GROUP_FIELD_NUMBER: builtins.int
-    group: global___DiskSelector.Group.V = ...
+    group: global___CollectDiskSelector.Group.V = ...
     def __init__(self,
         *,
-        group : global___DiskSelector.Group.V = ...,
+        group : global___CollectDiskSelector.Group.V = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal[u"group",b"group"]) -> None: ...
-global___DiskSelector = DiskSelector
+global___CollectDiskSelector = CollectDiskSelector
 
 class TaskCollectMemory(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
