@@ -1,6 +1,7 @@
 import pytest
 
-from fact.storage import Storage, Task, Artifact, ArtifactType, DataType
+from fact.storage import Storage, Task, Artifact
+from fact.storage.types import ArtifactType, DataType
 from fact.exceptions import (
     DirectoryExistsError,
     TaskInvalidUUID,

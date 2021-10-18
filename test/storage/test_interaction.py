@@ -2,7 +2,7 @@ import pytest
 from shutil import rmtree
 
 from fact.storage import Storage, Task, Artifact
-from fact.storage import ArtifactType, DataType
+from fact.storage.types import ArtifactType, DataType
 from fact.exceptions import (
     ArtifactNotFoundError,
     ArtifactExistsError,

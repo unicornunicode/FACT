@@ -1,3 +1,4 @@
+from .types import ArtifactType, DataType
 from fact.exceptions import (
     DirectoryExistsError,
     # StorageExistsError,
@@ -10,7 +11,6 @@ from fact.exceptions import (
     ArtifactInvalidType,
     ArtifactInvalidSubType,
 )
-from .custom_enum import ArtifactType, DataType
 
 from pathlib import Path
 from uuid import UUID
