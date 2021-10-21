@@ -28,7 +28,7 @@ async def start_all(c: Controller, w: Worker, p: GRPCWebProxy) -> None:
 
 
 async def stop_all(c: Controller, w: Worker, p: GRPCWebProxy) -> None:
-    await asyncio.gather(c.stop(10), w.stop(), p.stop())
+    await asyncio.gather(c.stop(1), w.stop(), p.stop())
 
 
 if __name__ == "__main__":
