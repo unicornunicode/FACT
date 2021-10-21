@@ -5,7 +5,7 @@
 module.exports = {
 	reactStrictMode: true,
 	experimental: {
-		swcLoader: true,
+		swcLoader: false,
 		swcMinify: false,
 	},
 };
