@@ -86,6 +86,10 @@ message ListWorkerRequest {
 }
 
 message ListWorkerResult {
+	repeated ListWorker workers = 1;
+}
+
+message ListWorker {
     bytes uuid = 1;
     string hostname = 2;
 }

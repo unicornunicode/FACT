@@ -107,6 +107,10 @@ export interface ListTarget {
 export interface ListWorkerRequest {}
 
 export interface ListWorkerResult {
+  workers: ListWorker[];
+}
+
+export interface ListWorker {
   uuid: Uint8Array;
   hostname: string;
 }
@@ -1095,11 +1099,78 @@ export const ListWorkerRequest = {
   },
 };
 
-const baseListWorkerResult: object = { hostname: "" };
+const baseListWorkerResult: object = {};
 
 export const ListWorkerResult = {
   encode(
     message: ListWorkerResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.workers) {
+      ListWorker.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListWorkerResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseListWorkerResult } as ListWorkerResult;
+    message.workers = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.workers.push(ListWorker.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListWorkerResult {
+    const message = { ...baseListWorkerResult } as ListWorkerResult;
+    message.workers = [];
+    if (object.workers !== undefined && object.workers !== null) {
+      for (const e of object.workers) {
+        message.workers.push(ListWorker.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: ListWorkerResult): unknown {
+    const obj: any = {};
+    if (message.workers) {
+      obj.workers = message.workers.map((e) =>
+        e ? ListWorker.toJSON(e) : undefined
+      );
+    } else {
+      obj.workers = [];
+    }
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<ListWorkerResult>): ListWorkerResult {
+    const message = { ...baseListWorkerResult } as ListWorkerResult;
+    message.workers = [];
+    if (object.workers !== undefined && object.workers !== null) {
+      for (const e of object.workers) {
+        message.workers.push(ListWorker.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
+const baseListWorker: object = { hostname: "" };
+
+export const ListWorker = {
+  encode(
+    message: ListWorker,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.uuid.length !== 0) {
@@ -1111,10 +1182,10 @@ export const ListWorkerResult = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ListWorkerResult {
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListWorker {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListWorkerResult } as ListWorkerResult;
+    const message = { ...baseListWorker } as ListWorker;
     message.uuid = new Uint8Array();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1133,8 +1204,8 @@ export const ListWorkerResult = {
     return message;
   },
 
-  fromJSON(object: any): ListWorkerResult {
-    const message = { ...baseListWorkerResult } as ListWorkerResult;
+  fromJSON(object: any): ListWorker {
+    const message = { ...baseListWorker } as ListWorker;
     message.uuid = new Uint8Array();
     if (object.uuid !== undefined && object.uuid !== null) {
       message.uuid = bytesFromBase64(object.uuid);
@@ -1147,7 +1218,7 @@ export const ListWorkerResult = {
     return message;
   },
 
-  toJSON(message: ListWorkerResult): unknown {
+  toJSON(message: ListWorker): unknown {
     const obj: any = {};
     message.uuid !== undefined &&
       (obj.uuid = base64FromBytes(
@@ -1157,8 +1228,8 @@ export const ListWorkerResult = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<ListWorkerResult>): ListWorkerResult {
-    const message = { ...baseListWorkerResult } as ListWorkerResult;
+  fromPartial(object: DeepPartial<ListWorker>): ListWorker {
+    const message = { ...baseListWorker } as ListWorker;
     if (object.uuid !== undefined && object.uuid !== null) {
       message.uuid = object.uuid;
     } else {
