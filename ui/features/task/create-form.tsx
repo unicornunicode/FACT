@@ -43,7 +43,7 @@ const CreateTaskForm = ({onSubmit}: Props) => {
 			<Row>
 				<Form.Group as={Col} className="mb-3" controlId="task-target">
 					<Form.Label>Target</Form.Label>
-					<Form.Control required className="text-monospace" type="text" placeholder="00000000-0000-0000-0000-000000000000" {...register('target')}/>
+					<Form.Control required className="font-monospace" type="text" placeholder="00000000-0000-0000-0000-000000000000" {...register('target')}/>
 				</Form.Group>
 				<Form.Group as={Col} className="mb-3" controlId="task-task">
 					<Form.Label>Task</Form.Label>
