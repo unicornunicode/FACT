@@ -1,0 +1,4 @@
+NAME   MAJ:MIN RM        SIZE RO TYPE MOUNTPOINT
+loop9    7:9    0    33878016  1 loop /snap/snapd/13170
+sda      8:0    0 85899345920  0 disk 
+sda1     8:1    0   536870912  0 part /boot/efi
