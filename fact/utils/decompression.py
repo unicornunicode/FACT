@@ -1,31 +1,7 @@
-import random
-import time
-import hashlib
 import gzip
 import os
 
 from fact.exceptions import GzipDecompressionError
-
-
-def create_random_file(output_path: str, filesize: int = 100000):
-    """Creates a random bytefile of specified filesize, default 100000 bytes"""
-
-    try:
-        with open(output_path, "wb") as f:
-            random.seed(time.time())
-            b = random.randbytes(filesize)
-            f.write(b)
-            f.close()
-    except OSError:
-        raise
-
-
-def calculatesha256sum(filepath: str) -> str:
-    sha256_hash = hashlib.sha256()
-    with open(filepath, "rb") as f:
-        for byte_block in iter(lambda: f.read(8192), b""):
-            sha256_hash.update(byte_block)
-        return sha256_hash.hexdigest()
 
 
 def decompress_gzip(gz_path: str, output_filepath: str = None, keep_gz: bool = True):

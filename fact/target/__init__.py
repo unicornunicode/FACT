@@ -3,7 +3,7 @@ import os
 import re
 
 from fact.exceptions import SSHInfoError, TargetRuntimeError, FileExistsError
-from fact.utils.files import decompress_gzip
+from fact.utils.decompression import decompress_gzip
 
 from pssh.clients import ParallelSSHClient
 from pssh.exceptions import PKeyFileError
