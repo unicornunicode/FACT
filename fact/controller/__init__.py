@@ -54,7 +54,6 @@ from .database import (
     Target,
     Task,
     TaskType,
-    TaskStatus,
 )
 from .mappings import (
     task_status_from_db,
@@ -193,7 +192,7 @@ class Controller:
 
                     # Find all waiting tasks
                     stmt = (
-                        select(Task).where(Task.status == TaskStatus.WAITING).limit(5)
+                        select(Task).where(Task.worker == None).limit(5)  # noqa: E711
                     )
                     rows = (await session.execute(stmt)).scalars()
                     tasks: List[Task] = rows.all()
@@ -242,12 +241,12 @@ class Management(ManagementServicer):
         elif task_type == "task_collect_disk":
             uuid = await self.controller._create_task(
                 target_uuid=target_uuid,
-                task_type=TaskType.task_none,
+                task_type=TaskType.task_collect_disk,
                 task_collect_disk_selector_path=request.task_collect_disk.selector.path,
             )
         elif task_type == "task_collect_memory":
             uuid = await self.controller._create_task(
-                target_uuid=target_uuid, task_type=TaskType.task_none
+                target_uuid=target_uuid, task_type=TaskType.task_collect_memory
             )
         else:
             context.abort(StatusCode.INVALID_ARGUMENT)
