@@ -17,6 +17,6 @@ export async function readConfig(): Promise<Config> {
 	}
 
 	return {
-		management: {endpoint: process.env.MANAGEMENT_ENDPOINT ?? 'http://localhost:5124', options: {debug: true}},
+		management: {endpoint: process.env.MANAGEMENT_ENDPOINT ?? 'http://localhost:5124', options: {debug: false}},
 	};
 }

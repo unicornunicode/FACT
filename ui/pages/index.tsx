@@ -23,7 +23,7 @@ const Home: NextPage = () => {
 			<Head>
 				<title>Overview</title>
 			</Head>
-			<pre><code>{JSON.stringify(tasks)}</code></pre>
+			<pre><code>{JSON.stringify(tasks, null, 2)}</code></pre>
 		</main>
 	);
 };

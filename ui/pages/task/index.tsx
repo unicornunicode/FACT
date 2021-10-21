@@ -18,7 +18,7 @@ const ListTaskPage: NextPage<Props> = ({tasks}: Props) => (
 	</main>
 );
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
 	const rpc = await managementRpc();
 	const client = new ManagementClientImpl(rpc);
 	const {tasks} = await client.ListTask({});
