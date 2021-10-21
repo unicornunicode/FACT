@@ -14,6 +14,7 @@ const Navigation = () => (
 			<Nav className="me-auto">
 				<Link passHref href="/"><Nav.Link>Overview</Nav.Link></Link>
 				<Link passHref href="/task"><Nav.Link>Tasks</Nav.Link></Link>
+				<Link passHref href="/target"><Nav.Link>Targets</Nav.Link></Link>
 				<Link passHref href="/worker"><Nav.Link>Workers</Nav.Link></Link>
 			</Nav>
 		</Container>

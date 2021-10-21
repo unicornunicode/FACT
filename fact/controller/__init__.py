@@ -18,12 +18,18 @@ from ..management_pb2 import (
     ListTaskRequest,
     ListTaskResult,
     ListTask,
+    CreateTargetRequest,
+    CreateTargetResult,
+    ListTargetRequest,
+    ListTargetResult,
+    ListTarget,
 )
 from ..tasks_pb2 import (
     TaskNone,
     TaskCollectDisk,
     CollectDiskSelector,
     TaskCollectMemory,
+    SSHAccess,
 )
 from ..controller_pb2_grpc import (
     WorkerTasksServicer,
@@ -38,7 +44,15 @@ from ..management_pb2_grpc import (
 from uuid import UUID, uuid4
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
-from .database import Base, Worker, Task, TaskType, TaskStatus, CollectDiskSelectorGroup
+from .database import (
+    Base,
+    Worker,
+    Target,
+    Task,
+    TaskType,
+    TaskStatus,
+    CollectDiskSelectorGroup,
+)
 from .mappings import (
     collect_disk_selector_group_from_proto,
     collect_disk_selector_group_from_db,
@@ -93,6 +107,36 @@ class Controller:
     async def _list_task(self) -> Iterable[Task]:
         with self.session.begin():
             stmt = select(Task)
+            return self.session.execute(stmt).scalars().all()
+
+    async def _create_target(
+        self,
+        name: str,
+        ssh_host: Optional[str] = None,
+        ssh_user: Optional[str] = None,
+        ssh_port: Optional[int] = None,
+        ssh_private_key: Optional[str] = None,
+        ssh_become: Optional[bool] = None,
+        ssh_become_password: Optional[str] = None,
+    ) -> UUID:
+        uuid = uuid4()
+        with self.session.begin():
+            target = Target(
+                uuid=uuid,
+                name=name,
+                ssh_host=ssh_host,
+                ssh_user=ssh_user,
+                ssh_port=ssh_port,
+                ssh_private_key=ssh_private_key,
+                ssh_become=ssh_become,
+                ssh_become_password=ssh_become_password,
+            )
+            self.session.add(target)
+        return uuid
+
+    async def _list_target(self) -> Iterable[Target]:
+        with self.session.begin():
+            stmt = select(Target)
             return self.session.execute(stmt).scalars().all()
 
     async def _list_worker(self) -> Iterable[Worker]:
@@ -164,7 +208,7 @@ class Management(ManagementServicer):
 
     async def CreateTask(
         self, request: CreateTaskRequest, context: ServicerContext
-    ) -> Optional[CreateTaskResult]:
+    ) -> CreateTaskResult:
         target_uuid = UUID(bytes=request.target)
         task_type = request.WhichOneof("task")
         if task_type == "task_none":
@@ -236,6 +280,50 @@ class Management(ManagementServicer):
                 )
             )
         return ListTaskResult(tasks=list_tasks)
+
+    async def CreateTarget(
+        self, request: CreateTargetRequest, context: ServicerContext
+    ) -> CreateTargetResult:
+        target_type = request.WhichOneof("access")
+        if target_type == "ssh":
+            uuid = await self.controller._create_target(
+                name=request.name,
+                ssh_host=request.ssh.host,
+                ssh_user=request.ssh.user,
+                ssh_port=request.ssh.port,
+                ssh_private_key=request.ssh.private_key,
+                ssh_become=request.ssh.become,
+                ssh_become_password=request.ssh.become_password,
+            )
+        else:
+            context.abort(StatusCode.INVALID_ARGUMENT)
+            raise Exception("Unreachable: Invalid task type")
+        return CreateTargetResult(uuid=uuid.bytes)
+
+    async def ListTarget(
+        self, request: ListTargetRequest, context: ServicerContext
+    ) -> ListTargetResult:
+        list_targets = []
+        targets = await self.controller._list_target()
+        for target in targets:
+            ssh = None
+            if target.ssh_host is not None:
+                ssh = SSHAccess(
+                    host=target.ssh_host or "",
+                    user=target.ssh_user or "",
+                    port=target.ssh_port or 0,
+                    private_key=target.ssh_private_key or "",
+                    become=target.ssh_become or False,
+                    become_password=target.ssh_become_password or "",
+                )
+            list_targets.append(
+                ListTarget(
+                    uuid=target.uuid.bytes if target.uuid is not None else None,
+                    name=target.name or "",
+                    ssh=ssh,
+                )
+            )
+        return ListTargetResult(targets=list_targets)
 
 
 class WorkerTasks(WorkerTasksServicer):

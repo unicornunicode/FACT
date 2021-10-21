@@ -13,11 +13,13 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.14.1",
     "@improbable-eng/grpc-web-node-http-transport": "^0.14.1",
+    "clsx": "^1.1.1",
     "debug": "^4.3.2",
     "next": "11.1.2",
     "react": "17.0.2",
     "react-bootstrap": "^2.0.0-rc.0",
     "react-dom": "17.0.2",
+    "react-hook-form": "^7.17.5",
     "rxjs": "^6.6.7",
     "ts-proto": "^1.83.1",
     "uuid": "^8.3.2"

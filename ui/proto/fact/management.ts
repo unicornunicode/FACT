@@ -4,7 +4,12 @@ import { grpc } from "@improbable-eng/grpc-web";
 import _m0 from "protobufjs/minimal";
 import { BrowserHeaders } from "browser-headers";
 import { Timestamp } from "../google/protobuf/timestamp";
-import { TaskNone, TaskCollectDisk, TaskCollectMemory } from "../fact/tasks";
+import {
+  TaskNone,
+  TaskCollectDisk,
+  TaskCollectMemory,
+  SSHAccess,
+} from "../fact/tasks";
 
 export const protobufPackage = "";
 
@@ -14,8 +19,6 @@ export interface CreateTaskRequest {
   taskCollectMemory: TaskCollectMemory | undefined;
   target: Uint8Array;
 }
-
-export interface TargetSelector {}
 
 export interface CreateTaskResult {
   uuid: Uint8Array;
@@ -78,6 +81,27 @@ export function listTask_StatusToJSON(object: ListTask_Status): string {
     default:
       return "UNKNOWN";
   }
+}
+
+export interface CreateTargetRequest {
+  name: string;
+  ssh: SSHAccess | undefined;
+}
+
+export interface CreateTargetResult {
+  uuid: Uint8Array;
+}
+
+export interface ListTargetRequest {}
+
+export interface ListTargetResult {
+  targets: ListTarget[];
+}
+
+export interface ListTarget {
+  uuid: Uint8Array;
+  name: string;
+  ssh: SSHAccess | undefined;
 }
 
 export interface ListWorkerRequest {}
@@ -236,47 +260,6 @@ export const CreateTaskRequest = {
     } else {
       message.target = new Uint8Array();
     }
-    return message;
-  },
-};
-
-const baseTargetSelector: object = {};
-
-export const TargetSelector = {
-  encode(
-    _: TargetSelector,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): TargetSelector {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTargetSelector } as TargetSelector;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(_: any): TargetSelector {
-    const message = { ...baseTargetSelector } as TargetSelector;
-    return message;
-  },
-
-  toJSON(_: TargetSelector): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: DeepPartial<TargetSelector>): TargetSelector {
-    const message = { ...baseTargetSelector } as TargetSelector;
     return message;
   },
 };
@@ -730,6 +713,347 @@ export const ListTask = {
   },
 };
 
+const baseCreateTargetRequest: object = { name: "" };
+
+export const CreateTargetRequest = {
+  encode(
+    message: CreateTargetRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    if (message.ssh !== undefined) {
+      SSHAccess.encode(message.ssh, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateTargetRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseCreateTargetRequest } as CreateTargetRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 3:
+          message.name = reader.string();
+          break;
+        case 2:
+          message.ssh = SSHAccess.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateTargetRequest {
+    const message = { ...baseCreateTargetRequest } as CreateTargetRequest;
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
+    if (object.ssh !== undefined && object.ssh !== null) {
+      message.ssh = SSHAccess.fromJSON(object.ssh);
+    } else {
+      message.ssh = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: CreateTargetRequest): unknown {
+    const obj: any = {};
+    message.name !== undefined && (obj.name = message.name);
+    message.ssh !== undefined &&
+      (obj.ssh = message.ssh ? SSHAccess.toJSON(message.ssh) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<CreateTargetRequest>): CreateTargetRequest {
+    const message = { ...baseCreateTargetRequest } as CreateTargetRequest;
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
+    if (object.ssh !== undefined && object.ssh !== null) {
+      message.ssh = SSHAccess.fromPartial(object.ssh);
+    } else {
+      message.ssh = undefined;
+    }
+    return message;
+  },
+};
+
+const baseCreateTargetResult: object = {};
+
+export const CreateTargetResult = {
+  encode(
+    message: CreateTargetResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.uuid.length !== 0) {
+      writer.uint32(10).bytes(message.uuid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateTargetResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseCreateTargetResult } as CreateTargetResult;
+    message.uuid = new Uint8Array();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.uuid = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateTargetResult {
+    const message = { ...baseCreateTargetResult } as CreateTargetResult;
+    message.uuid = new Uint8Array();
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = bytesFromBase64(object.uuid);
+    }
+    return message;
+  },
+
+  toJSON(message: CreateTargetResult): unknown {
+    const obj: any = {};
+    message.uuid !== undefined &&
+      (obj.uuid = base64FromBytes(
+        message.uuid !== undefined ? message.uuid : new Uint8Array()
+      ));
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<CreateTargetResult>): CreateTargetResult {
+    const message = { ...baseCreateTargetResult } as CreateTargetResult;
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = object.uuid;
+    } else {
+      message.uuid = new Uint8Array();
+    }
+    return message;
+  },
+};
+
+const baseListTargetRequest: object = {};
+
+export const ListTargetRequest = {
+  encode(
+    _: ListTargetRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListTargetRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseListTargetRequest } as ListTargetRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): ListTargetRequest {
+    const message = { ...baseListTargetRequest } as ListTargetRequest;
+    return message;
+  },
+
+  toJSON(_: ListTargetRequest): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<ListTargetRequest>): ListTargetRequest {
+    const message = { ...baseListTargetRequest } as ListTargetRequest;
+    return message;
+  },
+};
+
+const baseListTargetResult: object = {};
+
+export const ListTargetResult = {
+  encode(
+    message: ListTargetResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.targets) {
+      ListTarget.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListTargetResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseListTargetResult } as ListTargetResult;
+    message.targets = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.targets.push(ListTarget.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListTargetResult {
+    const message = { ...baseListTargetResult } as ListTargetResult;
+    message.targets = [];
+    if (object.targets !== undefined && object.targets !== null) {
+      for (const e of object.targets) {
+        message.targets.push(ListTarget.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: ListTargetResult): unknown {
+    const obj: any = {};
+    if (message.targets) {
+      obj.targets = message.targets.map((e) =>
+        e ? ListTarget.toJSON(e) : undefined
+      );
+    } else {
+      obj.targets = [];
+    }
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<ListTargetResult>): ListTargetResult {
+    const message = { ...baseListTargetResult } as ListTargetResult;
+    message.targets = [];
+    if (object.targets !== undefined && object.targets !== null) {
+      for (const e of object.targets) {
+        message.targets.push(ListTarget.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
+const baseListTarget: object = { name: "" };
+
+export const ListTarget = {
+  encode(
+    message: ListTarget,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.uuid.length !== 0) {
+      writer.uint32(10).bytes(message.uuid);
+    }
+    if (message.name !== "") {
+      writer.uint32(26).string(message.name);
+    }
+    if (message.ssh !== undefined) {
+      SSHAccess.encode(message.ssh, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListTarget {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseListTarget } as ListTarget;
+    message.uuid = new Uint8Array();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.uuid = reader.bytes();
+          break;
+        case 3:
+          message.name = reader.string();
+          break;
+        case 2:
+          message.ssh = SSHAccess.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListTarget {
+    const message = { ...baseListTarget } as ListTarget;
+    message.uuid = new Uint8Array();
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = bytesFromBase64(object.uuid);
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = String(object.name);
+    } else {
+      message.name = "";
+    }
+    if (object.ssh !== undefined && object.ssh !== null) {
+      message.ssh = SSHAccess.fromJSON(object.ssh);
+    } else {
+      message.ssh = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: ListTarget): unknown {
+    const obj: any = {};
+    message.uuid !== undefined &&
+      (obj.uuid = base64FromBytes(
+        message.uuid !== undefined ? message.uuid : new Uint8Array()
+      ));
+    message.name !== undefined && (obj.name = message.name);
+    message.ssh !== undefined &&
+      (obj.ssh = message.ssh ? SSHAccess.toJSON(message.ssh) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<ListTarget>): ListTarget {
+    const message = { ...baseListTarget } as ListTarget;
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = object.uuid;
+    } else {
+      message.uuid = new Uint8Array();
+    }
+    if (object.name !== undefined && object.name !== null) {
+      message.name = object.name;
+    } else {
+      message.name = "";
+    }
+    if (object.ssh !== undefined && object.ssh !== null) {
+      message.ssh = SSHAccess.fromPartial(object.ssh);
+    } else {
+      message.ssh = undefined;
+    }
+    return message;
+  },
+};
+
 const baseListWorkerRequest: object = {};
 
 export const ListWorkerRequest = {
@@ -858,6 +1182,14 @@ export interface Management {
     request: DeepPartial<ListTaskRequest>,
     metadata?: grpc.Metadata
   ): Promise<ListTaskResult>;
+  CreateTarget(
+    request: DeepPartial<CreateTargetRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CreateTargetResult>;
+  ListTarget(
+    request: DeepPartial<ListTargetRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<ListTargetResult>;
   ListWorker(
     request: DeepPartial<ListWorkerRequest>,
     metadata?: grpc.Metadata
@@ -871,6 +1203,8 @@ export class ManagementClientImpl implements Management {
     this.rpc = rpc;
     this.CreateTask = this.CreateTask.bind(this);
     this.ListTask = this.ListTask.bind(this);
+    this.CreateTarget = this.CreateTarget.bind(this);
+    this.ListTarget = this.ListTarget.bind(this);
     this.ListWorker = this.ListWorker.bind(this);
   }
 
@@ -892,6 +1226,28 @@ export class ManagementClientImpl implements Management {
     return this.rpc.unary(
       ManagementListTaskDesc,
       ListTaskRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  CreateTarget(
+    request: DeepPartial<CreateTargetRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CreateTargetResult> {
+    return this.rpc.unary(
+      ManagementCreateTargetDesc,
+      CreateTargetRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  ListTarget(
+    request: DeepPartial<ListTargetRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<ListTargetResult> {
+    return this.rpc.unary(
+      ManagementListTargetDesc,
+      ListTargetRequest.fromPartial(request),
       metadata
     );
   }
@@ -948,6 +1304,50 @@ export const ManagementListTaskDesc: UnaryMethodDefinitionish = {
     deserializeBinary(data: Uint8Array) {
       return {
         ...ListTaskResult.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const ManagementCreateTargetDesc: UnaryMethodDefinitionish = {
+  methodName: "CreateTarget",
+  service: ManagementDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return CreateTargetRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...CreateTargetResult.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const ManagementListTargetDesc: UnaryMethodDefinitionish = {
+  methodName: "ListTarget",
+  service: ManagementDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ListTargetRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...ListTargetResult.decode(data),
         toObject() {
           return this;
         },

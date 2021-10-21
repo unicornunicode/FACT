@@ -24,6 +24,16 @@ class ManagementStub(object):
                 request_serializer=fact_dot_management__pb2.ListTaskRequest.SerializeToString,
                 response_deserializer=fact_dot_management__pb2.ListTaskResult.FromString,
                 )
+        self.CreateTarget = channel.unary_unary(
+                '/Management/CreateTarget',
+                request_serializer=fact_dot_management__pb2.CreateTargetRequest.SerializeToString,
+                response_deserializer=fact_dot_management__pb2.CreateTargetResult.FromString,
+                )
+        self.ListTarget = channel.unary_unary(
+                '/Management/ListTarget',
+                request_serializer=fact_dot_management__pb2.ListTargetRequest.SerializeToString,
+                response_deserializer=fact_dot_management__pb2.ListTargetResult.FromString,
+                )
         self.ListWorker = channel.unary_unary(
                 '/Management/ListWorker',
                 request_serializer=fact_dot_management__pb2.ListWorkerRequest.SerializeToString,
@@ -41,6 +51,18 @@ class ManagementServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ListTask(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def CreateTarget(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ListTarget(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -64,6 +86,16 @@ def add_ManagementServicer_to_server(servicer, server):
                     servicer.ListTask,
                     request_deserializer=fact_dot_management__pb2.ListTaskRequest.FromString,
                     response_serializer=fact_dot_management__pb2.ListTaskResult.SerializeToString,
+            ),
+            'CreateTarget': grpc.unary_unary_rpc_method_handler(
+                    servicer.CreateTarget,
+                    request_deserializer=fact_dot_management__pb2.CreateTargetRequest.FromString,
+                    response_serializer=fact_dot_management__pb2.CreateTargetResult.SerializeToString,
+            ),
+            'ListTarget': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTarget,
+                    request_deserializer=fact_dot_management__pb2.ListTargetRequest.FromString,
+                    response_serializer=fact_dot_management__pb2.ListTargetResult.SerializeToString,
             ),
             'ListWorker': grpc.unary_unary_rpc_method_handler(
                     servicer.ListWorker,
@@ -111,6 +143,40 @@ class Management(object):
         return grpc.experimental.unary_unary(request, target, '/Management/ListTask',
             fact_dot_management__pb2.ListTaskRequest.SerializeToString,
             fact_dot_management__pb2.ListTaskResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def CreateTarget(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Management/CreateTarget',
+            fact_dot_management__pb2.CreateTargetRequest.SerializeToString,
+            fact_dot_management__pb2.CreateTargetResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def ListTarget(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Management/ListTarget',
+            fact_dot_management__pb2.ListTargetRequest.SerializeToString,
+            fact_dot_management__pb2.ListTargetResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
