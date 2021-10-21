@@ -1,7 +1,7 @@
 [flake8]
 max-line-length = 88
 select = C,E,F,W,B,B902,B903,B904,B950
-ignore = E203, E501
+ignore = E203,E501,W503
 extend-exclude =
 	*_pb2.py
 	*_pb2_grpc.py

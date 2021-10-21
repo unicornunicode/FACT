@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "fact/tasks.proto";
+
 service WorkerTasks {
     rpc Session(stream SessionResults) returns (stream SessionEvents);
 }
@@ -19,7 +21,7 @@ message SessionEvents {
 }
 
 message WorkerRegistration {
-    bytes previous_uuid = 1;
+    optional bytes previous_uuid = 1;
     string hostname = 2;
 }
 
@@ -28,67 +30,22 @@ message WorkerAcceptance {
 }
 
 message WorkerTask {
+    bytes uuid = 1;
+    optional Target target = 2;
     oneof task {
-        TaskNone task_none = 1;
-        TaskCollectDisk task_collect_disk = 2;
-        TaskCollectMemory task_collect_memory = 3;
+        TaskNone task_none = 3;
+        TaskCollectDisk task_collect_disk = 4;
+        TaskCollectMemory task_collect_memory = 5;
     }
 }
 
 message WorkerTaskResult {
+    bytes uuid = 1;
     oneof task {
-        TaskNoneResult task_none = 1;
-        TaskCollectDiskResult task_collect_disk = 2;
-        TaskCollectMemoryResult task_collect_memory = 3;
+        TaskNoneResult task_none = 2;
+        TaskCollectDiskResult task_collect_disk = 3;
+        TaskCollectMemoryResult task_collect_memory = 4;
     }
-}
-
-message TaskNone {
-
-}
-
-message TaskNoneResult {
-
-}
-
-message TaskCollectDisk {
-    Target target = 1;
-    DiskSelector disk_selector = 2;
-}
-
-message TaskCollectDiskResult {
-
-}
-
-message DiskSelector {
-    enum Group {
-        ALL_DISKS = 0;
-        ROOT_DISK = 1;
-        ROOT_PARTITION = 2;
-    }
-    Group group = 1;
-}
-
-message TaskCollectMemory {
-    Target target = 1;
-}
-
-message TaskCollectMemoryResult {
-
-}
-
-message Target {
-    string name = 1;
-    oneof access {
-        SSHAccess ssh = 2;
-    }
-}
-
-message SSHAccess {
-    string host = 1;
-    string user = 2;
-    uint32 port = 3;
-    string privateKey = 4;
 }
 
 // vim: set et ts=4 sw=4:

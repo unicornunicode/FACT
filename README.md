@@ -1,5 +1,5 @@
 <div align="center">
-  <h1><img src=".github/logo.svg" alt="FACT" width="320" /></h1>
+  <h1><img src="ui/public/logo.svg" alt="FACT" width="320" /></h1>
   <h3>Forensic Artefact Collection Tool</h3>
 </div>
 

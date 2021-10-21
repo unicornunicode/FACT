@@ -1,23 +1,31 @@
-import {Button} from 'react-bootstrap';
-import Head from 'next/head';
-import Image from 'next/image';
 import type {NextPage} from 'next';
+import Head from 'next/head';
+import {useEffect, useState} from 'react';
 
-import styles from '../styles/Home.module.css';
+import type {ListTask} from '../proto/fact/management';
+import {ManagementClientImpl} from '../proto/fact/management';
+import {managementRpc} from '../features/grpc';
 
-const Home: NextPage = () => (
-	<div>
-		<Head>
-			<title>Create Next App</title>
-		</Head>
+const Home: NextPage = () => {
+	const [tasks, setTasks] = useState([] as ListTask[]);
+	useEffect(() => {
+		const fetchTasks = async (): Promise<void> => {
+			const rpc = await managementRpc();
+			const client = new ManagementClientImpl(rpc);
+			const listTaskResult = await client.ListTask({});
+			setTasks(listTaskResult.tasks);
+		};
 
+		void fetchTasks();
+	}, []);
+	return (
 		<main>
-			<Button>Hello, world</Button>
-			<Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16}/>
+			<Head>
+				<title>Overview</title>
+			</Head>
+			<pre><code>{JSON.stringify(tasks, null, 2)}</code></pre>
 		</main>
-
-		<footer className={styles.footer}/>
-	</div>
-);
+	);
+};
 
 export default Home;

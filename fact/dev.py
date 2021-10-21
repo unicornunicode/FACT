@@ -1,20 +1,22 @@
 import asyncio
 import logging
+from pathlib import Path
 from argparse import ArgumentParser
 
 from .controller import Controller
 from .worker import Worker
+from .grpcwebproxy import GRPCWebProxy
 
 
-async def start_all(c: Controller, w: Worker) -> None:
-    tasks = [asyncio.create_task(t) for t in (c.start(), w.start())]
+async def start_all(c: Controller, w: Worker, p: GRPCWebProxy) -> None:
+    tasks = [asyncio.create_task(t) for t in (c.start(), w.start(), p.start())]
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
     logging.warning("One or more tasks ended")
-    await stop_all(c, w)
+    await stop_all(c, w, p)
 
 
-async def stop_all(c: Controller, w: Worker) -> None:
-    await asyncio.gather(c.stop(10), w.stop())
+async def stop_all(c: Controller, w: Worker, p: GRPCWebProxy) -> None:
+    await asyncio.gather(c.stop(10), w.stop(), p.stop())
 
 
 if __name__ == "__main__":
@@ -25,12 +27,20 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
 
-    c = Controller(listen_addr="localhost:5123")
-    w = Worker(controller_addr="localhost:5123")
+    # Ensure /tmp/fact is created
+    Path("/tmp/fact").mkdir(exist_ok=True)
+
+    c = Controller(
+        listen_addr="localhost:5123",
+        database_addr="sqlite:///file:/tmp/fact/controller.db?mode=rwc&uri=true",
+        database_echo=True,
+    )
+    w = Worker(controller_addr=c.listen_addr, storage_dir=Path("/tmp/fact"))
+    p = GRPCWebProxy(listen_addr="0.0.0.0:5124", controller_addr=c.listen_addr)
     try:
-        loop.run_until_complete(start_all(c, w))
+        loop.run_until_complete(start_all(c, w, p))
     except KeyboardInterrupt:
-        loop.run_until_complete(stop_all(c, w))
+        loop.run_until_complete(stop_all(c, w, p))
 
 
 # vim: set et ts=4 sw=4:
