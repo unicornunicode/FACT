@@ -1,6 +1,6 @@
 import os
 
-from fact.utils.hashing import calculate_sha256
+from utils.hashing import calculate_sha256
 from fact.utils.decompression import decompress_gzip
 from fact.exceptions import GzipDecompressionError
 
