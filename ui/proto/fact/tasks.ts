@@ -30,49 +30,7 @@ export interface TaskCollectDisk {
 export interface TaskCollectDiskResult {}
 
 export interface CollectDiskSelector {
-  group: CollectDiskSelector_Group;
-}
-
-export enum CollectDiskSelector_Group {
-  ALL_DISKS = 0,
-  ROOT_DISK = 1,
-  ROOT_PARTITION = 2,
-  UNRECOGNIZED = -1,
-}
-
-export function collectDiskSelector_GroupFromJSON(
-  object: any
-): CollectDiskSelector_Group {
-  switch (object) {
-    case 0:
-    case "ALL_DISKS":
-      return CollectDiskSelector_Group.ALL_DISKS;
-    case 1:
-    case "ROOT_DISK":
-      return CollectDiskSelector_Group.ROOT_DISK;
-    case 2:
-    case "ROOT_PARTITION":
-      return CollectDiskSelector_Group.ROOT_PARTITION;
-    case -1:
-    case "UNRECOGNIZED":
-    default:
-      return CollectDiskSelector_Group.UNRECOGNIZED;
-  }
-}
-
-export function collectDiskSelector_GroupToJSON(
-  object: CollectDiskSelector_Group
-): string {
-  switch (object) {
-    case CollectDiskSelector_Group.ALL_DISKS:
-      return "ALL_DISKS";
-    case CollectDiskSelector_Group.ROOT_DISK:
-      return "ROOT_DISK";
-    case CollectDiskSelector_Group.ROOT_PARTITION:
-      return "ROOT_PARTITION";
-    default:
-      return "UNKNOWN";
-  }
+  path: string;
 }
 
 export interface TaskCollectMemory {}
@@ -499,15 +457,15 @@ export const TaskCollectDiskResult = {
   },
 };
 
-const baseCollectDiskSelector: object = { group: 0 };
+const baseCollectDiskSelector: object = { path: "" };
 
 export const CollectDiskSelector = {
   encode(
     message: CollectDiskSelector,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    if (message.group !== 0) {
-      writer.uint32(8).int32(message.group);
+    if (message.path !== "") {
+      writer.uint32(10).string(message.path);
     }
     return writer;
   },
@@ -520,7 +478,7 @@ export const CollectDiskSelector = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.group = reader.int32() as any;
+          message.path = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -532,27 +490,26 @@ export const CollectDiskSelector = {
 
   fromJSON(object: any): CollectDiskSelector {
     const message = { ...baseCollectDiskSelector } as CollectDiskSelector;
-    if (object.group !== undefined && object.group !== null) {
-      message.group = collectDiskSelector_GroupFromJSON(object.group);
+    if (object.path !== undefined && object.path !== null) {
+      message.path = String(object.path);
     } else {
-      message.group = 0;
+      message.path = "";
     }
     return message;
   },
 
   toJSON(message: CollectDiskSelector): unknown {
     const obj: any = {};
-    message.group !== undefined &&
-      (obj.group = collectDiskSelector_GroupToJSON(message.group));
+    message.path !== undefined && (obj.path = message.path);
     return obj;
   },
 
   fromPartial(object: DeepPartial<CollectDiskSelector>): CollectDiskSelector {
     const message = { ...baseCollectDiskSelector } as CollectDiskSelector;
-    if (object.group !== undefined && object.group !== null) {
-      message.group = object.group;
+    if (object.path !== undefined && object.path !== null) {
+      message.path = object.path;
     } else {
-      message.group = 0;
+      message.path = "";
     }
     return message;
   },

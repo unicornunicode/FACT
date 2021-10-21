@@ -34,12 +34,7 @@ message TaskCollectDiskResult {
 }
 
 message CollectDiskSelector {
-    enum Group {
-        ALL_DISKS = 0;
-        ROOT_DISK = 1;
-        ROOT_PARTITION = 2;
-    }
-    Group group = 1;
+	string path = 1;
 }
 
 message TaskCollectMemory {
