@@ -1,6 +1,4 @@
-$theme-colors: (
-  "dark": #000000,
-  "primary": #ff7f2a,
-);
+$primary: darken(#00ccff, 4%);
+$dark: #000000;
 
 @import "~bootstrap/scss/bootstrap";

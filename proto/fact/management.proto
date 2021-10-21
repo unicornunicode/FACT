@@ -6,6 +6,8 @@ import "fact/tasks.proto";
 service Management {
     rpc CreateTask(CreateTaskRequest) returns (CreateTaskResult);
     rpc ListTask(ListTaskRequest) returns (ListTaskResult);
+	rpc CreateTarget(CreateTargetRequest) returns (CreateTargetResult);
+	rpc ListTarget(ListTargetRequest) returns (ListTargetResult);
     rpc ListWorker(ListWorkerRequest) returns (ListWorkerResult);
 }
 
@@ -16,10 +18,6 @@ message CreateTaskRequest {
         TaskCollectMemory task_collect_memory = 3;
     }
     bytes target = 4;
-}
-
-message TargetSelector {
-
 }
 
 message CreateTaskResult {
@@ -54,6 +52,33 @@ message ListTask {
     }
 
     bytes worker = 10; // Worker UUID
+}
+
+message CreateTargetRequest {
+	string name = 3;
+    oneof access {
+        SSHAccess ssh = 2;
+    }
+}
+
+message CreateTargetResult {
+	bytes uuid = 1;
+}
+
+message ListTargetRequest {
+
+}
+
+message ListTargetResult {
+	repeated ListTarget targets = 1;
+}
+
+message ListTarget {
+	bytes uuid = 1;
+	string name = 3;
+    oneof access {
+        SSHAccess ssh = 2;
+    }
 }
 
 message ListWorkerRequest {
