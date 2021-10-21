@@ -1,6 +1,6 @@
 import os
 
-from fact.utils import calculatesha256sum, uncompress_gzip
+from fact.utils.files import calculatesha256sum, decompress_gzip
 from fact.exceptions import GzipDecompressionError
 
 
@@ -16,13 +16,13 @@ def test_invalid_gunzip():
     assert_list = []
 
     try:
-        uncompress_gzip("test/files/raw_data")
+        decompress_gzip("test/files/raw_data")
     except GzipDecompressionError as e:
         if "no .gz extension" in e.message:
             assert_list.append(1)
 
     try:
-        uncompress_gzip("test/files/invalid_gzip.gz")
+        decompress_gzip("test/files/invalid_gzip.gz")
     except GzipDecompressionError as e:
         if "Error reading/processing" in e.message:
             assert_list.append(2)
@@ -33,7 +33,7 @@ def test_invalid_gunzip():
 
 
 def test_gunzip():
-    uncompress_gzip("test/files/test_data.gz")
+    decompress_gzip("test/files/test_data.gz")
     assert calculatesha256sum("test/files/test_data") == calculatesha256sum(
         "test/files/raw_data"
     )

@@ -3,7 +3,7 @@ import os
 import re
 
 from fact.exceptions import SSHInfoError, TargetRuntimeError, FileExistsError
-from fact.utils import uncompress_gzip
+from fact.utils.files import decompress_gzip
 
 from pssh.clients import ParallelSSHClient
 from pssh.exceptions import PKeyFileError
@@ -195,7 +195,7 @@ class TargetEndpoint:
             _write_remote_output(host_output, gz_path)
 
         if decompress:
-            uncompress_gzip(gz_path)
+            decompress_gzip(gz_path)
 
     def get_all_available_disk(self) -> dict:
         """
