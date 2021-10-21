@@ -43,6 +43,7 @@ class FileExistsError(FACTError, MiscError):
 
     pass
 
+
 class StorageModuleException(Exception):
     """Base class for Storage module exceptions"""
 
