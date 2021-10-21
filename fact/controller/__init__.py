@@ -68,7 +68,7 @@ class Controller:
     """
     The Controller gets tasks from the UI and schedules them onto workers
 
-    >>> c = Controller("localhost:5123", "sqlite:///:memory:")
+    >>> c = Controller("localhost:5123", "sqlite+aiosqlite:///:memory:")
     """
 
     listen_addr: str
