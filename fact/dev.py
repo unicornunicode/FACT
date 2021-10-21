@@ -2,14 +2,26 @@ import asyncio
 import logging
 from pathlib import Path
 from argparse import ArgumentParser
+from typing import TypeVar, Awaitable
 
 from .controller import Controller
 from .worker import Worker
 from .grpcwebproxy import GRPCWebProxy
 
 
+T = TypeVar("T")
+
+
+async def delay(t: Awaitable[T], delay: float) -> T:
+    await asyncio.sleep(delay)
+    return await t
+
+
 async def start_all(c: Controller, w: Worker, p: GRPCWebProxy) -> None:
-    tasks = [asyncio.create_task(t) for t in (c.start(), w.start(), p.start())]
+    tasks = [
+        asyncio.create_task(t)
+        for t in (c.start(), delay(w.start(), 1), delay(p.start(), 1))
+    ]
     await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
     logging.warning("One or more tasks ended")
     await stop_all(c, w, p)
@@ -32,7 +44,7 @@ if __name__ == "__main__":
 
     c = Controller(
         listen_addr="localhost:5123",
-        database_addr="sqlite:///file:/tmp/fact/controller.db?mode=rwc&uri=true",
+        database_addr="sqlite+aiosqlite:///file:/tmp/fact/controller.db?mode=rwc&uri=true",
         database_echo=True,
     )
     w = Worker(controller_addr=c.listen_addr, storage_dir=Path("/tmp/fact"))
