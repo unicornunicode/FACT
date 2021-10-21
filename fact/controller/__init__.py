@@ -23,6 +23,9 @@ from ..management_pb2 import (
     ListTargetRequest,
     ListTargetResult,
     ListTarget,
+    ListWorkerRequest,
+    ListWorkerResult,
+    ListWorker,
 )
 from ..tasks_pb2 import (
     TaskNone,
@@ -59,6 +62,7 @@ from .mappings import (
 
 
 log = logging.getLogger(__name__)
+logging.getLogger("aiosqlite").setLevel(logging.WARN)
 
 
 class Controller:
@@ -339,6 +343,20 @@ class Management(ManagementServicer):
                 )
             )
         return ListTargetResult(targets=list_targets)
+
+    async def ListWorker(
+        self, request: ListWorkerRequest, context: ServicerContext
+    ) -> ListWorkerResult:
+        list_workers = []
+        workers = await self.controller._list_worker()
+        for worker in workers:
+            list_workers.append(
+                ListWorker(
+                    uuid=worker.uuid.bytes if worker.uuid is not None else None,
+                    hostname=worker.hostname or "",
+                )
+            )
+        return ListWorkerResult(workers=list_workers)
 
 
 class WorkerTasks(WorkerTasksServicer):
