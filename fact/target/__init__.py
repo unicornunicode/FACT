@@ -20,7 +20,7 @@ def _write_remote_output(output: HostOutput, filepath: str):
             for data in output.buffers.stdout.rw_buffer:
                 f.write(data)
     except OSError as e:
-        raise TargetRuntimeError("Unable to open file for writing", e) from e
+        raise TargetRuntimeError("Unable to open file for writing", filepath) from e
 
 
 def _parse_lsblk_output(raw_lsblk_data: bytes) -> dict:

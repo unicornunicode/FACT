@@ -37,7 +37,7 @@ def uncompress_gzip(gz_path: str, output_filepath: str = None, keep_gz: bool = T
     """
     if ".gz" not in gz_path:
         raise GzipDecompressionError(
-            "Input file has no .gz extension (requireed)", gz_path
+            "Input file has no .gz extension (required)", gz_path
         )
 
     if output_filepath is None:
@@ -52,7 +52,9 @@ def uncompress_gzip(gz_path: str, output_filepath: str = None, keep_gz: bool = T
         inf.close()
         outf.close()
     except gzip.BadGzipFile as e:
-        raise GzipDecompressionError("Error reading/processing gzip file", e) from e
+        raise GzipDecompressionError(
+            "Error reading/processing gzip file", gz_path
+        ) from e
 
     if not keep_gz:
         os.remove(gz_path)
