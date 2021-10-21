@@ -42,8 +42,9 @@ from ..management_pb2_grpc import (
 
 # Data
 from uuid import UUID, uuid4
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
 from .database import (
     Base,
     Worker,
@@ -78,14 +79,18 @@ class Controller:
         self.server = grpc_server()
         # Database
         # TODO: Switch to async_engine when there is sqlite support
-        engine = create_engine(database_addr, echo=database_echo, future=True)
-        Base.metadata.create_all(engine)
-        self.session = Session(engine)
+        engine = create_async_engine(database_addr, echo=database_echo, future=True)
+        self.engine = engine
+        self.session = sessionmaker(engine, class_=AsyncSession)
         # Services
         worker_tasks = WorkerTasks(controller=self)
         add_WorkerTasksServicer_to_server(worker_tasks, self.server)
         management = Management(controller=self)
         add_ManagementServicer_to_server(management, self.server)
+
+    async def setup(self):
+        async with self.engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
     async def _create_task(
         self,
@@ -94,20 +99,24 @@ class Controller:
         task_collect_disk_selector_group: Optional[CollectDiskSelectorGroup] = None,
     ) -> UUID:
         uuid = uuid4()
-        with self.session.begin():
-            task = Task(
-                uuid=uuid,
-                target=target_uuid,
-                type=task_type,
-                task_collect_disk_selector_group=task_collect_disk_selector_group,
-            )
-            self.session.add(task)
+        async with self.session() as session:
+            async with session.begin():
+                task = Task(
+                    uuid=uuid,
+                    target=target_uuid,
+                    type=task_type,
+                    task_collect_disk_selector_group=task_collect_disk_selector_group,
+                )
+                session.add(task)
         return uuid
 
     async def _list_task(self) -> Iterable[Task]:
-        with self.session.begin():
-            stmt = select(Task)
-            return self.session.execute(stmt).scalars().all()
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Task)
+                tasks = (await session.execute(stmt)).scalars().all()
+                session.expunge_all()
+                return tasks
 
     async def _create_target(
         self,
@@ -120,40 +129,49 @@ class Controller:
         ssh_become_password: Optional[str] = None,
     ) -> UUID:
         uuid = uuid4()
-        with self.session.begin():
-            target = Target(
-                uuid=uuid,
-                name=name,
-                ssh_host=ssh_host,
-                ssh_user=ssh_user,
-                ssh_port=ssh_port,
-                ssh_private_key=ssh_private_key,
-                ssh_become=ssh_become,
-                ssh_become_password=ssh_become_password,
-            )
-            self.session.add(target)
+        async with self.session() as session:
+            async with session.begin():
+                target = Target(
+                    uuid=uuid,
+                    name=name,
+                    ssh_host=ssh_host,
+                    ssh_user=ssh_user,
+                    ssh_port=ssh_port,
+                    ssh_private_key=ssh_private_key,
+                    ssh_become=ssh_become,
+                    ssh_become_password=ssh_become_password,
+                )
+                session.add(target)
         return uuid
 
     async def _list_target(self) -> Iterable[Target]:
-        with self.session.begin():
-            stmt = select(Target)
-            return self.session.execute(stmt).scalars().all()
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Target)
+                targets = (await session.execute(stmt)).scalars().all()
+                session.expunge_all()
+                return targets
 
     async def _list_worker(self) -> Iterable[Worker]:
-        with self.session.begin():
-            stmt = select(Worker)
-            return self.session.execute(stmt).scalars().all()
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Worker)
+                workers = (await session.execute(stmt)).scalars().all()
+                session.expunge_all()
+                return workers
 
     async def _create_worker(self, uuid: UUID, hostname: str) -> None:
-        with self.session.begin():
-            worker = Worker(uuid=uuid, hostname=hostname)
-            self.session.add(worker)
+        async with self.session() as session:
+            async with session.begin():
+                worker = Worker(uuid=uuid, hostname=hostname)
+                session.add(worker)
 
     async def _update_worker(self, uuid: UUID, hostname: str) -> None:
-        with self.session.begin():
-            stmt = select(Worker).where(Worker.uuid == uuid)
-            worker: Worker = self.session.execute(stmt).scalar_one()
-            worker.hostname = hostname
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Worker).where(Worker.uuid == uuid)
+                worker: Worker = (await session.execute(stmt)).scalar_one()
+                worker.hostname = hostname
 
     def _assign_task_to_worker(self, workers: List[Worker], task: Task) -> bool:
         # TODO: Actually schedule across multiple workers
@@ -163,27 +181,32 @@ class Controller:
         return True
 
     async def _process_incoming_tasks(self) -> None:
-        assigned = False
-        while True:
-            with self.session.begin():
-                # Find all workers
-                stmt_workers = select(Worker)
-                rows_workers = self.session.execute(stmt_workers).scalars()
-                workers: List[Worker] = rows_workers.all()
+        async with self.session() as session:
+            assigned = False
+            while True:
+                async with session.begin():
+                    # Find all workers
+                    stmt_workers = select(Worker)
+                    rows_workers = (await session.execute(stmt_workers)).scalars()
+                    workers: List[Worker] = rows_workers.all()
 
-                # Find all waiting tasks
-                stmt = select(Task).where(Task.status == TaskStatus.WAITING).limit(5)
-                rows = self.session.execute(stmt).scalars()
-                tasks: List[Task] = rows.all()
+                    # Find all waiting tasks
+                    stmt = (
+                        select(Task).where(Task.status == TaskStatus.WAITING).limit(5)
+                    )
+                    rows = (await session.execute(stmt)).scalars()
+                    tasks: List[Task] = rows.all()
 
-                assigned = False
-                for task in tasks:
-                    assigned = self._assign_task_to_worker(workers, task)
+                    assigned = False
+                    for task in tasks:
+                        assigned = self._assign_task_to_worker(workers, task)
 
-            if not assigned:
-                await asyncio.sleep(10)
+                if not assigned:
+                    await asyncio.sleep(10)
 
     async def start(self) -> None:
+        log.info("Initializing database")
+        await self.setup()
         log.info(f"Starting server on {self.listen_addr}")
         self.server.add_insecure_port(self.listen_addr)
         await self.server.start()
@@ -361,7 +384,7 @@ class WorkerTasks(WorkerTasksServicer):
             async for response in self._exchange_handshake(request):
                 yield response
         except Exception as e:
-            log.warn(e)
+            log.error(f"failed to exchange handshake: {e}")
             context.abort(StatusCode.FAILED_PRECONDITION)
             return
 

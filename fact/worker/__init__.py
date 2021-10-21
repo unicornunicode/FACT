@@ -147,7 +147,7 @@ class Worker:
             try:
                 await self._exchange_handshake(responses, events)
             except Exception as e:
-                log.warn(e)
+                log.critical(f"failed to exchange handshake: {e}")
                 return
 
             async for event in events:
@@ -156,7 +156,7 @@ class Worker:
                 try:
                     result = await self._handle_worker_task(event.worker_task)
                 except Exception as e:
-                    log.warn(e)
+                    log.critical(f"failed to process incoming tasks: {e}")
                     return
                 await responses.add(SessionResults(worker_task_result=result))
 
