@@ -43,7 +43,7 @@ from ..management_pb2_grpc import (
 # Data
 from uuid import UUID, uuid4
 from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import scoped_session, sessionmaker
 from .database import (
     Base,
     Worker,
@@ -80,7 +80,7 @@ class Controller:
         # TODO: Switch to async_engine when there is sqlite support
         engine = create_engine(database_addr, echo=database_echo, future=True)
         Base.metadata.create_all(engine)
-        self.session = Session(engine)
+        self.session = scoped_session(sessionmaker(bind=engine))
         # Services
         worker_tasks = WorkerTasks(controller=self)
         add_WorkerTasksServicer_to_server(worker_tasks, self.server)
@@ -93,21 +93,23 @@ class Controller:
         task_type: TaskType,
         task_collect_disk_selector_group: Optional[CollectDiskSelectorGroup] = None,
     ) -> UUID:
+        session = self.session()
         uuid = uuid4()
-        with self.session.begin():
+        with session.begin():
             task = Task(
                 uuid=uuid,
                 target=target_uuid,
                 type=task_type,
                 task_collect_disk_selector_group=task_collect_disk_selector_group,
             )
-            self.session.add(task)
+            session.add(task)
         return uuid
 
     async def _list_task(self) -> Iterable[Task]:
-        with self.session.begin():
+        session = self.session()
+        with session.begin():
             stmt = select(Task)
-            return self.session.execute(stmt).scalars().all()
+            return session.execute(stmt).scalars().all()
 
     async def _create_target(
         self,
@@ -119,8 +121,9 @@ class Controller:
         ssh_become: Optional[bool] = None,
         ssh_become_password: Optional[str] = None,
     ) -> UUID:
+        session = self.session()
         uuid = uuid4()
-        with self.session.begin():
+        with session.begin():
             target = Target(
                 uuid=uuid,
                 name=name,
@@ -131,28 +134,32 @@ class Controller:
                 ssh_become=ssh_become,
                 ssh_become_password=ssh_become_password,
             )
-            self.session.add(target)
+            session.add(target)
         return uuid
 
     async def _list_target(self) -> Iterable[Target]:
-        with self.session.begin():
+        session = self.session()
+        with session.begin():
             stmt = select(Target)
-            return self.session.execute(stmt).scalars().all()
+            return session.execute(stmt).scalars().all()
 
     async def _list_worker(self) -> Iterable[Worker]:
-        with self.session.begin():
+        session = self.session()
+        with session.begin():
             stmt = select(Worker)
-            return self.session.execute(stmt).scalars().all()
+            return session.execute(stmt).scalars().all()
 
     async def _create_worker(self, uuid: UUID, hostname: str) -> None:
-        with self.session.begin():
+        session = self.session()
+        with session.begin():
             worker = Worker(uuid=uuid, hostname=hostname)
-            self.session.add(worker)
+            session.add(worker)
 
     async def _update_worker(self, uuid: UUID, hostname: str) -> None:
-        with self.session.begin():
+        session = self.session()
+        with session.begin():
             stmt = select(Worker).where(Worker.uuid == uuid)
-            worker: Worker = self.session.execute(stmt).scalar_one()
+            worker: Worker = session.execute(stmt).scalar_one()
             worker.hostname = hostname
 
     def _assign_task_to_worker(self, workers: List[Worker], task: Task) -> bool:
@@ -163,17 +170,18 @@ class Controller:
         return True
 
     async def _process_incoming_tasks(self) -> None:
+        session = self.session()
         assigned = False
         while True:
-            with self.session.begin():
+            with session.begin():
                 # Find all workers
                 stmt_workers = select(Worker)
-                rows_workers = self.session.execute(stmt_workers).scalars()
+                rows_workers = session.execute(stmt_workers).scalars()
                 workers: List[Worker] = rows_workers.all()
 
                 # Find all waiting tasks
                 stmt = select(Task).where(Task.status == TaskStatus.WAITING).limit(5)
-                rows = self.session.execute(stmt).scalars()
+                rows = session.execute(stmt).scalars()
                 tasks: List[Task] = rows.all()
 
                 assigned = False
