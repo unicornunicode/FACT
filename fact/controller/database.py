@@ -29,12 +29,6 @@ class TaskType(enum.Enum):
     task_collect_memory = 2
 
 
-class CollectDiskSelectorGroup(enum.Enum):
-    ALL_DISKS = 0
-    ROOT_DISK = 1
-    ROOT_PARTITION = 2
-
-
 class Task(Base):
     __tablename__ = "task"
 
@@ -46,9 +40,7 @@ class Task(Base):
 
     type = Column(Enum(TaskType), nullable=False)
     target = Column(UUID, ForeignKey("target.uuid"), nullable=True)
-    task_collect_disk_selector_group = Column(
-        Enum(CollectDiskSelectorGroup), nullable=True
-    )
+    task_collect_disk_selector_path = Column(String, nullable=True)
 
     worker = Column(UUID, ForeignKey("worker.uuid"), nullable=True)
 

@@ -52,11 +52,8 @@ from .database import (
     Task,
     TaskType,
     TaskStatus,
-    CollectDiskSelectorGroup,
 )
 from .mappings import (
-    collect_disk_selector_group_from_proto,
-    collect_disk_selector_group_from_db,
     task_status_from_db,
 )
 
@@ -96,7 +93,7 @@ class Controller:
         self,
         target_uuid: UUID,
         task_type: TaskType,
-        task_collect_disk_selector_group: Optional[CollectDiskSelectorGroup] = None,
+        task_collect_disk_selector_path: Optional[str] = None,
     ) -> UUID:
         uuid = uuid4()
         async with self.session() as session:
@@ -105,7 +102,7 @@ class Controller:
                     uuid=uuid,
                     target=target_uuid,
                     type=task_type,
-                    task_collect_disk_selector_group=task_collect_disk_selector_group,
+                    task_collect_disk_selector_path=task_collect_disk_selector_path,
                 )
                 session.add(task)
         return uuid
@@ -239,13 +236,10 @@ class Management(ManagementServicer):
                 target_uuid=target_uuid, task_type=TaskType.task_none
             )
         elif task_type == "task_collect_disk":
-            selector_group = collect_disk_selector_group_from_proto(
-                request.task_collect_disk.selector.group
-            )
             uuid = await self.controller._create_task(
                 target_uuid=target_uuid,
                 task_type=TaskType.task_none,
-                task_collect_disk_selector_group=selector_group,
+                task_collect_disk_selector_path=request.task_collect_disk.selector.path,
             )
         elif task_type == "task_collect_memory":
             uuid = await self.controller._create_task(
@@ -266,13 +260,11 @@ class Management(ManagementServicer):
             task_collect_disk = (
                 TaskCollectDisk(
                     selector=CollectDiskSelector(
-                        group=collect_disk_selector_group_from_db(
-                            task.task_collect_disk_selector_group
-                        )
+                        path=task.task_collect_disk_selector_path
                     )
                 )
                 if task.type == TaskType.task_collect_disk
-                and task.task_collect_disk_selector_group is not None
+                and task.task_collect_disk_selector_path is not None
                 else None
             )
             task_collect_memory = (

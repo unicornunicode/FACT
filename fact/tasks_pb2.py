@@ -19,40 +19,10 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"\n\n\x08TaskNone\"\x10\n\x0eTaskNoneResult\"9\n\x0fTaskCollectDisk\x12&\n\x08selector\x18\x02 \x01(\x0b\x32\x14.CollectDiskSelector\"\x17\n\x15TaskCollectDiskResult\"{\n\x13\x43ollectDiskSelector\x12)\n\x05group\x18\x01 \x01(\x0e\x32\x1a.CollectDiskSelector.Group\"9\n\x05Group\x12\r\n\tALL_DISKS\x10\x00\x12\r\n\tROOT_DISK\x10\x01\x12\x12\n\x0eROOT_PARTITION\x10\x02\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResultb\x06proto3'
+  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"\n\n\x08TaskNone\"\x10\n\x0eTaskNoneResult\"9\n\x0fTaskCollectDisk\x12&\n\x08selector\x18\x02 \x01(\x0b\x32\x14.CollectDiskSelector\"\x17\n\x15TaskCollectDiskResult\"#\n\x13\x43ollectDiskSelector\x12\x0c\n\x04path\x18\x01 \x01(\t\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResultb\x06proto3'
 )
 
 
-
-_COLLECTDISKSELECTOR_GROUP = _descriptor.EnumDescriptor(
-  name='Group',
-  full_name='CollectDiskSelector.Group',
-  filename=None,
-  file=DESCRIPTOR,
-  create_key=_descriptor._internal_create_key,
-  values=[
-    _descriptor.EnumValueDescriptor(
-      name='ALL_DISKS', index=0, number=0,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='ROOT_DISK', index=1, number=1,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-    _descriptor.EnumValueDescriptor(
-      name='ROOT_PARTITION', index=2, number=2,
-      serialized_options=None,
-      type=None,
-      create_key=_descriptor._internal_create_key),
-  ],
-  containing_type=None,
-  serialized_options=None,
-  serialized_start=378,
-  serialized_end=435,
-)
-_sym_db.RegisterEnumDescriptor(_COLLECTDISKSELECTOR_GROUP)
 
 
 _TARGET = _descriptor.Descriptor(
@@ -282,9 +252,9 @@ _COLLECTDISKSELECTOR = _descriptor.Descriptor(
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='group', full_name='CollectDiskSelector.group', index=0,
-      number=1, type=14, cpp_type=8, label=1,
-      has_default_value=False, default_value=0,
+      name='path', full_name='CollectDiskSelector.path', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
@@ -293,7 +263,6 @@ _COLLECTDISKSELECTOR = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
-    _COLLECTDISKSELECTOR_GROUP,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -302,7 +271,7 @@ _COLLECTDISKSELECTOR = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=312,
-  serialized_end=435,
+  serialized_end=347,
 )
 
 
@@ -326,8 +295,8 @@ _TASKCOLLECTMEMORY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=437,
-  serialized_end=456,
+  serialized_start=349,
+  serialized_end=368,
 )
 
 
@@ -351,8 +320,8 @@ _TASKCOLLECTMEMORYRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=458,
-  serialized_end=483,
+  serialized_start=370,
+  serialized_end=395,
 )
 
 _TARGET.fields_by_name['ssh'].message_type = _SSHACCESS
@@ -360,8 +329,6 @@ _TARGET.oneofs_by_name['access'].fields.append(
   _TARGET.fields_by_name['ssh'])
 _TARGET.fields_by_name['ssh'].containing_oneof = _TARGET.oneofs_by_name['access']
 _TASKCOLLECTDISK.fields_by_name['selector'].message_type = _COLLECTDISKSELECTOR
-_COLLECTDISKSELECTOR.fields_by_name['group'].enum_type = _COLLECTDISKSELECTOR_GROUP
-_COLLECTDISKSELECTOR_GROUP.containing_type = _COLLECTDISKSELECTOR
 DESCRIPTOR.message_types_by_name['Target'] = _TARGET
 DESCRIPTOR.message_types_by_name['SSHAccess'] = _SSHACCESS
 DESCRIPTOR.message_types_by_name['TaskNone'] = _TASKNONE

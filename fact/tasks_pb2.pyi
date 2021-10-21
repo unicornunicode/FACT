@@ -4,7 +4,6 @@ isort:skip_file
 """
 import builtins
 import google.protobuf.descriptor
-import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
 import typing
 import typing_extensions
@@ -89,27 +88,13 @@ global___TaskCollectDiskResult = TaskCollectDiskResult
 
 class CollectDiskSelector(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
-    class Group(_Group, metaclass=_GroupEnumTypeWrapper):
-        pass
-    class _Group:
-        V = typing.NewType('V', builtins.int)
-    class _GroupEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_Group.V], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor = ...
-        ALL_DISKS = CollectDiskSelector.Group.V(0)
-        ROOT_DISK = CollectDiskSelector.Group.V(1)
-        ROOT_PARTITION = CollectDiskSelector.Group.V(2)
-
-    ALL_DISKS = CollectDiskSelector.Group.V(0)
-    ROOT_DISK = CollectDiskSelector.Group.V(1)
-    ROOT_PARTITION = CollectDiskSelector.Group.V(2)
-
-    GROUP_FIELD_NUMBER: builtins.int
-    group: global___CollectDiskSelector.Group.V = ...
+    PATH_FIELD_NUMBER: builtins.int
+    path: typing.Text = ...
     def __init__(self,
         *,
-        group : global___CollectDiskSelector.Group.V = ...,
+        path : typing.Text = ...,
         ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal[u"group",b"group"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal[u"path",b"path"]) -> None: ...
 global___CollectDiskSelector = CollectDiskSelector
 
 class TaskCollectMemory(google.protobuf.message.Message):
