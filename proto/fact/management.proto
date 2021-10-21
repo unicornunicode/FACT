@@ -13,6 +13,7 @@ service Management {
 
 message CreateTaskRequest {
     oneof task {
+		// TODO: Shorten these
         TaskNone task_none = 1;
         TaskCollectDisk task_collect_disk = 2;
         TaskCollectMemory task_collect_memory = 3;

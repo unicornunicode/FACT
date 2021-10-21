@@ -1,12 +1,16 @@
 import type {GetServerSideProps, NextPage} from 'next';
 import Head from 'next/head';
+import Container from 'react-bootstrap/Container';
 
-import type {ListTask} from '../../proto/fact/management';
+import {serializeTask} from '../../features/task';
+import type {SerializableTask} from '../../features/task';
 import {managementRpc} from '../../features/grpc';
 import {ManagementClientImpl} from '../../proto/fact/management';
 
+import CreateTask from '../../features/task/create';
+
 interface Props {
-	tasks: ListTask[];
+	tasks: SerializableTask[];
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
@@ -15,18 +19,27 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 	const {tasks} = await client.ListTask({});
 	return {
 		props: {
-			tasks,
+			tasks: tasks.map(t => serializeTask(t)),
 		},
 	};
 };
 
-const ListTaskPage: NextPage<Props> = ({tasks}: Props) => (
-	<main>
-		<Head>
-			<title>Tasks</title>
-		</Head>
-		<pre><code>{JSON.stringify(tasks, null, 2)}</code></pre>
-	</main>
-);
+const ListTaskPage: NextPage<Props> = ({tasks}: Props) => {
+	const onCreateTask = async (uuid: Uint8Array) => {
+		console.debug(uuid);
+	};
+
+	return (
+		<main>
+			<Head>
+				<title>Tasks</title>
+			</Head>
+			<Container fluid>
+				<CreateTask onComplete={onCreateTask}/>
+				<pre><code>{JSON.stringify(tasks, null, 2)}</code></pre>
+			</Container>
+		</main>
+	);
+};
 
 export default ListTaskPage;

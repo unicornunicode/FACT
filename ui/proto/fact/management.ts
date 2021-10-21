@@ -14,6 +14,7 @@ import {
 export const protobufPackage = "";
 
 export interface CreateTaskRequest {
+  /** TODO: Shorten these */
   taskNone: TaskNone | undefined;
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
