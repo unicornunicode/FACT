@@ -1,7 +1,5 @@
 from .types import ArtifactType, DataType
 from fact.exceptions import (
-    DirectoryExistsError,
-    # StorageExistsError,
     TaskExistsError,
     TaskNotFoundError,
     TaskInvalidUUID,
@@ -264,9 +262,7 @@ class Storage:
             |__ Task
     """
 
-    DEFAULT_PATH = Path("/var/lib/fact")
-
-    def __init__(self, data_dir: Path = DEFAULT_PATH) -> None:
+    def __init__(self, data_dir: Path) -> None:
         """Initialises a Storage object
 
         :param data_dir: Data directory for storage
@@ -274,10 +270,8 @@ class Storage:
             DirectoryExistsError: Directory exists already
             PermissionError: Insufficient permission to create directory
         """
-        if data_dir.exists():
-            raise DirectoryExistsError("Directory exists already", str(data_dir))
         try:
-            data_dir.mkdir(parents=True, exist_ok=False)
+            data_dir.mkdir(parents=True, exist_ok=True)
         except PermissionError as e:
             raise e
         self.data_dir = data_dir

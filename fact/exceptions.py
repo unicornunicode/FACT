@@ -55,18 +55,6 @@ class StorageModuleException(Exception):
         return f"{self.field} -> {self.message}"
 
 
-class DirectoryExistsError(StorageModuleException):
-    def __init__(self, message: str, storage_path: str):
-        """Exception if directory exists"""
-        super().__init__(message, storage_path)
-
-
-class StorageExistsError(StorageModuleException):
-    def __init__(self, message: str, storage_path: str):
-        """Exception if Storage exists"""
-        super().__init__(message, storage_path)
-
-
 class TaskExistsError(StorageModuleException):
     def __init__(self, message: str, task_uuid: str):
         """Exception if Task exists"""

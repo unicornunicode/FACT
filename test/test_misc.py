@@ -1,8 +1,9 @@
 import os
 
-from utils.hashing import calculate_sha256
 from fact.utils.decompression import decompress_gzip
 from fact.exceptions import GzipDecompressionError
+
+from .utils.hashing import calculate_sha256
 
 
 def test_sha256sum_implementation():

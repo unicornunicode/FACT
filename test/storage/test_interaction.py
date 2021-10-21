@@ -11,6 +11,7 @@ from fact.exceptions import (
 )
 
 from pathlib import Path
+from tempfile import mkdtemp
 from uuid import uuid4
 
 
@@ -33,8 +34,15 @@ def init_tasks():
 
 
 @pytest.fixture
-def init_storage():
-    stg = Storage(Path("/tmp/fact"))
+def init_storage(request):
+    tmpdir = Path(mkdtemp())
+
+    def cleanup():
+        rmtree(tmpdir, ignore_errors=True)
+
+    request.addfinalizer(cleanup)
+
+    stg = Storage(tmpdir)
     return stg
 
 

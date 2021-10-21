@@ -5,9 +5,9 @@ import re
 from fact.exceptions import SSHInfoError, TargetRuntimeError, FileExistsError
 from fact.utils.decompression import decompress_gzip
 
-from pssh.clients import ParallelSSHClient
-from pssh.exceptions import PKeyFileError
-from pssh.output import HostOutput
+from pssh.clients import ParallelSSHClient  # type: ignore
+from pssh.exceptions import PKeyFileError  # type: ignore
+from pssh.output import HostOutput  # type: ignore
 
 log = logging.getLogger(__name__)
 
@@ -91,6 +91,7 @@ class SSHAccessInfo:
 
 
 class SSHProxyInfo:
+    __slots__ = "proxy_user", "proxy_host", "proxy_port", "proxy_password", "proxy_pkey"
     """Optional fields for connecting to targets via a proxy server. Supported by pssh."""
 
     def __init__(
@@ -109,6 +110,17 @@ class SSHProxyInfo:
 
 
 class SSHAccessInfoOptional:
+    __slots__ = (
+        "num_retries",
+        "retry_delay",
+        "timeout",
+        "pool_size",
+        "host_config",
+        "allow_agent",
+        "identity_auth",
+        "forward_ssh_agent",
+        "keepalive_seconds",
+    )
     """Optional fields that may be needed, has to be supported by pssh."""
 
     def __init__(

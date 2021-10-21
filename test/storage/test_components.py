@@ -3,7 +3,6 @@ import pytest
 from fact.storage import Storage, Task, Artifact
 from fact.storage.types import ArtifactType, DataType
 from fact.exceptions import (
-    DirectoryExistsError,
     TaskInvalidUUID,
     ArtifactInvalidName,
     ArtifactInvalidType,
@@ -11,18 +10,23 @@ from fact.exceptions import (
 )
 
 from pathlib import Path
+from tempfile import mkdtemp
 from uuid import uuid4
 
 
 def test_init_storage():
-    desired_path = Path("/tmp/fact")
+    desired_path = Path(mkdtemp())
+    # Let Storage create the directory structure
+    desired_path.rmdir()
+
     stg1 = Storage(desired_path)
     assert stg1.get_storage_path() == desired_path
     assert stg1.get_storage_info() == {"data_dir": str(desired_path), "tasks": []}
 
-    with pytest.raises(DirectoryExistsError):
-        Storage(desired_path)
+    # Storage should be able to run with the same folder
+    Storage(desired_path)
 
+    # Cleanup
     desired_path.rmdir()
 
 
