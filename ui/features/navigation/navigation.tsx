@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import {Container, Nav, Navbar} from 'react-bootstrap';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
 
 import logo from '../../public/logo.svg';
 import styles from './navigation.module.css';
