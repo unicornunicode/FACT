@@ -1,9 +1,8 @@
 import logging
-import os
 import re
+from typing import BinaryIO
 
-from fact.exceptions import SSHInfoError, TargetRuntimeError, FileExistsError
-from fact.utils.decompression import decompress_gzip
+from fact.exceptions import SSHInfoError
 
 from pssh.clients import ParallelSSHClient  # type: ignore
 from pssh.exceptions import PKeyFileError  # type: ignore
@@ -12,15 +11,12 @@ from pssh.output import HostOutput  # type: ignore
 log = logging.getLogger(__name__)
 
 
-def _write_remote_output(output: HostOutput, filepath: str):
-    if os.path.exists(filepath):
-        raise FileExistsError("File to be written already exists.", filepath)
+def _write_remote_output(output: HostOutput, file_io: BinaryIO):
     try:
-        with open(filepath, "wb") as f:
-            for data in output.buffers.stdout.rw_buffer:
-                f.write(data)
+        for data in output.buffers.stdout.rw_buffer:
+            file_io.write(data)
     except OSError as e:
-        raise TargetRuntimeError("Unable to open file for writing", filepath) from e
+        raise e
 
 
 def _parse_lsblk_output(raw_lsblk_data: bytes) -> dict:
@@ -181,15 +177,12 @@ class TargetEndpoint:
         except PKeyFileError as e:
             raise SSHInfoError("Error finding private key") from e
 
-    def collect_image(
-        self, remote_path_of_image: str, path_to_save: str, decompress: bool = True
-    ):
+    def collect_image(self, remote_path_of_image: str, output_file_io: BinaryIO):
         """
         Collects the image of a file. Can be a disk, or process, or file in general.
             The remote user must have root priv.
         :param remote_path_to_image: Path of the remote image
-        :param path_to_save: Full path + filename of the file_output
-        :param decompress: Whether to decompress the resulting GZ file. Defaults to True
+        :param output_file_io: Binary IO of output file
         :raises TargetRuntimeError: If there is problem during the remote file acquisition
         """
 
@@ -200,14 +193,10 @@ class TargetEndpoint:
 
         host_outputs = self.client_session.run_command(remote_command, sudo=True)
 
-        gz_path = path_to_save + ".gz"
         # TODO: Show some form of status update on copying
         # A single .gz path is enough since the output will come from one host only.
         for host_output in host_outputs:
-            _write_remote_output(host_output, gz_path)
-
-        if decompress:
-            decompress_gzip(gz_path)
+            _write_remote_output(host_output, output_file_io)
 
     def get_all_available_disk(self) -> dict:
         """
