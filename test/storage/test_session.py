@@ -33,3 +33,7 @@ def test_synchronous_session():
     with open(artf2_path, "rb") as f:
         asrtf2_actual_contents = f.read()
     assert artf2_contents == asrtf2_actual_contents
+
+
+def test_asynchronous_session():
+    pass
