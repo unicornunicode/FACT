@@ -12,6 +12,8 @@ from fact.exceptions import (
 from pathlib import Path
 from uuid import UUID
 from typing import Union
+from asyncio import new_event_loop, set_event_loop
+from asyncio.locks import Lock
 
 
 class Artifact:
@@ -366,3 +368,60 @@ class Storage:
     #         storage.add_task(task)
 
     #     return storage
+
+
+class Session:
+    def __init__(
+        self, storage: Storage, storage_lock: Lock, task: Task, artifact: Artifact
+    ):
+        self.storage_lock = storage_lock
+        self.storage = storage
+        self.task = task
+        self.artifact = artifact
+        self.file_io = None
+
+        loop = new_event_loop()
+        set_event_loop(loop)
+        loop.run_until_complete(self.execute())
+        loop.close()
+
+    async def add_task(self):
+        async with self.storage_lock:
+            try:
+                self.storage.add_task(self.task)
+            except TaskExistsError:
+                return
+
+    async def add_task_artifact(self):
+        async with self.storage_lock:
+            task_uuid = self.task.get_task_uuid()
+            artifact_path = self.storage.add_task_artifact(task_uuid, self.artifact)
+        artifact_file_io = open(artifact_path, "wb")
+        return artifact_file_io
+
+    async def execute(self):
+        await self.add_task()
+        self.file_io = await self.add_task_artifact()
+
+    def complete_file_io(self):
+        self.file_io.close()
+        self.file_io = None
+
+
+class SessionManager:
+    def __init__(self, storage: Storage):
+        self.storage = storage
+
+        self.loop = new_event_loop()
+        set_event_loop(self.loop)
+        self.storage_lock = Lock()
+
+    def new_session(self, task: Task, artifact: Artifact):
+        session = Session(self.storage, self.storage_lock, task, artifact)
+        return session
+
+    def end_session(self, session: Session):
+        session.complete_file_io()
+
+    def terminate(self):
+        self.loop.close()
