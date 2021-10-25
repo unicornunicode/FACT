@@ -10,7 +10,6 @@ python = "^3.9"
 parallel-ssh = "^2.6.0"
 grpcio = "^1.41.0"
 SQLAlchemy = "^1.4.25"
-pytest-asyncio = "^0.16.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -26,6 +25,7 @@ types-protobuf = "^3.18.0"
 grpc-stubs = "^1.24.7"
 SQLAlchemy = {extras = ["mypy"], version = "^1.4.25"}
 aiosqlite = "^0.17.0"
+pytest-asyncio = "^0.16.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
