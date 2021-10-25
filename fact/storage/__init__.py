@@ -407,6 +407,12 @@ class Session:
         self.file_io.close()
         self.file_io = None
 
+    @classmethod
+    async def init_session(
+        cls, storage: Storage, storage_lock: Lock, task: Task, artifact: Artifact
+    ):
+        return cls(storage, storage_lock, task, artifact)
+
 
 class SessionManager:
     def __init__(self, storage: Storage):
@@ -416,8 +422,10 @@ class SessionManager:
         set_event_loop(self.loop)
         self.storage_lock = Lock()
 
-    def new_session(self, task: Task, artifact: Artifact):
-        session = Session(self.storage, self.storage_lock, task, artifact)
+    async def new_session(self, task: Task, artifact: Artifact):
+        session = await Session.init_session(
+            self.storage, self.storage_lock, task, artifact
+        )
         return session
 
     def end_session(self, session: Session):

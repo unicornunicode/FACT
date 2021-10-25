@@ -3,7 +3,6 @@ import pytest
 from fact.storage import Storage, Task, Artifact, SessionManager
 from fact.storage.types import ArtifactType, DataType
 
-# from asyncio import new_event_loop, set_event_loop
 from pathlib import Path
 from tempfile import mkdtemp
 from shutil import rmtree
@@ -34,7 +33,8 @@ def init_storage_task_artifact(request):
     return stg, tsk, artf1, artf2
 
 
-def test_synchronous_session(init_storage_task_artifact):
+@pytest.mark.asyncio
+async def test_session(event_loop, init_storage_task_artifact):
     stg, tsk, artf1, artf2 = init_storage_task_artifact
     tsk_uuid = tsk.get_task_uuid()
     artf1_contents = b"I am sda.raw data"
@@ -54,26 +54,3 @@ def test_synchronous_session(init_storage_task_artifact):
 
     artf2_path = stg.get_task_artifact_path(str(tsk_uuid), artf2)
     assert verify_contents(artf2_path, artf2_contents)
-
-
-def test_asynchronous_session(init_storage_task_artifact):
-    # stg, tsk, artf1, artf2 = init_storage_task_artifact
-    # tsk_uuid = tsk.get_task_uuid()
-    # artf1_contents = b"I am sda.raw data"
-    # artf2_contents = b"I am sdb1.raw data"
-
-    # sm = SessionManager(stg)
-    # sess1 = sm.new_session(tsk, artf1)
-    # sess2 = sm.new_session(tsk, artf2)
-    # sess1.file_io.write(artf1_contents)
-    # sess2.file_io.write(artf2_contents)
-    # sm.end_session(sess1)
-    # sm.end_session(sess2)
-    # sm.terminate()
-
-    # artf1_path = stg.get_task_artifact_path(str(tsk_uuid), artf1)
-    # assert verify_contents(artf1_path, artf1_contents)
-
-    # artf2_path = stg.get_task_artifact_path(str(tsk_uuid), artf2)
-    # assert verify_contents(artf2_path, artf2_contents)
-    pass
