@@ -2,7 +2,7 @@ import pytest
 from shutil import rmtree
 
 from fact.storage import Storage, Task, Artifact
-from fact.storage.types import ArtifactType, DataType
+from fact.storage.types import ArtifactType
 from fact.exceptions import (
     ArtifactNotFoundError,
     ArtifactExistsError,
@@ -17,9 +17,9 @@ from uuid import uuid4
 
 @pytest.fixture
 def init_artifacts():
-    artf1 = Artifact("sda.raw", ArtifactType.disk.name, DataType.full.name)
-    artf2 = Artifact("sdb1.raw", ArtifactType.disk.name, DataType.partition.name)
-    artf3 = Artifact("1.mem", ArtifactType.memory.name, DataType.process.name)
+    artf1 = Artifact("sda.raw", ArtifactType.disk.name)
+    artf2 = Artifact("sdb1.raw", ArtifactType.disk.name)
+    artf3 = Artifact("1.mem", ArtifactType.memory.name)
     return [artf1, artf2, artf3]
 
 
@@ -78,7 +78,7 @@ def test_storage_task_artifact(init_artifacts, init_tasks, init_storage):
     tsk1_uuid = tsk1.get_task_uuid()
     tsk2_uuid = tsk2.get_task_uuid()
     tsk3_uuid = tsk3.get_task_uuid()
-    artf1, artf2, artf3 = artifacts
+    artf1, _, artf3 = artifacts
 
     # Add first 2 artifacts to first task, which is added to storage
     for artifact in artifacts[:-1]:
@@ -107,5 +107,3 @@ def test_storage_task_artifact(init_artifacts, init_tasks, init_storage):
         storage.get_task_artifact_path(tsk2_uuid, artf1)
     with pytest.raises(TaskNotFoundError):
         storage.get_task_artifact_path(tsk3_uuid, artf1)
-
-    rmtree(storage_path)

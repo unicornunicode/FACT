@@ -1,12 +1,11 @@
 import pytest
 
 from fact.storage import Storage, Task, Artifact
-from fact.storage.types import ArtifactType, DataType
+from fact.storage.types import ArtifactType
 from fact.exceptions import (
     TaskInvalidUUID,
     ArtifactInvalidName,
     ArtifactInvalidType,
-    ArtifactInvalidSubType,
 )
 
 from pathlib import Path
@@ -53,27 +52,15 @@ def test_init_artifact():
     artf2_artifact_name = "test.docx"
     artf2 = Artifact(artf2_artifact_name)
     artf2_artifact_type = artf2.get_artifact_type()
-    artf2_sub_type = artf2.get_sub_type()
-    artf2_info_path, artf2_name = artf2.get_artifact_path()
-    artf2_artifact_path = artf2_info_path / artf2_name
+    artf2_type_path, artf2_name = artf2.get_artifact_path()
+    artf2_artifact_path = artf2_type_path / artf2_name
     assert artf2.artifact_name == artf2_artifact_name
     assert type(artf2.artifact_type) == ArtifactType
-    assert type(artf2.sub_type) == DataType
     assert artf2_artifact_type == ArtifactType.unknown.name
-    assert artf2_sub_type == DataType.unknown.name
-    expected_path = (
-        Path(artf2_artifact_type) / Path(artf2_sub_type) / Path(artf2_artifact_name)
-    )
+    expected_path = Path(artf2_artifact_type) / Path(artf2_artifact_name)
     assert artf2_artifact_path == expected_path
 
     artf3_artifact_name = "test2.raw"
     artf3_artifact_type = "DISK"
-    artf3_sub_type = "full"
     with pytest.raises(ArtifactInvalidType):
-        Artifact(artf3_artifact_name, artf3_artifact_type, artf3_sub_type)
-
-    artf4_artifact_name = "test3.raw"
-    artf4_artifact_type = "disk"
-    artf4_sub_type = "FULL"
-    with pytest.raises(ArtifactInvalidSubType):
-        Artifact(artf4_artifact_name, artf4_artifact_type, artf4_sub_type)
+        Artifact(artf3_artifact_name, artf3_artifact_type)
