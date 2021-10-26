@@ -51,6 +51,10 @@ def test_session(init_storage, init_task_artifact):
 
     # Second way to initialise and interact with Session
     sess2 = Session(stg, tsk, artf2)
+    with pytest.raises(AttributeError):
+        sess2.write(artf2_contents)
+    with pytest.raises(AttributeError):
+        sess2.close()
     sess2.setup()
     sess2.write(artf2_contents)
     sess2.close()

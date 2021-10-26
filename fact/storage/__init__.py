@@ -375,7 +375,7 @@ class Session:
         self.storage = storage
         self.task = task
         self.artifact = artifact
-        self.file_io: BinaryIO = None
+        self.file_io: BinaryIO
 
     def __enter__(self):
         self.setup()
@@ -398,8 +398,14 @@ class Session:
     def write(self, data: bytes):
         """Write data to self.file_io
         :param data: Data to be written to artifact"""
-        self.file_io.write(data)
+        try:
+            self.file_io.write(data)
+        except AttributeError:
+            raise
 
     def close(self):
         """Close self.file_io"""
-        self.file_io.close()
+        try:
+            self.file_io.close()
+        except AttributeError:
+            raise
