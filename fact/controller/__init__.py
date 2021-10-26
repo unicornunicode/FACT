@@ -475,7 +475,7 @@ class WorkerTasks(WorkerTasksServicer):
             # Grab task off queue
             worker_task = await self._pop_task(uuid)
             if worker_task is None:
-                await asyncio.sleep(1)
+                await asyncio.sleep(10)
                 continue
 
             # Send request
