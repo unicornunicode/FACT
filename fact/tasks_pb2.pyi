@@ -4,6 +4,7 @@ isort:skip_file
 """
 import builtins
 import google.protobuf.descriptor
+import google.protobuf.internal.containers
 import google.protobuf.message
 import typing
 import typing_extensions
@@ -108,3 +109,41 @@ class TaskCollectMemoryResult(google.protobuf.message.Message):
     def __init__(self,
         ) -> None: ...
 global___TaskCollectMemoryResult = TaskCollectMemoryResult
+
+class TaskCollectLsblk(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    def __init__(self,
+        ) -> None: ...
+global___TaskCollectLsblk = TaskCollectLsblk
+
+class LsblkResult(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    DEVICE_NAME_FIELD_NUMBER: builtins.int
+    SIZE_FIELD_NUMBER: builtins.int
+    TYPE_FIELD_NUMBER: builtins.int
+    MOUNTPOINT_FIELD_NUMBER: builtins.int
+    device_name: typing.Text = ...
+    size: builtins.int = ...
+    type: typing.Text = ...
+    mountpoint: typing.Text = ...
+    def __init__(self,
+        *,
+        device_name : typing.Text = ...,
+        size : builtins.int = ...,
+        type : typing.Text = ...,
+        mountpoint : typing.Text = ...,
+        ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal[u"device_name",b"device_name",u"mountpoint",b"mountpoint",u"size",b"size",u"type",b"type"]) -> None: ...
+global___LsblkResult = LsblkResult
+
+class TaskCollectLsblkResult(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    LSBLK_RESULTS_FIELD_NUMBER: builtins.int
+    @property
+    def lsblk_results(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___LsblkResult]: ...
+    def __init__(self,
+        *,
+        lsblk_results : typing.Optional[typing.Iterable[global___LsblkResult]] = ...,
+        ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal[u"lsblk_results",b"lsblk_results"]) -> None: ...
+global___TaskCollectLsblkResult = TaskCollectLsblkResult
