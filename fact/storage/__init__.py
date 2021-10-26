@@ -11,9 +11,7 @@ from fact.exceptions import (
 
 from pathlib import Path
 from uuid import UUID
-from typing import Union
-from asyncio import new_event_loop, set_event_loop
-from asyncio.locks import Lock
+from typing import BinaryIO, Union
 
 
 class Artifact:
@@ -371,65 +369,38 @@ class Storage:
 
 
 class Session:
+    """ Provides a session to interact with storage and manage the file system """
     def __init__(
-        self, storage: Storage, storage_lock: Lock, task: Task, artifact: Artifact
+        self, storage: Storage, task: Task, artifact: Artifact
     ):
-        self.storage_lock = storage_lock
         self.storage = storage
         self.task = task
         self.artifact = artifact
-        self.file_io = None
+        self.file_io: BinaryIO = None
 
-        loop = new_event_loop()
-        set_event_loop(loop)
-        loop.run_until_complete(self.execute())
-        loop.close()
+    def __enter__(self):
+        self.setup()
+        return self
 
-    async def add_task(self):
-        async with self.storage_lock:
-            try:
-                self.storage.add_task(self.task)
-            except TaskExistsError:
-                return
+    def __exit__(self, *exc):
+        self.close()
 
-    async def add_task_artifact(self):
-        async with self.storage_lock:
-            task_uuid = self.task.get_task_uuid()
-            artifact_path = self.storage.add_task_artifact(task_uuid, self.artifact)
-        artifact_file_io = open(artifact_path, "wb")
-        return artifact_file_io
+    def setup(self):
+        """ Add self.task to self.storage and self.artifact to that task 
+        and open Binary IO to that artifact path. """
+        try:
+            self.storage.add_task(self.task)
+        except TaskExistsError:
+            pass
+        task_uuid = self.task.get_task_uuid()
+        artifact_path = self.storage.add_task_artifact(task_uuid, self.artifact)
+        self.file_io = open(artifact_path, "wb")
 
-    async def execute(self):
-        await self.add_task()
-        self.file_io = await self.add_task_artifact()
+    def write(self, data: bytes):
+        """ Write data to self.file_io 
+        :param data: Data to be written to artifact """
+        self.file_io.write(data)
 
-    def complete_file_io(self):
+    def close(self):
+        """ Close self.file_io """
         self.file_io.close()
-        self.file_io = None
-
-    @classmethod
-    async def init_session(
-        cls, storage: Storage, storage_lock: Lock, task: Task, artifact: Artifact
-    ):
-        return cls(storage, storage_lock, task, artifact)
-
-
-class SessionManager:
-    def __init__(self, storage: Storage):
-        self.storage = storage
-
-        self.loop = new_event_loop()
-        set_event_loop(self.loop)
-        self.storage_lock = Lock()
-
-    async def new_session(self, task: Task, artifact: Artifact):
-        session = await Session.init_session(
-            self.storage, self.storage_lock, task, artifact
-        )
-        return session
-
-    def end_session(self, session: Session):
-        session.complete_file_io()
-
-    def terminate(self):
-        self.loop.close()
