@@ -215,12 +215,16 @@ class Storage:
             DirectoryExistsError: Directory exists already
             PermissionError: Insufficient permission to create directory
         """
-        try:
-            data_dir.mkdir(parents=True, exist_ok=True)
-        except PermissionError as e:
-            raise e
         self.data_dir = data_dir
         self.tasks: list[Task] = []
+
+        if self.data_dir.exists():
+            self._restore_storage()  # Maybe need to check return value?!
+        else:
+            try:
+                self.data_dir.mkdir(parents=True, exist_ok=True)
+            except PermissionError as e:
+                raise e
 
     def get_task(self, task_uuid: str) -> Union[Task, None]:
         """Gets task of instance matching the task UUID
@@ -335,6 +339,37 @@ class Storage:
         data_dir: str = str(self.get_storage_path())
         tasks = [task.get_task_info() for task in self.tasks]
         return {"data_dir": data_dir, "tasks": tasks}
+
+    def _restore_storage(self):
+        file_paths = self.data_dir.rglob("*")
+        for fpath in file_paths:
+            pruned_fpath = fpath.relative_to(self.data_dir)
+            fpath_parts = pruned_fpath.parts
+
+            num_of_parts = len(fpath_parts)
+            if num_of_parts > 3:
+                continue  # not recognised. maybe log warning.
+
+            try:
+                task_uuid_str = fpath_parts[0]
+                task = Task(task_uuid_str)
+            except TaskInvalidUUID:
+                continue  # not recognised. maybe log warning.
+            try:
+                self.add_task(task)
+            except TaskExistsError:
+                pass
+
+            if num_of_parts == 3:
+                _, artifact_type, artifact_name = fpath_parts
+                try:
+                    artifact = Artifact(artifact_name, artifact_type)
+                except ArtifactInvalidName:
+                    continue  # not supported. maybe log warning.
+                except ArtifactInvalidType:
+                    continue  # not supported. maybe log warning.
+                else:
+                    self.add_task_artifact(task_uuid_str, artifact)
 
     # @classmethod
     # def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
