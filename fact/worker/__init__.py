@@ -19,6 +19,9 @@ from ..tasks_pb2 import (
     TaskCollectDiskResult,
     TaskCollectMemory,
     TaskCollectMemoryResult,
+    TaskCollectLsblk,
+    LsblkResult,
+    TaskCollectLsblkResult,
 )
 from ..controller_pb2_grpc import WorkerTasksStub
 from ..utils.stream import Stream
@@ -27,6 +30,13 @@ from ..utils.stream import Stream
 from uuid import UUID
 import platform
 
+# FACT
+from fact.target import (
+    SSHAccessInfo,
+    SSHProxyInfo,
+    SSHAccessInfoOptional,
+    TargetEndpoint,
+)
 
 log = logging.getLogger(__name__)
 
@@ -79,6 +89,40 @@ class Worker:
         """
         return platform.node()
 
+    async def _handle_task_obtain_lsblk(
+        self, task_uuid: UUID, target: Target, task: TaskCollectLsblk
+    ) -> list:
+        access_type = target.WhichOneof("access")
+        if access_type == "ssh":
+            host = target.ssh.host
+            user = target.ssh.user
+            port = target.ssh.port
+            private_key = target.ssh.private_key
+
+            core_access = SSHAccessInfo(
+                user=user, hosts=list(host), port=port, privateKey_path=private_key
+            )
+            proxy = SSHProxyInfo()
+            optional = SSHAccessInfoOptional()
+            remote = TargetEndpoint(core_access, proxy, optional)
+
+            lsblk_result = remote.get_all_available_disk()
+
+            # Convert to grpc compatible version
+            grpc_lsblk_results = []
+            for entry in lsblk_result:
+                grpc_lsblk_results.append(
+                    LsblkResult(
+                        device_name=entry[0],
+                        size=entry[1],
+                        type=entry[2],
+                        mountpoint=entry[3],
+                    )
+                )
+            return lsblk_result
+
+        raise Exception("Invalid remote access type")
+
     async def _handle_task_collect_disk(
         self, task_uuid: UUID, target: Target, task: TaskCollectDisk
     ) -> None:
@@ -112,6 +156,14 @@ class Worker:
             )
             return WorkerTaskResult(
                 uuid=task_uuid.bytes, task_collect_memory=TaskCollectMemoryResult()
+            )
+        if task_type == "task_collect_lsblk":
+            lsblk_results = await self._handle_task_obtain_lsblk(
+                task_uuid, task.target, task.task_collect_lsblk
+            )
+            return WorkerTaskResult(
+                uuid=task_uuid.bytes,
+                task_collect_lsblk=TaskCollectLsblkResult(lsblk_results=lsblk_results),
             )
         raise Exception("Unreachable: Invalid task type")
 
