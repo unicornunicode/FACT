@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Optional, Iterable, List, AsyncIterator, AsyncGenerator
+from typing import Optional, Iterable, List, Tuple, AsyncIterator, AsyncGenerator
 
 # Protocol
 from grpc.aio import server as grpc_server, Server, ServicerContext
@@ -11,6 +11,7 @@ from ..controller_pb2 import (
     SessionEvents,
     WorkerAcceptance,
     WorkerTask,
+    WorkerTaskResult,
 )
 from ..management_pb2 import (
     CreateTaskRequest,
@@ -28,6 +29,7 @@ from ..management_pb2 import (
     ListWorker,
 )
 from ..tasks_pb2 import (
+    Target as ProtoTarget,
     TaskNone,
     TaskCollectDisk,
     CollectDiskSelector,
@@ -44,6 +46,7 @@ from ..management_pb2_grpc import (
 )
 
 # Data
+from datetime import datetime
 from uuid import UUID, uuid4
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
@@ -54,6 +57,7 @@ from .database import (
     Target,
     Task,
     TaskType,
+    TaskStatus,
 )
 from .mappings import (
     task_status_from_db,
@@ -172,6 +176,25 @@ class Controller:
                 stmt = select(Worker).where(Worker.uuid == uuid)
                 worker: Worker = (await session.execute(stmt)).scalar_one()
                 worker.hostname = hostname
+
+    async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
+        async with self.session() as session:
+            async with session.begin():
+                stmt = (
+                    select(Task)
+                    .where(Task.status == TaskStatus.WAITING, Task.worker == uuid)
+                    .limit(1)
+                )
+                task = (await session.execute(stmt)).scalar_one_or_none()
+                if task is None:
+                    return None
+                stmt_target = select(Target).where(Target.uuid == task.target)
+                target = (await session.execute(stmt_target)).scalar_one()
+                task.status = TaskStatus.RUNNING
+                task.assignedAt = datetime.utcnow()
+                await session.flush()  # TODO: Is this necessary?
+                session.expunge_all()
+                return task, target
 
     def _assign_task_to_worker(self, workers: List[Worker], task: Task) -> bool:
         # TODO: Actually schedule across multiple workers
@@ -386,11 +409,62 @@ class WorkerTasks(WorkerTasksServicer):
             await self.controller._update_worker(uuid, registration.hostname)
         yield SessionEvents(worker_acceptance=WorkerAcceptance(uuid=uuid.bytes))
 
+    async def _pop_task(self, worker_uuid: UUID) -> Optional[WorkerTask]:
+        next_task = await self.controller._pop_worker_next_task(worker_uuid)
+        if next_task is None:
+            return None
+        task, target = next_task
+
+        ssh = SSHAccess(
+            host=target.ssh_host or "",
+            user=target.ssh_user or "",
+            port=target.ssh_port or 0,
+            private_key=target.ssh_private_key or "",
+            become=target.ssh_become or False,
+            become_password=target.ssh_become_password or "",
+        )
+        task_target = ProtoTarget(
+            uuid=target.uuid.bytes if target.uuid is not None else None, ssh=ssh
+        )
+        if task.type == TaskType.task_collect_disk:
+            task_collect_disk = TaskCollectDisk(
+                selector=CollectDiskSelector(
+                    path=task.task_collect_disk_selector_path
+                    if task.task_collect_disk_selector_path is not None
+                    else ""
+                )
+            )
+            return WorkerTask(
+                uuid=task.uuid.bytes if task.uuid is not None else None,
+                target=task_target,
+                task_collect_disk=task_collect_disk,
+            )
+        elif task.type == TaskType.task_collect_memory:
+            task_collect_memory = TaskCollectMemory()
+            return WorkerTask(
+                uuid=task.uuid.bytes if task.uuid is not None else None,
+                target=task_target,
+                task_collect_memory=task_collect_memory,
+            )
+        elif task.type == TaskType.task_none:
+            return WorkerTask(
+                uuid=task.uuid.bytes if task.uuid is not None else None,
+                task_none=TaskNone(),
+            )
+        else:
+            raise Exception("Unreachable: Invalid task type")
+
+    async def _complete_task(self, task_uuid: UUID) -> None:
+        pass
+
     async def Session(
         self, request: AsyncIterator[SessionResults], context: ServicerContext
     ) -> AsyncGenerator[SessionEvents, None]:
+        uuid: UUID
         try:
             async for response in self._exchange_handshake(request):
+                # For now, read UUID from the response
+                uuid = UUID(bytes=response.worker_acceptance.uuid)
                 yield response
         except Exception as e:
             log.error(f"failed to exchange handshake: {e}")
@@ -398,15 +472,25 @@ class WorkerTasks(WorkerTasksServicer):
             return
 
         while True:
+            # Grab task off queue
+            worker_task = await self._pop_task(uuid)
+            if worker_task is None:
+                await asyncio.sleep(1)
+                continue
+
             # Send request
-            worker_task = WorkerTask(uuid=uuid4().bytes, task_none=TaskNone())
             yield SessionEvents(worker_task=worker_task)
 
-            # Read subsequent results
-            worker_task_result = await request.__anext__()
-            log.debug(worker_task_result)
+            session_result: SessionResults = await request.__anext__()
+            if session_result.WhichOneof("result") != "worker_task_result":
+                log.error("recieved an event that is not worker_task_result")
+                context.abort(StatusCode.FAILED_PRECONDITION)
+                return
 
-            await asyncio.sleep(1_000)
+            # Read subsequent results
+            worker_task_result: WorkerTaskResult = session_result.worker_task_result
+            log.debug(worker_task_result)
+            await self._complete_task(UUID(bytes=worker_task_result.uuid))
 
 
 # vim: set et ts=4 sw=4:

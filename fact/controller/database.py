@@ -18,15 +18,15 @@ class Worker(Base):
 
 
 class TaskStatus(enum.Enum):
-    WAITING = 0
-    RUNNING = 1
-    COMPLETE = 2
+    WAITING = "WAITING"
+    RUNNING = "RUNNING"
+    COMPLETE = "COMPLETE"
 
 
 class TaskType(enum.Enum):
-    task_none = 0
-    task_collect_disk = 1
-    task_collect_memory = 2
+    task_none = "task_none"
+    task_collect_disk = "task_collect_disk"
+    task_collect_memory = "task_collect_memory"
 
 
 class Task(Base):
