@@ -38,23 +38,37 @@ def init_task_artifact():
     return tsk, artf1, artf2
 
 
-def test_session(init_storage, init_task_artifact):
+def test_session_context_manager(init_storage, init_task_artifact):
+    stg = init_storage
+    tsk, artf, _ = init_task_artifact
+
+    with Session(stg, tsk, artf) as sess:
+        assert sess is not None
+
+
+def test_session_non_context_manager(init_storage, init_task_artifact):
+    stg = init_storage
+    tsk, artf, _ = init_task_artifact
+    artf_contents = b"I am sda.raw data"
+
+    sess2 = Session(stg, tsk, artf)
+    with pytest.raises(AttributeError):
+        sess2.write(artf_contents)
+    with pytest.raises(AttributeError):
+        sess2.close()
+
+
+def test_session_file_io(init_storage, init_task_artifact):
     stg = init_storage
     tsk, artf1, artf2 = init_task_artifact
     tsk_uuid = tsk.get_task_uuid()
     artf1_contents = b"I am sda.raw data"
     artf2_contents = b"I am sdb1.raw data"
 
-    # First way to initialise and interact with Session
     with Session(stg, tsk, artf1) as sess:
         sess.write(artf1_contents)
 
-    # Second way to initialise and interact with Session
     sess2 = Session(stg, tsk, artf2)
-    with pytest.raises(AttributeError):
-        sess2.write(artf2_contents)
-    with pytest.raises(AttributeError):
-        sess2.close()
     sess2.setup()
     sess2.write(artf2_contents)
     sess2.close()
