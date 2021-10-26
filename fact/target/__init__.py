@@ -2,7 +2,7 @@ import logging
 import re
 from typing import BinaryIO
 
-from fact.exceptions import SSHInfoError
+from fact.exceptions import SSHInfoError, TargetRuntimeError
 
 from pssh.clients import ParallelSSHClient  # type: ignore
 from pssh.exceptions import PKeyFileError  # type: ignore
@@ -15,8 +15,8 @@ def _write_remote_output(output: HostOutput, file_io: BinaryIO):
     try:
         for data in output.buffers.stdout.rw_buffer:
             file_io.write(data)
-    except OSError as e:
-        raise e
+    except OSError:
+        raise
 
 
 def _parse_lsblk_output(raw_lsblk_data: bytes) -> dict:
@@ -196,7 +196,10 @@ class TargetEndpoint:
         # TODO: Show some form of status update on copying
         # A single .gz path is enough since the output will come from one host only.
         for host_output in host_outputs:
-            _write_remote_output(host_output, output_file_io)
+            try:
+                _write_remote_output(host_output, output_file_io)
+            except OSError as e:
+                raise TargetRuntimeError("Error writing to file") from e
 
     def get_all_available_disk(self) -> dict:
         """
