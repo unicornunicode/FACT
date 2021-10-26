@@ -1,6 +1,6 @@
 import pytest
 
-from fact.storage import Storage, Task, Artifact, SessionManager
+from fact.storage import Session, Storage, Task, Artifact
 from fact.storage.types import ArtifactType, DataType
 
 from pathlib import Path
@@ -16,7 +16,7 @@ def verify_contents(file_path, actual_file_contents):
 
 
 @pytest.fixture
-def init_storage_task_artifact(request):
+def init_storage(request):
     tmpdir = Path(mkdtemp())
 
     def cleanup():
@@ -25,29 +25,35 @@ def init_storage_task_artifact(request):
     request.addfinalizer(cleanup)
 
     stg = Storage(tmpdir)
+    return stg
+
+
+@pytest.fixture
+def init_task_artifact():
     tsk_uuid = uuid4()
     tsk = Task(str(tsk_uuid))
     artf1 = Artifact("sda.raw", ArtifactType.disk.name, DataType.full.name)
     artf2 = Artifact("sdb1.raw", ArtifactType.disk.name, DataType.partition.name)
 
-    return stg, tsk, artf1, artf2
+    return tsk, artf1, artf2
 
 
-@pytest.mark.asyncio
-async def test_session(event_loop, init_storage_task_artifact):
-    stg, tsk, artf1, artf2 = init_storage_task_artifact
+def test_session(init_storage, init_task_artifact):
+    stg = init_storage
+    tsk, artf1, artf2 = init_task_artifact
     tsk_uuid = tsk.get_task_uuid()
     artf1_contents = b"I am sda.raw data"
     artf2_contents = b"I am sdb1.raw data"
 
-    sm = SessionManager(stg)
-    sess1 = sm.new_session(tsk, artf1)
-    sess2 = sm.new_session(tsk, artf2)
-    sess1.file_io.write(artf1_contents)
-    sess2.file_io.write(artf2_contents)
-    sm.end_session(sess1)
-    sm.end_session(sess2)
-    sm.terminate()
+    # First way to initialise and interact with Session
+    with Session(stg, tsk, artf1) as sess:
+        sess.write(artf1_contents)
+
+    # Second way to initialise and interact with Session
+    sess2 = Session(stg, tsk, artf2)
+    sess2.setup()
+    sess2.write(artf2_contents)
+    sess2.close()
 
     artf1_path = stg.get_task_artifact_path(str(tsk_uuid), artf1)
     assert verify_contents(artf1_path, artf1_contents)
