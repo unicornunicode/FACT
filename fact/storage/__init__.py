@@ -369,10 +369,9 @@ class Storage:
 
 
 class Session:
-    """ Provides a session to interact with storage and manage the file system """
-    def __init__(
-        self, storage: Storage, task: Task, artifact: Artifact
-    ):
+    """Provides a session to interact with storage and manage the file system"""
+
+    def __init__(self, storage: Storage, task: Task, artifact: Artifact):
         self.storage = storage
         self.task = task
         self.artifact = artifact
@@ -386,8 +385,8 @@ class Session:
         self.close()
 
     def setup(self):
-        """ Add self.task to self.storage and self.artifact to that task 
-        and open Binary IO to that artifact path. """
+        """Add self.task to self.storage and self.artifact to that task
+        and open Binary IO to that artifact path."""
         try:
             self.storage.add_task(self.task)
         except TaskExistsError:
@@ -397,10 +396,10 @@ class Session:
         self.file_io = open(artifact_path, "wb")
 
     def write(self, data: bytes):
-        """ Write data to self.file_io 
-        :param data: Data to be written to artifact """
+        """Write data to self.file_io
+        :param data: Data to be written to artifact"""
         self.file_io.write(data)
 
     def close(self):
-        """ Close self.file_io """
+        """Close self.file_io"""
         self.file_io.close()
