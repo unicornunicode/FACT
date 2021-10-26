@@ -1,7 +1,7 @@
 import pytest
 
 from fact.storage import Session, Storage, Task, Artifact
-from fact.storage.types import ArtifactType, DataType
+from fact.storage.types import ArtifactType
 
 from pathlib import Path
 from tempfile import mkdtemp
@@ -32,8 +32,8 @@ def init_storage(request):
 def init_task_artifact():
     tsk_uuid = uuid4()
     tsk = Task(str(tsk_uuid))
-    artf1 = Artifact("sda.raw", ArtifactType.disk.name, DataType.full.name)
-    artf2 = Artifact("sdb1.raw", ArtifactType.disk.name, DataType.partition.name)
+    artf1 = Artifact("sda.raw", ArtifactType.disk.name)
+    artf2 = Artifact("sdb1.raw", ArtifactType.disk.name)
 
     return tsk, artf1, artf2
 
