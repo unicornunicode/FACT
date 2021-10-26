@@ -95,9 +95,3 @@ class ArtifactInvalidType(StorageModuleException):
     def __init__(self, message: str, artifact_type: str):
         """Exception if Artifact has invalid type"""
         super().__init__(message, artifact_type)
-
-
-class ArtifactInvalidSubType(StorageModuleException):
-    def __init__(self, message: str, sub_type: str):
-        """Exception if Artifact has invalid sub type"""
-        super().__init__(message, sub_type)

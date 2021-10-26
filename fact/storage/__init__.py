@@ -1,4 +1,4 @@
-from .types import ArtifactType, DataType
+from .types import ArtifactType
 from fact.exceptions import (
     TaskExistsError,
     TaskNotFoundError,
@@ -7,7 +7,6 @@ from fact.exceptions import (
     ArtifactNotFoundError,
     ArtifactInvalidName,
     ArtifactInvalidType,
-    ArtifactInvalidSubType,
 )
 
 from pathlib import Path
@@ -20,18 +19,14 @@ class Artifact:
     Stores information about an artifact
     """
 
-    def __init__(
-        self, artifact_name: str = "", artifact_type: str = "", sub_type: str = ""
-    ) -> None:
+    def __init__(self, artifact_name: str = "", artifact_type: str = "") -> None:
         """Initialises an Artifact object
 
         :param artifact_name: Name of artifact
         :param artifact_type: Type of artifact
-        :param sub_type: Sub type of artifact
         :raises:
             ArtifactInvalidName: Invalid name. Cannot be empty.
             ArtifactInvalidType: Invalid artifact type, needs to be found in ArtifactType
-            ArtifactInvalidSubType: Invalid artifact sub type, needs to be found in DataType
         """
         if not artifact_name:
             raise ArtifactInvalidName("Invalid empty name", artifact_name)
@@ -43,16 +38,8 @@ class Artifact:
             err_msg = f"Invalid artifact type. Select from: {valid_types}"
             raise ArtifactInvalidType(err_msg, artifact_type)
 
-        if not sub_type:
-            sub_type = DataType.unknown.name
-        elif not Artifact.is_valid_sub_type(sub_type):
-            valid_types = "{" + ", ".join(DataType.__members__.keys()) + "}"
-            err_msg = f"Invalid sub type. Select from: {valid_types}"
-            raise ArtifactInvalidSubType(err_msg, sub_type)
-
         self.artifact_name = artifact_name
         self.artifact_type = ArtifactType[artifact_type]
-        self.sub_type = DataType[sub_type]
 
     def get_artifact_type(self) -> str:
         """Gets artifact type of instance
@@ -60,20 +47,13 @@ class Artifact:
         """
         return self.artifact_type.name
 
-    def get_sub_type(self) -> str:
-        """Gets artifact sub type of instance
-        :return: Artifact sub type
-        """
-        return self.sub_type.name
-
     def get_artifact_path(self) -> tuple[Path, Path]:
         """Gets artifact path of instance
         :return: (Artifact path, Artifact name) ->
-                 ( {artifact_type}/{sub_type}, {artifact_name} )
+                 ( {artifact_type}, {artifact_name} )
         """
         artifact_type = self.get_artifact_type()
-        sub_type = self.get_sub_type()
-        artifact_path = Path(artifact_type) / Path(sub_type)
+        artifact_path = Path(artifact_type)
         return artifact_path, Path(self.artifact_name)
 
     def get_artifact_info(self) -> dict[str, str]:
@@ -81,34 +61,24 @@ class Artifact:
         :return: Artifact info (Attributes of instance)
         """
         artifact_type: str = self.get_artifact_type()
-        sub_type: str = self.get_sub_type()
-        return {
-            "artifact_name": self.artifact_name,
-            "artifact_type": artifact_type,
-            "sub_type": sub_type,
-        }
+        return {"artifact_name": self.artifact_name, "artifact_type": artifact_type}
 
     # @classmethod
     # def create_artifact(cls, artifact_info: dict):
-    #     artifact_name, artifact_type, sub_type = Artifact.extract_info(artifact_info)
+    #     artifact_name, artifact_type = Artifact.extract_info(artifact_info)
     #     if not Artifact.is_valid_artifact_name(artifact_name):
     #         raise ArtifactInvalidName("Invalid empty name", artifact_name)
     #     if not Artifact.is_valid_artifact_type(artifact_type):
     #         valid_types = "{" + ", ".join(ArtifactType.__members__.keys()) + "}"
     #         err_msg = f"Invalid artifact type. Select from: {valid_types}"
     #         raise ArtifactInvalidType(err_msg, artifact_type)
-    #     if not Artifact.is_valid_sub_type(sub_type):
-    #         valid_types = "{" + ", ".join(DataType.__members__.keys()) + "}"
-    #         err_msg = f"Invalid sub type. Select from: {valid_types}"
-    #         raise ArtifactInvalidSubType(err_msg, sub_type)
-    #     return cls(artifact_name, artifact_type, sub_type)
+    #     return cls(artifact_name, artifact_type)
 
     # @staticmethod
     # def extract_info(artifact_info: dict):
     #     name: str = artifact_info.get("artifact_name", "")
     #     artifact_type: str = artifact_info.get("artifact_type", "")
-    #     sub_type: str = artifact_info.get("sub_type", "")
-    #     return name, artifact_type, sub_type
+    #     return name, artifact_type
 
     @staticmethod
     def is_valid_artifact_name(artifact_name: str) -> bool:
@@ -125,14 +95,6 @@ class Artifact:
         :return: Validation result
         """
         return artifact_type in ArtifactType.__members__
-
-    @staticmethod
-    def is_valid_sub_type(sub_type: str) -> bool:
-        """Checks if artifact sub type exists in DataType
-        :param sub_type: Sub type of artifact
-        :return: Validation result
-        """
-        return sub_type in DataType.__members__
 
 
 class Task:
@@ -330,9 +292,9 @@ class Storage:
             )
         task.add_artifact(artifact)
 
-        artifact_info_path, artifact_name = artifact.get_artifact_path()
+        artifact_type_path, artifact_name = artifact.get_artifact_path()
         artifact_path: Path = (
-            self.get_storage_path() / task.get_task_path() / artifact_info_path
+            self.get_storage_path() / task.get_task_path() / artifact_type_path
         )
         if not artifact_path.exists():
             try:
@@ -366,11 +328,11 @@ class Storage:
                 f"Artifact does not exist in {task_uuid}", artifact_info
             )
 
-        artifact_info_path, artifact_name = task_artifact.get_artifact_path()
+        artifact_type_path, artifact_name = task_artifact.get_artifact_path()
         artifact_path: Path = (
             self.get_storage_path()
             / task.get_task_path()
-            / artifact_info_path
+            / artifact_type_path
             / artifact_name
         )
         return artifact_path
