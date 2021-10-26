@@ -27,8 +27,8 @@ if __name__ == "__main__":
         remote_image_path = "/dev/sda"
 
         file_io = open(save_location, "wb")
-    target.collect_image(remote_image_path, file_io)
-    file_io.close()
+        target.collect_image(remote_image_path, file_io)
+        file_io.close()
 
     if "lsblk" in test_keywords:
         dic = target.get_all_available_disk()
