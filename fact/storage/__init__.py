@@ -11,7 +11,7 @@ from fact.exceptions import (
 
 from pathlib import Path
 from uuid import UUID
-from typing import BinaryIO, Union
+from typing import BinaryIO, List, Union
 import logging
 
 log = logging.getLogger(__name__)
@@ -204,7 +204,7 @@ class Storage:
             PermissionError: Insufficient permission to create directory
         """
         self.data_dir = data_dir
-        self.tasks: list[Task] = []
+        self.tasks: List[Task] = []
 
         if self.data_dir.exists():
             log.info("Existing directory found. Attempting to restore Storage.")
