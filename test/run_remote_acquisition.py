@@ -1,7 +1,10 @@
 from pathlib import Path
 from uuid import uuid4
 
-from fact.target import (TargetEndpoint,SSHAccessInfo,)
+from fact.target import (
+    TargetEndpoint,
+    SSHAccessInfo,
+)
 from fact.storage import Session, Artifact, Task, Storage
 
 import logging
