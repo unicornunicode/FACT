@@ -12,6 +12,9 @@ from fact.exceptions import (
 from pathlib import Path
 from uuid import UUID
 from typing import BinaryIO, Union
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class Artifact:
@@ -219,7 +222,8 @@ class Storage:
         self.tasks: list[Task] = []
 
         if self.data_dir.exists():
-            self._restore_storage()  # Maybe need to check return value?!
+            log.info("Existing directory found. Attempting to restore Storage.")
+            self._restore_storage()
         else:
             try:
                 self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -340,7 +344,8 @@ class Storage:
         tasks = [task.get_task_info() for task in self.tasks]
         return {"data_dir": data_dir, "tasks": tasks}
 
-    def _restore_storage(self):
+    def _restore_storage(self) -> None:
+        """Restores instance from files and folders in self.data_dir"""
         file_paths = self.data_dir.rglob("*")
         for fpath in file_paths:
             pruned_fpath = fpath.relative_to(self.data_dir)
@@ -348,15 +353,21 @@ class Storage:
 
             num_of_parts = len(fpath_parts)
             if num_of_parts > 3:
-                continue  # not recognised. maybe log warning.
+                log.warning(
+                    f"Unknown folder structure. Skipping reconstruction of {pruned_fpath}."
+                )
+                continue
 
             try:
                 task_uuid_str = fpath_parts[0]
                 task = Task(task_uuid_str)
-            except TaskInvalidUUID:
-                continue  # not recognised. maybe log warning.
-            try:
                 self.add_task(task)
+            except TaskInvalidUUID:
+                log.warning(
+                    f"Invalid task UUID: {task_uuid_str}. "
+                    + f"Skipping reconstruction of {pruned_fpath}."
+                )
+                continue
             except TaskExistsError:
                 pass
 
@@ -365,9 +376,17 @@ class Storage:
                 try:
                     artifact = Artifact(artifact_name, artifact_type)
                 except ArtifactInvalidName:
-                    continue  # not supported. maybe log warning.
+                    log.warning(
+                        f"Invalid artifact name: {artifact_name}. "
+                        + f"Skipping reconstruction of {pruned_fpath}."
+                    )
+                    continue
                 except ArtifactInvalidType:
-                    continue  # not supported. maybe log warning.
+                    log.warning(
+                        f"Invalid artifact type: {artifact_type}. "
+                        + f"Skipping reconstruction of {pruned_fpath}."
+                    )
+                    continue
                 else:
                     self.add_task_artifact(task_uuid_str, artifact)
 
