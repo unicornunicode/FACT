@@ -63,23 +63,6 @@ class Artifact:
         artifact_type: str = self.get_artifact_type()
         return {"artifact_name": self.artifact_name, "artifact_type": artifact_type}
 
-    # @classmethod
-    # def create_artifact(cls, artifact_info: dict):
-    #     artifact_name, artifact_type = Artifact.extract_info(artifact_info)
-    #     if not Artifact.is_valid_artifact_name(artifact_name):
-    #         raise ArtifactInvalidName("Invalid empty name", artifact_name)
-    #     if not Artifact.is_valid_artifact_type(artifact_type):
-    #         valid_types = "{" + ", ".join(ArtifactType.__members__.keys()) + "}"
-    #         err_msg = f"Invalid artifact type. Select from: {valid_types}"
-    #         raise ArtifactInvalidType(err_msg, artifact_type)
-    #     return cls(artifact_name, artifact_type)
-
-    # @staticmethod
-    # def extract_info(artifact_info: dict):
-    #     name: str = artifact_info.get("artifact_name", "")
-    #     artifact_type: str = artifact_info.get("artifact_type", "")
-    #     return name, artifact_type
-
     @staticmethod
     def is_valid_artifact_name(artifact_name: str) -> bool:
         """Checks if artifact name is not empty
