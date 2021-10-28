@@ -35,8 +35,6 @@ import platform
 # FACT
 from fact.target import (
     SSHAccessInfo,
-    SSHProxyInfo,
-    SSHAccessInfoOptional,
     TargetEndpoint,
 )
 
@@ -109,11 +107,12 @@ class Worker:
                 os.chmod(private_key_path, 0o600)
 
                 core_access = SSHAccessInfo(
-                    user=user, hosts=[host], port=port, privateKey_path=private_key_path
+                    user=user,
+                    host=host,
+                    port=str(port),
+                    privateKey_path=private_key_path,
                 )
-                proxy = SSHProxyInfo()
-                optional = SSHAccessInfoOptional()
-                remote = TargetEndpoint(core_access, proxy, optional)
+                remote = TargetEndpoint(core_access)
 
                 try:
                     lsblk_result = remote.get_all_available_disk()

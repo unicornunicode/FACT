@@ -29,7 +29,7 @@ if __name__ == "__main__":
 
     if "image" in test_keywords:
         with Session(s, t, a) as sess:
-            remote_image_path = Path("/dev/loop2")
+            remote_image_path = "/dev/loop2"
             target.collect_image(remote_image_path, sess)
 
     if "lsblk" in test_keywords:
