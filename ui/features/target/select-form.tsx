@@ -3,31 +3,24 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import {useForm} from 'react-hook-form';
 
+import SelectTargetsFormTarget from './select-form-target'
+import SelectTargetsFormDisks from './select-form-disks'
 import type {SerializableTarget} from '.';
+
+import {colCheck} from './select-form.module.css'
 
 export interface SelectTargetsFormData {
 	selection: string[];
 }
 
-type SelectMode = null | 'target' | 'target+disk';
+type SelectMode = null | 'target' | 'target+disk' | 'disk';
 
 interface Props {
 	targets: SerializableTarget[];
 	mode: SelectMode;
 	onSubmit: (data: SelectTargetsFormData) => Promise<void>;
-	children: JSX.Element[] | JSX.Element;
+	children: JSX.Element[] | JSX.Element | string;
 }
-
-const renderAccess = ({ssh}: SerializableTarget) => {
-	if (ssh) {
-		return (
-			<span>SSH: {ssh.user}@{ssh.host}:{ssh.port}{ssh.become ? <>, with <code>sudo</code></> : ''}
-			</span>
-		);
-	}
-
-	return <span>Invalid</span>;
-};
 
 const SelectTargetsForm = ({targets, mode, onSubmit, children}: Props) => {
 	const {register, handleSubmit, reset, formState: {isSubmitSuccessful}} = useForm<SelectTargetsFormData>();
@@ -44,11 +37,16 @@ const SelectTargetsForm = ({targets, mode, onSubmit, children}: Props) => {
 
 	const renderTarget = (target: SerializableTarget, mode: SelectMode) => (
 		<Fragment key={target.uuid}>
+			<SelectTargetsFormTarget target={target}>
+				{(selection) => mode?.startsWith("target") ? renderCheck(selection) : ''}
+			</SelectTargetsFormTarget>
 			<tr>
-				<th>{mode?.startsWith('target') ? renderCheck(target.uuid) : ''}</th>
-				<td>{target.name}</td>
-				<td>{target.uuid}</td>
-				<td>{renderAccess(target)}</td>
+				<td/>
+				<td colSpan={3} className="p-0">
+					<SelectTargetsFormDisks target={target}>
+						{(selection) => mode?.endsWith("disk") ? renderCheck(selection) : ''}
+					</SelectTargetsFormDisks>
+				</td>
 			</tr>
 		</Fragment>
 	);
@@ -59,10 +57,10 @@ const SelectTargetsForm = ({targets, mode, onSubmit, children}: Props) => {
 			<Table>
 				<thead>
 					<tr>
-						<th/>
-						<th>Name</th>
-						<th>UUID</th>
+						<th className={colCheck} />
+						<th>Target</th>
 						<th>Access</th>
+						<th>UUID</th>
 					</tr>
 				</thead>
 				<tbody>

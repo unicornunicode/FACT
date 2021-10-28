@@ -7,7 +7,7 @@ import {ManagementClientImpl} from '../proto/fact/management';
 import {managementRpc} from '../features/grpc';
 
 const Home: NextPage = () => {
-	const [tasks, setTasks] = useState([] as ListTask[]);
+	const [tasks, setTasks] = useState<ListTask[]>([]);
 	useEffect(() => {
 		const fetchTasks = async (): Promise<void> => {
 			const rpc = await managementRpc();
