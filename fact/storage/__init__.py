@@ -168,21 +168,6 @@ class Task:
         artifacts = self._get_artifacts()
         return {"task_uuid": task_uuid, "artifacts": artifacts}
 
-    # @classmethod
-    # def _recreate_task(cls, task_info: dict):
-    #     task_uuid_str: str = task_info.get("task_uuid", "")
-    #     if not Task.is_valid_uuid(task_uuid_str):
-    #         raise TaskInvalidUUID("Invalid Task UUID", task_uuid_str)
-    #     task: Task = cls(task_uuid_str)
-
-    #     artifacts: list[dict] = task_info.get("artifacts", [])
-    #     for a in artifacts:
-    #         artifact: Artifact = Artifact.create_artifact(a)
-    #         if artifact:
-    #             task.add_artifact(artifact)
-
-    #     return task
-
     @staticmethod
     def is_valid_uuid(uuid_str: str) -> bool:
         """Checks if UUID string is valid
@@ -389,20 +374,6 @@ class Storage:
                     continue
                 else:
                     self.add_task_artifact(task_uuid_str, artifact)
-
-    # @classmethod
-    # def clone_storage(cls, storage_dict: dict, new_data_dir: Path):
-    #     old_data_dir: Path = storage_dict.get("data_dir", Storage.DEFAULT_PATH)
-    #     if old_data_dir == new_data_dir:
-    #         raise StorageExistsError("Storage exists already", str(new_data_dir))
-    #     storage: Storage = cls(new_data_dir)
-
-    #     tasks: list[dict] = storage_dict.get("tasks", [])
-    #     for t in tasks:
-    #         task: Task = Task._recreate_task(t)
-    #         storage.add_task(task)
-
-    #     return storage
 
 
 class Session:
