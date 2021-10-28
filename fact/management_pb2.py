@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15\x66\x61\x63t/management.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x10\x66\x61\x63t/tasks.proto\"\xde\x01\n\x11\x43reateTaskRequest\x12\x1e\n\ttask_none\x18\x01 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x02 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x03 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12/\n\x12task_collect_lsblk\x18\x05 \x01(\x0b\x32\x11.TaskCollectLsblkH\x00\x12\x0e\n\x06target\x18\x04 \x01(\x0c\x42\x06\n\x04task\" \n\x10\x43reateTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x11\n\x0fListTaskRequest\"*\n\x0eListTaskResult\x12\x18\n\x05tasks\x18\x01 \x03(\x0b\x32\t.ListTask\"\xda\x03\n\x08ListTask\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12 \n\x06status\x18\x02 \x01(\x0e\x32\x10.ListTask.Status\x12.\n\ncreated_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12/\n\x0b\x61ssigned_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x30\n\x0c\x63ompleted_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06target\x18\x06 \x01(\x0c\x12\x1e\n\ttask_none\x18\x07 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x08 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\t \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12/\n\x12task_collect_lsblk\x18\x0b \x01(\x0b\x32\x11.TaskCollectLsblkH\x00\x12\x0e\n\x06worker\x18\n \x01(\x0c\"0\n\x06Status\x12\x0b\n\x07WAITING\x10\x00\x12\x0b\n\x07RUNNING\x10\x01\x12\x0c\n\x08\x43OMPLETE\x10\x02\x42\x06\n\x04task\"H\n\x13\x43reateTargetRequest\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"\"\n\x12\x43reateTargetResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x13\n\x11ListTargetRequest\"0\n\x10ListTargetResult\x12\x1c\n\x07targets\x18\x01 \x03(\x0b\x32\x0b.ListTarget\"M\n\nListTarget\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"\x13\n\x11ListWorkerRequest\"0\n\x10ListWorkerResult\x12\x1c\n\x07workers\x18\x01 \x03(\x0b\x32\x0b.ListWorker\",\n\nListWorker\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x10\n\x08hostname\x18\x02 \x01(\t2\x95\x02\n\nManagement\x12\x33\n\nCreateTask\x12\x12.CreateTaskRequest\x1a\x11.CreateTaskResult\x12-\n\x08ListTask\x12\x10.ListTaskRequest\x1a\x0f.ListTaskResult\x12\x39\n\x0c\x43reateTarget\x12\x14.CreateTargetRequest\x1a\x13.CreateTargetResult\x12\x33\n\nListTarget\x12\x12.ListTargetRequest\x1a\x11.ListTargetResult\x12\x33\n\nListWorker\x12\x12.ListWorkerRequest\x1a\x11.ListWorkerResultb\x06proto3'
+  serialized_pb=b'\n\x15\x66\x61\x63t/management.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x10\x66\x61\x63t/tasks.proto\"\xde\x01\n\x11\x43reateTaskRequest\x12\x1e\n\ttask_none\x18\x01 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x02 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x03 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12/\n\x12task_collect_lsblk\x18\x05 \x01(\x0b\x32\x11.TaskCollectLsblkH\x00\x12\x0e\n\x06target\x18\x04 \x01(\x0c\x42\x06\n\x04task\" \n\x10\x43reateTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x11\n\x0fListTaskRequest\"*\n\x0eListTaskResult\x12\x18\n\x05tasks\x18\x01 \x03(\x0b\x32\t.ListTask\"\xda\x03\n\x08ListTask\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12 \n\x06status\x18\x02 \x01(\x0e\x32\x10.ListTask.Status\x12.\n\ncreated_at\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12/\n\x0b\x61ssigned_at\x18\x04 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x30\n\x0c\x63ompleted_at\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x0e\n\x06target\x18\x06 \x01(\x0c\x12\x1e\n\ttask_none\x18\x07 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x08 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\t \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12/\n\x12task_collect_lsblk\x18\x0b \x01(\x0b\x32\x11.TaskCollectLsblkH\x00\x12\x0e\n\x06worker\x18\n \x01(\x0c\"0\n\x06Status\x12\x0b\n\x07WAITING\x10\x00\x12\x0b\n\x07RUNNING\x10\x01\x12\x0c\n\x08\x43OMPLETE\x10\x02\x42\x06\n\x04task\"H\n\x13\x43reateTargetRequest\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"\"\n\x12\x43reateTargetResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x13\n\x11ListTargetRequest\"0\n\x10ListTargetResult\x12\x1c\n\x07targets\x18\x01 \x03(\x0b\x32\x0b.ListTarget\"&\n\x16ListTargetLsblkRequest\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"<\n\x15ListTargetLsblkResult\x12#\n\rlsblk_results\x18\x01 \x03(\x0b\x32\x0c.LsblkResult\"M\n\nListTarget\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x0c\n\x04name\x18\x03 \x01(\t\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"\x13\n\x11ListWorkerRequest\"0\n\x10ListWorkerResult\x12\x1c\n\x07workers\x18\x01 \x03(\x0b\x32\x0b.ListWorker\",\n\nListWorker\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x10\n\x08hostname\x18\x02 \x01(\t2\xd9\x02\n\nManagement\x12\x33\n\nCreateTask\x12\x12.CreateTaskRequest\x1a\x11.CreateTaskResult\x12-\n\x08ListTask\x12\x10.ListTaskRequest\x1a\x0f.ListTaskResult\x12\x39\n\x0c\x43reateTarget\x12\x14.CreateTargetRequest\x1a\x13.CreateTargetResult\x12\x33\n\nListTarget\x12\x12.ListTargetRequest\x1a\x11.ListTargetResult\x12\x42\n\x0fListTargetLsblk\x12\x17.ListTargetLsblkRequest\x1a\x16.ListTargetLsblkResult\x12\x33\n\nListWorker\x12\x12.ListWorkerRequest\x1a\x11.ListWorkerResultb\x06proto3'
   ,
   dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,fact_dot_tasks__pb2.DESCRIPTOR,])
 
@@ -453,6 +453,70 @@ _LISTTARGETRESULT = _descriptor.Descriptor(
 )
 
 
+_LISTTARGETLSBLKREQUEST = _descriptor.Descriptor(
+  name='ListTargetLsblkRequest',
+  full_name='ListTargetLsblkRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='uuid', full_name='ListTargetLsblkRequest.uuid', index=0,
+      number=1, type=12, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1056,
+  serialized_end=1094,
+)
+
+
+_LISTTARGETLSBLKRESULT = _descriptor.Descriptor(
+  name='ListTargetLsblkResult',
+  full_name='ListTargetLsblkResult',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='lsblk_results', full_name='ListTargetLsblkResult.lsblk_results', index=0,
+      number=1, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=1096,
+  serialized_end=1156,
+)
+
+
 _LISTTARGET = _descriptor.Descriptor(
   name='ListTarget',
   full_name='ListTarget',
@@ -499,8 +563,8 @@ _LISTTARGET = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1056,
-  serialized_end=1133,
+  serialized_start=1158,
+  serialized_end=1235,
 )
 
 
@@ -524,8 +588,8 @@ _LISTWORKERREQUEST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1135,
-  serialized_end=1154,
+  serialized_start=1237,
+  serialized_end=1256,
 )
 
 
@@ -556,8 +620,8 @@ _LISTWORKERRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1156,
-  serialized_end=1204,
+  serialized_start=1258,
+  serialized_end=1306,
 )
 
 
@@ -595,8 +659,8 @@ _LISTWORKER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1206,
-  serialized_end=1250,
+  serialized_start=1308,
+  serialized_end=1352,
 )
 
 _CREATETASKREQUEST.fields_by_name['task_none'].message_type = fact_dot_tasks__pb2._TASKNONE
@@ -642,6 +706,7 @@ _CREATETARGETREQUEST.oneofs_by_name['access'].fields.append(
   _CREATETARGETREQUEST.fields_by_name['ssh'])
 _CREATETARGETREQUEST.fields_by_name['ssh'].containing_oneof = _CREATETARGETREQUEST.oneofs_by_name['access']
 _LISTTARGETRESULT.fields_by_name['targets'].message_type = _LISTTARGET
+_LISTTARGETLSBLKRESULT.fields_by_name['lsblk_results'].message_type = fact_dot_tasks__pb2._LSBLKRESULT
 _LISTTARGET.fields_by_name['ssh'].message_type = fact_dot_tasks__pb2._SSHACCESS
 _LISTTARGET.oneofs_by_name['access'].fields.append(
   _LISTTARGET.fields_by_name['ssh'])
@@ -656,6 +721,8 @@ DESCRIPTOR.message_types_by_name['CreateTargetRequest'] = _CREATETARGETREQUEST
 DESCRIPTOR.message_types_by_name['CreateTargetResult'] = _CREATETARGETRESULT
 DESCRIPTOR.message_types_by_name['ListTargetRequest'] = _LISTTARGETREQUEST
 DESCRIPTOR.message_types_by_name['ListTargetResult'] = _LISTTARGETRESULT
+DESCRIPTOR.message_types_by_name['ListTargetLsblkRequest'] = _LISTTARGETLSBLKREQUEST
+DESCRIPTOR.message_types_by_name['ListTargetLsblkResult'] = _LISTTARGETLSBLKRESULT
 DESCRIPTOR.message_types_by_name['ListTarget'] = _LISTTARGET
 DESCRIPTOR.message_types_by_name['ListWorkerRequest'] = _LISTWORKERREQUEST
 DESCRIPTOR.message_types_by_name['ListWorkerResult'] = _LISTWORKERRESULT
@@ -725,6 +792,20 @@ ListTargetResult = _reflection.GeneratedProtocolMessageType('ListTargetResult', 
   })
 _sym_db.RegisterMessage(ListTargetResult)
 
+ListTargetLsblkRequest = _reflection.GeneratedProtocolMessageType('ListTargetLsblkRequest', (_message.Message,), {
+  'DESCRIPTOR' : _LISTTARGETLSBLKREQUEST,
+  '__module__' : 'fact.management_pb2'
+  # @@protoc_insertion_point(class_scope:ListTargetLsblkRequest)
+  })
+_sym_db.RegisterMessage(ListTargetLsblkRequest)
+
+ListTargetLsblkResult = _reflection.GeneratedProtocolMessageType('ListTargetLsblkResult', (_message.Message,), {
+  'DESCRIPTOR' : _LISTTARGETLSBLKRESULT,
+  '__module__' : 'fact.management_pb2'
+  # @@protoc_insertion_point(class_scope:ListTargetLsblkResult)
+  })
+_sym_db.RegisterMessage(ListTargetLsblkResult)
+
 ListTarget = _reflection.GeneratedProtocolMessageType('ListTarget', (_message.Message,), {
   'DESCRIPTOR' : _LISTTARGET,
   '__module__' : 'fact.management_pb2'
@@ -762,8 +843,8 @@ _MANAGEMENT = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=1253,
-  serialized_end=1530,
+  serialized_start=1355,
+  serialized_end=1700,
   methods=[
   _descriptor.MethodDescriptor(
     name='CreateTask',
@@ -806,9 +887,19 @@ _MANAGEMENT = _descriptor.ServiceDescriptor(
     create_key=_descriptor._internal_create_key,
   ),
   _descriptor.MethodDescriptor(
+    name='ListTargetLsblk',
+    full_name='Management.ListTargetLsblk',
+    index=4,
+    containing_service=None,
+    input_type=_LISTTARGETLSBLKREQUEST,
+    output_type=_LISTTARGETLSBLKRESULT,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
     name='ListWorker',
     full_name='Management.ListWorker',
-    index=4,
+    index=5,
     containing_service=None,
     input_type=_LISTWORKERREQUEST,
     output_type=_LISTWORKERRESULT,
