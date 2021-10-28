@@ -19,15 +19,13 @@ const renderAccess = ({ssh}: SerializableTarget) => {
 	return <span>Invalid</span>;
 };
 
-const SelectTargetsFormTarget = ({ target, children }: Props) => {
-	return (
-			<tr>
-				<td>{children(target.uuid)}</td>
-				<td>{target.name}</td>
-				<td>{renderAccess(target)}</td>
-				<td><small className="text-muted">{target.uuid}</small></td>
-			</tr>
-		)
-}
+const SelectTargetsFormTarget = ({target, children}: Props) => (
+	<tr>
+		<td>{children(target.uuid)}</td>
+		<td>{target.name}</td>
+		<td>{renderAccess(target)}</td>
+		<td><small className="text-muted">{target.uuid}</small></td>
+	</tr>
+);
 
 export default SelectTargetsFormTarget;

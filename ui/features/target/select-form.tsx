@@ -3,11 +3,10 @@ import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 import {useForm} from 'react-hook-form';
 
-import SelectTargetsFormTarget from './select-form-target'
-import SelectTargetsFormDisks from './select-form-disks'
+import SelectTargetsFormTarget from './select-form-target';
+import SelectTargetsFormDisks from './select-form-disks';
+import {colCheck} from './select-form.module.css';
 import type {SerializableTarget} from '.';
-
-import {colCheck} from './select-form.module.css'
 
 export interface SelectTargetsFormData {
 	selection: string[];
@@ -38,13 +37,13 @@ const SelectTargetsForm = ({targets, mode, onSubmit, children}: Props) => {
 	const renderTarget = (target: SerializableTarget, mode: SelectMode) => (
 		<Fragment key={target.uuid}>
 			<SelectTargetsFormTarget target={target}>
-				{(selection) => mode?.startsWith("target") ? renderCheck(selection) : ''}
+				{selection => mode?.startsWith('target') ? renderCheck(selection) : ''}
 			</SelectTargetsFormTarget>
 			<tr>
 				<td/>
 				<td colSpan={3} className="p-0">
 					<SelectTargetsFormDisks target={target}>
-						{(selection) => mode?.endsWith("disk") ? renderCheck(selection) : ''}
+						{selection => mode?.endsWith('disk') ? renderCheck(selection) : ''}
 					</SelectTargetsFormDisks>
 				</td>
 			</tr>
@@ -57,7 +56,7 @@ const SelectTargetsForm = ({targets, mode, onSubmit, children}: Props) => {
 			<Table>
 				<thead>
 					<tr>
-						<th className={colCheck} />
+						<th className={colCheck}/>
 						<th>Target</th>
 						<th>Access</th>
 						<th>UUID</th>

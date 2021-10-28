@@ -20,7 +20,7 @@ const SelectTargets = ({targets}: Props) => {
 
 	return (
 		<SelectTargetsForm targets={targets} mode={null} onSubmit={onSubmit}>
-			{/*<Button type="submit">Submit</Button>*/}
+			{/* <Button type="submit">Submit</Button> */}
 		</SelectTargetsForm>
 	);
 };
