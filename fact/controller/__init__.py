@@ -24,6 +24,8 @@ from ..management_pb2 import (
     ListTargetRequest,
     ListTargetResult,
     ListTarget,
+    ListTargetLsblkRequest,
+    ListTargetLsblkResult,
     ListWorkerRequest,
     ListWorkerResult,
     ListWorker,
@@ -35,6 +37,7 @@ from ..tasks_pb2 import (
     CollectDiskSelector,
     TaskCollectMemory,
     TaskCollectLsblk,
+    LsblkResult,
     SSHAccess,
 )
 from ..controller_pb2_grpc import (
@@ -197,9 +200,9 @@ class Controller:
                         await session.execute(stmt_lsblk_result)
                     ).scalar_one_or_none()
                     if lsblk_result is not None:
-                        task.size = size
-                        task.type = type
-                        task.mountpoint = mountpoint
+                        lsblk_result.size = size
+                        lsblk_result.type = type
+                        lsblk_result.mountpoint = mountpoint
                         continue
                     lsblk_result = TargetLsblkResult(
                         target=task.target,
@@ -209,6 +212,27 @@ class Controller:
                         mountpoint=mountpoint,
                     )
                     session.add(lsblk_result)
+
+    async def _list_target_lsblk_results(
+        self, uuid: UUID
+    ) -> Iterable[Tuple[str, int, str, str]]:
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(TargetLsblkResult).where(
+                    TargetLsblkResult.target == uuid,
+                )
+                lsblk_results = (await session.execute(stmt)).scalars().all()
+                results = []
+                for lsblk_result in lsblk_results:
+                    results.append(
+                        (
+                            lsblk_result.device_name,
+                            lsblk_result.size,
+                            lsblk_result.type,
+                            lsblk_result.mountpoint,
+                        )
+                    )
+                return results
 
     async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
         async with self.session() as session:
@@ -413,6 +437,23 @@ class Management(ManagementServicer):
                 )
             )
         return ListTargetResult(targets=list_targets)
+
+    async def ListTargetLsblk(
+        self, request: ListTargetLsblkRequest, context: ServicerContext
+    ) -> ListTargetLsblkResult:
+        target_uuid = UUID(bytes=request.uuid)
+        lsblk_results = await self.controller._list_target_lsblk_results(target_uuid)
+        results = []
+        for device_name, size, type, mountpoint in lsblk_results:
+            results.append(
+                LsblkResult(
+                    device_name=device_name,
+                    size=size,
+                    type=type,
+                    mountpoint=mountpoint,
+                )
+            )
+        return ListTargetLsblkResult(lsblk_results=results)
 
     async def ListWorker(
         self, request: ListWorkerRequest, context: ServicerContext

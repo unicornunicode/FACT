@@ -10,6 +10,7 @@ import {
   TaskCollectMemory,
   TaskCollectLsblk,
   SSHAccess,
+  LsblkResult,
 } from "../fact/tasks";
 
 export const protobufPackage = "";
@@ -100,6 +101,14 @@ export interface ListTargetRequest {}
 
 export interface ListTargetResult {
   targets: ListTarget[];
+}
+
+export interface ListTargetLsblkRequest {
+  uuid: Uint8Array;
+}
+
+export interface ListTargetLsblkResult {
+  lsblkResults: LsblkResult[];
 }
 
 export interface ListTarget {
@@ -1038,6 +1047,146 @@ export const ListTargetResult = {
   },
 };
 
+const baseListTargetLsblkRequest: object = {};
+
+export const ListTargetLsblkRequest = {
+  encode(
+    message: ListTargetLsblkRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.uuid.length !== 0) {
+      writer.uint32(10).bytes(message.uuid);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ListTargetLsblkRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseListTargetLsblkRequest } as ListTargetLsblkRequest;
+    message.uuid = new Uint8Array();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.uuid = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListTargetLsblkRequest {
+    const message = { ...baseListTargetLsblkRequest } as ListTargetLsblkRequest;
+    message.uuid = new Uint8Array();
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = bytesFromBase64(object.uuid);
+    }
+    return message;
+  },
+
+  toJSON(message: ListTargetLsblkRequest): unknown {
+    const obj: any = {};
+    message.uuid !== undefined &&
+      (obj.uuid = base64FromBytes(
+        message.uuid !== undefined ? message.uuid : new Uint8Array()
+      ));
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListTargetLsblkRequest>
+  ): ListTargetLsblkRequest {
+    const message = { ...baseListTargetLsblkRequest } as ListTargetLsblkRequest;
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = object.uuid;
+    } else {
+      message.uuid = new Uint8Array();
+    }
+    return message;
+  },
+};
+
+const baseListTargetLsblkResult: object = {};
+
+export const ListTargetLsblkResult = {
+  encode(
+    message: ListTargetLsblkResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.lsblkResults) {
+      LsblkResult.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ListTargetLsblkResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseListTargetLsblkResult } as ListTargetLsblkResult;
+    message.lsblkResults = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.lsblkResults.push(
+            LsblkResult.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListTargetLsblkResult {
+    const message = { ...baseListTargetLsblkResult } as ListTargetLsblkResult;
+    message.lsblkResults = [];
+    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
+      for (const e of object.lsblkResults) {
+        message.lsblkResults.push(LsblkResult.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: ListTargetLsblkResult): unknown {
+    const obj: any = {};
+    if (message.lsblkResults) {
+      obj.lsblkResults = message.lsblkResults.map((e) =>
+        e ? LsblkResult.toJSON(e) : undefined
+      );
+    } else {
+      obj.lsblkResults = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListTargetLsblkResult>
+  ): ListTargetLsblkResult {
+    const message = { ...baseListTargetLsblkResult } as ListTargetLsblkResult;
+    message.lsblkResults = [];
+    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
+      for (const e of object.lsblkResults) {
+        message.lsblkResults.push(LsblkResult.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
 const baseListTarget: object = { name: "" };
 
 export const ListTarget = {
@@ -1337,6 +1486,10 @@ export interface Management {
     request: DeepPartial<ListTargetRequest>,
     metadata?: grpc.Metadata
   ): Promise<ListTargetResult>;
+  ListTargetLsblk(
+    request: DeepPartial<ListTargetLsblkRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<ListTargetLsblkResult>;
   ListWorker(
     request: DeepPartial<ListWorkerRequest>,
     metadata?: grpc.Metadata
@@ -1352,6 +1505,7 @@ export class ManagementClientImpl implements Management {
     this.ListTask = this.ListTask.bind(this);
     this.CreateTarget = this.CreateTarget.bind(this);
     this.ListTarget = this.ListTarget.bind(this);
+    this.ListTargetLsblk = this.ListTargetLsblk.bind(this);
     this.ListWorker = this.ListWorker.bind(this);
   }
 
@@ -1395,6 +1549,17 @@ export class ManagementClientImpl implements Management {
     return this.rpc.unary(
       ManagementListTargetDesc,
       ListTargetRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  ListTargetLsblk(
+    request: DeepPartial<ListTargetLsblkRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<ListTargetLsblkResult> {
+    return this.rpc.unary(
+      ManagementListTargetLsblkDesc,
+      ListTargetLsblkRequest.fromPartial(request),
       metadata
     );
   }
@@ -1495,6 +1660,28 @@ export const ManagementListTargetDesc: UnaryMethodDefinitionish = {
     deserializeBinary(data: Uint8Array) {
       return {
         ...ListTargetResult.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const ManagementListTargetLsblkDesc: UnaryMethodDefinitionish = {
+  methodName: "ListTargetLsblk",
+  service: ManagementDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ListTargetLsblkRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...ListTargetLsblkResult.decode(data),
         toObject() {
           return this;
         },
