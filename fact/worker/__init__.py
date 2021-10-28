@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from pathlib import Path
-from typing import Optional, AsyncIterator
+from typing import List, Optional, AsyncIterator
 
 # Protocol
 from grpc.aio import insecure_channel
@@ -91,7 +91,7 @@ class Worker:
 
     async def _handle_task_obtain_lsblk(
         self, task_uuid: UUID, target: Target, task: TaskCollectLsblk
-    ) -> list[LsblkResult]:
+    ) -> List[LsblkResult]:
         access_type = target.WhichOneof("access")
         if access_type == "ssh":
             host = target.ssh.host

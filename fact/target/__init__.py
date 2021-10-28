@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import BinaryIO, Tuple
+from typing import BinaryIO, Tuple, List
 
 from fact.exceptions import SSHInfoError, TargetRuntimeError
 
@@ -19,7 +19,7 @@ def _write_remote_output(output: HostOutput, file_io: BinaryIO):
         raise
 
 
-def _parse_lsblk_output(raw_lsblk_data: bytes) -> list[Tuple[str, int, str, str]]:
+def _parse_lsblk_output(raw_lsblk_data: bytes) -> List[Tuple[str, int, str, str]]:
     """
     Converts the lsblk_data from commandline and save relevant info in a dict
     Assumes the "lsblk -lb" returns in the following format:
@@ -192,7 +192,7 @@ class TargetEndpoint:
             except OSError as e:
                 raise TargetRuntimeError("Error writing to file") from e
 
-    def get_all_available_disk(self) -> list[Tuple[str, int, str, str]]:
+    def get_all_available_disk(self) -> List[Tuple[str, int, str, str]]:
         """
         Gets a list of availale disks on the remote machine
         :return: lsblk information as list of tuple
