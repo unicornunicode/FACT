@@ -11,7 +11,7 @@ from fact.exceptions import (
 
 from pathlib import Path
 from uuid import UUID
-from typing import Union
+from typing import BinaryIO, Union
 
 
 class Artifact:
@@ -62,23 +62,6 @@ class Artifact:
         """
         artifact_type: str = self.get_artifact_type()
         return {"artifact_name": self.artifact_name, "artifact_type": artifact_type}
-
-    # @classmethod
-    # def create_artifact(cls, artifact_info: dict):
-    #     artifact_name, artifact_type = Artifact.extract_info(artifact_info)
-    #     if not Artifact.is_valid_artifact_name(artifact_name):
-    #         raise ArtifactInvalidName("Invalid empty name", artifact_name)
-    #     if not Artifact.is_valid_artifact_type(artifact_type):
-    #         valid_types = "{" + ", ".join(ArtifactType.__members__.keys()) + "}"
-    #         err_msg = f"Invalid artifact type. Select from: {valid_types}"
-    #         raise ArtifactInvalidType(err_msg, artifact_type)
-    #     return cls(artifact_name, artifact_type)
-
-    # @staticmethod
-    # def extract_info(artifact_info: dict):
-    #     name: str = artifact_info.get("artifact_name", "")
-    #     artifact_type: str = artifact_info.get("artifact_type", "")
-    #     return name, artifact_type
 
     @staticmethod
     def is_valid_artifact_name(artifact_name: str) -> bool:
@@ -366,3 +349,46 @@ class Storage:
     #         storage.add_task(task)
 
     #     return storage
+
+
+class Session:
+    """Provides a session to interact with storage and manage the file system"""
+
+    def __init__(self, storage: Storage, task: Task, artifact: Artifact):
+        self.storage = storage
+        self.task = task
+        self.artifact = artifact
+        self.file_io: BinaryIO
+
+    def __enter__(self):
+        self.setup()
+        return self
+
+    def __exit__(self, *exc):
+        self.close()
+
+    def setup(self):
+        """Add self.task to self.storage and self.artifact to that task
+        and open Binary IO to that artifact path."""
+        try:
+            self.storage.add_task(self.task)
+        except TaskExistsError:
+            pass
+        task_uuid = self.task.get_task_uuid()
+        artifact_path = self.storage.add_task_artifact(task_uuid, self.artifact)
+        self.file_io = open(artifact_path, "wb")
+
+    def write(self, data: bytes):
+        """Write data to self.file_io
+        :param data: Data to be written to artifact"""
+        try:
+            self.file_io.write(data)
+        except AttributeError:
+            raise
+
+    def close(self):
+        """Close self.file_io"""
+        try:
+            self.file_io.close()
+        except AttributeError:
+            raise

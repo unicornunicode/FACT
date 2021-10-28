@@ -1,23 +1,25 @@
 import gzip
-import os
+
+from pathlib import Path
 
 from fact.exceptions import GzipDecompressionError
 
 
-def decompress_gzip(gz_path: str, output_filepath: str = None, keep_gz: bool = True):
+def decompress_gzip(gz_path: Path, output_filepath: Path = None, keep_gz: bool = True):
     """
     :param gz_path: path of the gzip file. Requires the .gz extension
     :param output_filepath: Path+filename to save the file as.
         Defaults to the same directory and the same name (without .gz extension)
     :param keep_gz: Whether to keep the original gzip file. Defaults to True
     """
-    if ".gz" not in gz_path:
+
+    if ".gz" not in gz_path.suffix:
         raise GzipDecompressionError(
             "Input file has no .gz extension (required)", gz_path
         )
 
     if output_filepath is None:
-        output_filepath = os.path.splitext(gz_path)[0]
+        output_filepath = gz_path.with_suffix("")
 
     try:
         inf = open(gz_path, mode="rb")
@@ -33,4 +35,4 @@ def decompress_gzip(gz_path: str, output_filepath: str = None, keep_gz: bool = T
         ) from e
 
     if not keep_gz:
-        os.remove(gz_path)
+        gz_path.unlink()
