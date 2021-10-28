@@ -7,6 +7,8 @@ import type {SerializableWorker} from '../../features/worker';
 import {managementRpc} from '../../features/grpc';
 import {ManagementClientImpl} from '../../proto/fact/management';
 
+import ListWorker from '../../features/worker/list';
+
 interface Props {
 	workers: SerializableWorker[];
 }
@@ -28,7 +30,7 @@ const ListWorkerPage: NextPage<Props> = ({workers}: Props) => (
 			<title>Workers</title>
 		</Head>
 		<Container fluid>
-			<pre><code>{JSON.stringify(workers, null, 2)}</code></pre>
+			<ListWorker workers={workers}/>
 		</Container>
 	</main>
 );
