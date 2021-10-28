@@ -11,7 +11,7 @@ const renderAccess = ({ssh}: SerializableTarget) => {
 			<span>
 				<strong className="text-muted">SSH: </strong>
 				{ssh.user}@{ssh.host}:{ssh.port}
-				{ssh.become ? <>, with <code>sudo</code></> : <></>}
+				{ssh.become ? <>, with <code>sudo</code></> : ''}
 			</span>
 		);
 	}
@@ -21,7 +21,7 @@ const renderAccess = ({ssh}: SerializableTarget) => {
 
 const SelectTargetsFormTarget = ({target, children}: Props) => (
 	<tr>
-		<td>{children(target.uuid)}</td>
+		<td>{children(`target.${target.uuid}`)}</td>
 		<td>{target.name}</td>
 		<td>{renderAccess(target)}</td>
 		<td><small className="text-muted">{target.uuid}</small></td>

@@ -1,11 +1,11 @@
-import {useEffect, Fragment} from 'react';
+import {useState, useEffect, Fragment} from 'react';
+import type {FormEvent} from 'react';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
-import {useForm} from 'react-hook-form';
 
 import SelectTargetsFormTarget from './select-form-target';
 import SelectTargetsFormDisks from './select-form-disks';
-import {colCheck} from './select-form.module.css';
+import styles from './select-form.module.css';
 import type {SerializableTarget} from '.';
 
 export interface SelectTargetsFormData {
@@ -17,21 +17,32 @@ type SelectMode = null | 'target' | 'target+disk' | 'disk';
 interface Props {
 	targets: SerializableTarget[];
 	mode: SelectMode;
-	onSubmit: (data: SelectTargetsFormData) => Promise<void>;
-	children: JSX.Element[] | JSX.Element | string;
+	onUpdate: (data: SelectTargetsFormData) => Promise<void>;
 }
 
-const SelectTargetsForm = ({targets, mode, onSubmit, children}: Props) => {
-	const {register, handleSubmit, reset, formState: {isSubmitSuccessful}} = useForm<SelectTargetsFormData>();
+const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
+	const [selection, setSelection] = useState<string[]>([]);
+	const selectionUpdate = (key: string, value: boolean) => {
+		if (selection.includes(key)) {
+			if (!value) {
+				setSelection(selection.filter(s => s !== key));
+			}
+		} else if (value) {
+			setSelection([...selection, key]);
+		}
+	};
 
 	useEffect(() => {
-		if (isSubmitSuccessful) {
-			reset();
-		}
-	}, [isSubmitSuccessful, reset]);
+		void onUpdate({selection});
+	}, [onUpdate, selection]);
+
+	const onInput = (event: FormEvent<HTMLInputElement>): void => {
+		const target = event.target as HTMLInputElement;
+		selectionUpdate(target.value, target.checked);
+	};
 
 	const renderCheck = (value: string) => (
-		<Form.Check id={'selection+' + value} type="checkbox" value={value} aria-label="Use sudo for privilege escalation" {...register('selection')}/>
+		<Form.Check id={'selection+' + value} type="checkbox" value={value} onInput={onInput}/>
 	);
 
 	const renderTarget = (target: SerializableTarget, mode: SelectMode) => (
@@ -51,19 +62,18 @@ const SelectTargetsForm = ({targets, mode, onSubmit, children}: Props) => {
 	);
 
 	return (
-		<Form onSubmit={handleSubmit(onSubmit)}>
-			{children}
+		<Form>
 			<Table>
 				<thead>
 					<tr>
-						<th className={colCheck}/>
+						<th className={styles.colCheck}/>
 						<th>Target</th>
 						<th>Access</th>
 						<th>UUID</th>
 					</tr>
 				</thead>
 				<tbody>
-					{targets.filter((_, i) => i === 0).map(target => renderTarget(target, mode))}
+					{targets.map(target => renderTarget(target, mode))}
 				</tbody>
 			</Table>
 		</Form>

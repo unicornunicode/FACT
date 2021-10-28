@@ -6,9 +6,12 @@ import type {CreateTargetFormData} from './create-form';
 
 interface Props {
 	onComplete: (uuid: Uint8Array) => Promise<void>;
+	modal: boolean;
+	modalShow: boolean;
+	onModalClose: () => void;
 }
 
-const CreateTarget = ({onComplete}: Props) => {
+const CreateTarget = ({onComplete, modal, modalShow, onModalClose}: Props) => {
 	const onSubmit = async (data: CreateTargetFormData) => {
 		const rpc = await managementRpc();
 		const client = new ManagementClientImpl(rpc);
@@ -27,7 +30,7 @@ const CreateTarget = ({onComplete}: Props) => {
 	};
 
 	return (
-		<CreateTargetForm onSubmit={onSubmit}/>
+		<CreateTargetForm modal={modal} modalShow={modalShow} onSubmit={onSubmit} onModalClose={onModalClose}/>
 	);
 };
 

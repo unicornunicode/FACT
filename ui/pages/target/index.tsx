@@ -1,5 +1,7 @@
+import {useState, useEffect, useCallback} from 'react';
 import type {GetServerSideProps, NextPage} from 'next';
 import Head from 'next/head';
+import {useRouter} from 'next/router';
 import Container from 'react-bootstrap/Container';
 
 import {serializeTarget} from '../../features/target';
@@ -26,9 +28,30 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 };
 
 const ListTargetPage: NextPage<Props> = ({targets}: Props) => {
-	const onCreateTarget = async (uuid: Uint8Array) => {
-		console.debug(uuid);
-	};
+	const router = useRouter();
+
+	const onCreateTarget = useCallback(async (_uuid: Uint8Array) => {
+		await router.replace(router.asPath);
+	}, [router]);
+	useEffect(() => {
+		const interval = setInterval(async () => {
+			await router.replace(router.asPath);
+		}, 10_000);
+
+		return () => {
+			clearInterval(interval);
+		};
+	}, [router]);
+
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	const [showAddTarget, setShowAddTarget] = useState(false);
+	const handleCloseAddTarget = useCallback(async () => {
+		setShowAddTarget(false);
+	}, []);
+
+	const handleShowAddTarget = useCallback(async () => {
+		setShowAddTarget(true);
+	}, []);
 
 	return (
 		<main>
@@ -36,9 +59,9 @@ const ListTargetPage: NextPage<Props> = ({targets}: Props) => {
 				<title>Targets</title>
 			</Head>
 			<Container fluid>
-				<CreateTarget onComplete={onCreateTarget}/>
-				<SelectTargets targets={targets}/>
+				<SelectTargets targets={targets} onShowAddTarget={handleShowAddTarget}/>
 			</Container>
+			<CreateTarget modal modalShow={showAddTarget} onComplete={onCreateTarget} onModalClose={handleCloseAddTarget}/>
 		</main>
 	);
 };

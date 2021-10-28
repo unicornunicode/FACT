@@ -6,7 +6,7 @@ import {parse as uuidParse} from 'uuid';
 import type {LsblkResult} from '../../proto/fact/tasks';
 import {ManagementClientImpl} from '../../proto/fact/management';
 import {managementRpc} from '../grpc';
-import {colCheck} from './select-form.module.css';
+import styles from './select-form.module.css';
 import type {SerializableTarget} from '.';
 
 interface Props {
@@ -15,9 +15,9 @@ interface Props {
 }
 
 const SelectTargetsFormDisks = ({target, children}: Props) => {
-	const uuid = uuidParse(target.uuid) as Uint8Array;
 	const [disks, setDisks] = useState<LsblkResult[] | null>(null);
 	useEffect(() => {
+		const uuid = uuidParse(target.uuid) as Uint8Array;
 		const fetchLsblkResult = async (): Promise<void> => {
 			const rpc = await managementRpc();
 			const client = new ManagementClientImpl(rpc);
@@ -26,10 +26,10 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 		};
 
 		void fetchLsblkResult();
-	}, []);
+	}, [target]);
 	const renderDisk = (disk: LsblkResult) => (
 		<tr key={disk.deviceName}>
-			<td>{children(`${target.uuid}+${disk.deviceName}`)}</td>
+			<td>{children(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>
 			<td>{disk.deviceName}</td>
 			<td>{disk.type}</td>
 			<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
@@ -47,8 +47,8 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 		<Table size="sm" className="mb-0">
 			<tbody>
 				<tr>
-					<th className={colCheck}/>
-					<th>Device</th>
+					<th className={styles.colCheck}/>
+					<th>Disk</th>
 					<th>Type</th>
 					<th>Size</th>
 					<th>Mount</th>
