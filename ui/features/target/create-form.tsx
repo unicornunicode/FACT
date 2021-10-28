@@ -4,6 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 import {useForm} from 'react-hook-form';
 
@@ -22,11 +23,14 @@ export interface CreateTargetFormData {
 
 interface Props {
 	onSubmit: (data: CreateTargetFormData) => Promise<void>;
+	modal: boolean;
+	modalShow: boolean;
+	onModalClose: () => void;
 }
 
 const sshPrivateKeyPlaceholder = '-----BEGIN OPENSSH PRIVATE KEY-----\naGVoZSB5b3UgZm91bmQgdGhpcyBtZXNzYWdlLCBncmVhdCBqb2I...';
 
-const CreateTargetForm = ({onSubmit}: Props) => {
+const CreateTargetForm = ({onSubmit, modal, modalShow, onModalClose}: Props) => {
 	const {register, handleSubmit, watch, reset, formState: {isSubmitSuccessful}} = useForm<CreateTargetFormData>({
 		defaultValues: {
 			sshPort: 22,
@@ -83,8 +87,8 @@ const CreateTargetForm = ({onSubmit}: Props) => {
 		ssh: renderSsh,
 	};
 
-	return (
-		<Form onSubmit={handleSubmit(onSubmit)}>
+	const renderForm = () => (
+		<>
 			<Row>
 				<Form.Group as={Col} className="mb-3" controlId="target-name">
 					<Form.Label>Name</Form.Label>
@@ -98,13 +102,44 @@ const CreateTargetForm = ({onSubmit}: Props) => {
 				</Form.Group>
 			</Row>
 			{renderAccess[access]}
-			<Row>
-				<Col className="mb-3">
-					<Button type="submit" variant="primary">
-						Create
-					</Button>
-				</Col>
-			</Row>
+			{modal ? '' : (
+				<Row>
+					<Col className="mb-3">
+						<Button type="submit">
+							Add
+						</Button>
+					</Col>
+				</Row>
+			)}
+		</>
+	);
+
+	if (modal) {
+		return (
+			<Modal show={modalShow} size="lg" onHide={onModalClose}>
+				<Form onSubmit={handleSubmit(onSubmit)}>
+					<Modal.Header closeButton>
+						<Modal.Title>Add target</Modal.Title>
+					</Modal.Header>
+					<Modal.Body>
+						{renderForm()}
+					</Modal.Body>
+					<Modal.Footer>
+						<Button variant="secondary" onClick={onModalClose}>
+							Close
+						</Button>
+						<Button type="submit">
+							Add
+						</Button>
+					</Modal.Footer>
+				</Form>
+			</Modal>
+		);
+	}
+
+	return (
+		<Form onSubmit={handleSubmit(onSubmit)}>
+			{renderForm()}
 		</Form>
 	);
 };

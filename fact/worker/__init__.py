@@ -115,7 +115,11 @@ class Worker:
                 optional = SSHAccessInfoOptional()
                 remote = TargetEndpoint(core_access, proxy, optional)
 
-                lsblk_result = remote.get_all_available_disk()
+                try:
+                    lsblk_result = remote.get_all_available_disk()
+                except Exception as e:
+                    log.error(f"Failed to perform SSH: {e}")
+                    return []
 
             # Convert to grpc compatible version
             grpc_lsblk_results = []

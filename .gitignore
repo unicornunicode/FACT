@@ -18,6 +18,9 @@ node_modules
 # nodejs: production
 /ui/build
 
+# nodejs: typescript
+/ui/*.tsbuildinfo
+
 # nodejs: debug
 npm-debug.log*
 yarn-debug.log*
