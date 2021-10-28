@@ -1,5 +1,7 @@
 import asyncio
 import logging
+import tempfile
+import os
 from pathlib import Path
 from typing import List, Optional, AsyncIterator
 
@@ -99,14 +101,21 @@ class Worker:
             port = target.ssh.port
             private_key = target.ssh.private_key
 
-            core_access = SSHAccessInfo(
-                user=user, hosts=list(host), port=port, privateKey_path=private_key
-            )
-            proxy = SSHProxyInfo()
-            optional = SSHAccessInfoOptional()
-            remote = TargetEndpoint(core_access, proxy, optional)
+            with tempfile.NamedTemporaryFile("w+") as f:
+                f.write(private_key)
+                f.flush()
 
-            lsblk_result = remote.get_all_available_disk()
+                private_key_path = f.name
+                os.chmod(private_key_path, 0o600)
+
+                core_access = SSHAccessInfo(
+                    user=user, hosts=[host], port=port, privateKey_path=private_key_path
+                )
+                proxy = SSHProxyInfo()
+                optional = SSHAccessInfoOptional()
+                remote = TargetEndpoint(core_access, proxy, optional)
+
+                lsblk_result = remote.get_all_available_disk()
 
             # Convert to grpc compatible version
             grpc_lsblk_results = []
@@ -121,7 +130,7 @@ class Worker:
                 )
             return grpc_lsblk_results
 
-        raise Exception("Invalid remote access type")
+        raise Exception(f"Invalid remote access type {access_type}")
 
     async def _handle_task_collect_disk(
         self, task_uuid: UUID, target: Target, task: TaskCollectDisk
@@ -200,7 +209,7 @@ class Worker:
                 await self._exchange_handshake(responses, events)
             except Exception as e:
                 log.critical(f"failed to exchange handshake: {e}")
-                return
+                raise
 
             async for event in events:
                 # For now, synchronously and sequentially handle incoming tasks
@@ -209,7 +218,7 @@ class Worker:
                     result = await self._handle_worker_task(event.worker_task)
                 except Exception as e:
                     log.critical(f"failed to process incoming tasks: {e}")
-                    return
+                    raise
                 await responses.add(SessionResults(worker_task_result=result))
 
     async def stop(self) -> None:

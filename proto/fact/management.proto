@@ -17,6 +17,7 @@ message CreateTaskRequest {
         TaskNone task_none = 1;
         TaskCollectDisk task_collect_disk = 2;
         TaskCollectMemory task_collect_memory = 3;
+		TaskCollectLsblk task_collect_lsblk = 5;
     }
     bytes target = 4;
 }
@@ -50,6 +51,7 @@ message ListTask {
         TaskNone task_none = 7;
         TaskCollectDisk task_collect_disk = 8;
         TaskCollectMemory task_collect_memory = 9;
+		TaskCollectLsblk task_collect_lsblk = 11;
     }
 
     bytes worker = 10; // Worker UUID

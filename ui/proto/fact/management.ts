@@ -8,6 +8,7 @@ import {
   TaskNone,
   TaskCollectDisk,
   TaskCollectMemory,
+  TaskCollectLsblk,
   SSHAccess,
 } from "../fact/tasks";
 
@@ -18,6 +19,7 @@ export interface CreateTaskRequest {
   taskNone: TaskNone | undefined;
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
+  taskCollectLsblk: TaskCollectLsblk | undefined;
   target: Uint8Array;
 }
 
@@ -42,6 +44,7 @@ export interface ListTask {
   taskNone: TaskNone | undefined;
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
+  taskCollectLsblk: TaskCollectLsblk | undefined;
   /** Worker UUID */
   worker: Uint8Array;
 }
@@ -138,6 +141,12 @@ export const CreateTaskRequest = {
         writer.uint32(26).fork()
       ).ldelim();
     }
+    if (message.taskCollectLsblk !== undefined) {
+      TaskCollectLsblk.encode(
+        message.taskCollectLsblk,
+        writer.uint32(42).fork()
+      ).ldelim();
+    }
     if (message.target.length !== 0) {
       writer.uint32(34).bytes(message.target);
     }
@@ -163,6 +172,12 @@ export const CreateTaskRequest = {
           break;
         case 3:
           message.taskCollectMemory = TaskCollectMemory.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 5:
+          message.taskCollectLsblk = TaskCollectLsblk.decode(
             reader,
             reader.uint32()
           );
@@ -206,6 +221,16 @@ export const CreateTaskRequest = {
     } else {
       message.taskCollectMemory = undefined;
     }
+    if (
+      object.taskCollectLsblk !== undefined &&
+      object.taskCollectLsblk !== null
+    ) {
+      message.taskCollectLsblk = TaskCollectLsblk.fromJSON(
+        object.taskCollectLsblk
+      );
+    } else {
+      message.taskCollectLsblk = undefined;
+    }
     if (object.target !== undefined && object.target !== null) {
       message.target = bytesFromBase64(object.target);
     }
@@ -225,6 +250,10 @@ export const CreateTaskRequest = {
     message.taskCollectMemory !== undefined &&
       (obj.taskCollectMemory = message.taskCollectMemory
         ? TaskCollectMemory.toJSON(message.taskCollectMemory)
+        : undefined);
+    message.taskCollectLsblk !== undefined &&
+      (obj.taskCollectLsblk = message.taskCollectLsblk
+        ? TaskCollectLsblk.toJSON(message.taskCollectLsblk)
         : undefined);
     message.target !== undefined &&
       (obj.target = base64FromBytes(
@@ -259,6 +288,16 @@ export const CreateTaskRequest = {
       );
     } else {
       message.taskCollectMemory = undefined;
+    }
+    if (
+      object.taskCollectLsblk !== undefined &&
+      object.taskCollectLsblk !== null
+    ) {
+      message.taskCollectLsblk = TaskCollectLsblk.fromPartial(
+        object.taskCollectLsblk
+      );
+    } else {
+      message.taskCollectLsblk = undefined;
     }
     if (object.target !== undefined && object.target !== null) {
       message.target = object.target;
@@ -487,6 +526,12 @@ export const ListTask = {
         writer.uint32(74).fork()
       ).ldelim();
     }
+    if (message.taskCollectLsblk !== undefined) {
+      TaskCollectLsblk.encode(
+        message.taskCollectLsblk,
+        writer.uint32(90).fork()
+      ).ldelim();
+    }
     if (message.worker.length !== 0) {
       writer.uint32(82).bytes(message.worker);
     }
@@ -538,6 +583,12 @@ export const ListTask = {
           break;
         case 9:
           message.taskCollectMemory = TaskCollectMemory.decode(
+            reader,
+            reader.uint32()
+          );
+          break;
+        case 11:
+          message.taskCollectLsblk = TaskCollectLsblk.decode(
             reader,
             reader.uint32()
           );
@@ -609,6 +660,16 @@ export const ListTask = {
     } else {
       message.taskCollectMemory = undefined;
     }
+    if (
+      object.taskCollectLsblk !== undefined &&
+      object.taskCollectLsblk !== null
+    ) {
+      message.taskCollectLsblk = TaskCollectLsblk.fromJSON(
+        object.taskCollectLsblk
+      );
+    } else {
+      message.taskCollectLsblk = undefined;
+    }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = bytesFromBase64(object.worker);
     }
@@ -644,6 +705,10 @@ export const ListTask = {
     message.taskCollectMemory !== undefined &&
       (obj.taskCollectMemory = message.taskCollectMemory
         ? TaskCollectMemory.toJSON(message.taskCollectMemory)
+        : undefined);
+    message.taskCollectLsblk !== undefined &&
+      (obj.taskCollectLsblk = message.taskCollectLsblk
+        ? TaskCollectLsblk.toJSON(message.taskCollectLsblk)
         : undefined);
     message.worker !== undefined &&
       (obj.worker = base64FromBytes(
@@ -708,6 +773,16 @@ export const ListTask = {
       );
     } else {
       message.taskCollectMemory = undefined;
+    }
+    if (
+      object.taskCollectLsblk !== undefined &&
+      object.taskCollectLsblk !== null
+    ) {
+      message.taskCollectLsblk = TaskCollectLsblk.fromPartial(
+        object.taskCollectLsblk
+      );
+    } else {
+      message.taskCollectLsblk = undefined;
     }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = object.worker;

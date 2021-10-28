@@ -48,6 +48,7 @@ const CreateTaskForm = ({onSubmit}: Props) => {
 				<Form.Group as={Col} className="mb-3" controlId="task-task">
 					<Form.Label>Task</Form.Label>
 					<div className="py-1">
+						<Form.Check inline required type="radio" id="task-collect-lsblk" label="Discover Disks" value="collectLsblk" {...register('task')}/>
 						<Form.Check inline required type="radio" id="task-collect-disk" label="Collect Disk" value="collectDisk" {...register('task')}/>
 						<Form.Check inline required type="radio" id="task-collect-memory" label="Collect Memory" value="collectMemory" {...register('task')}/>
 					</div>
