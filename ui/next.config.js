@@ -4,8 +4,4 @@
 
 module.exports = {
 	reactStrictMode: true,
-	experimental: {
-		swcLoader: false,
-		swcMinify: false,
-	},
 };
