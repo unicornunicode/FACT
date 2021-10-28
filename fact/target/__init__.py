@@ -1,6 +1,6 @@
 import logging
 import re
-from typing import BinaryIO
+from typing import BinaryIO, Tuple, List
 
 from fact.exceptions import SSHInfoError, TargetRuntimeError
 
@@ -19,25 +19,18 @@ def _write_remote_output(output: HostOutput, file_io: BinaryIO):
         raise
 
 
-def _parse_lsblk_output(raw_lsblk_data: bytes) -> dict:
+def _parse_lsblk_output(raw_lsblk_data: bytes) -> List[Tuple[str, int, str, str]]:
     """
     Converts the lsblk_data from commandline and save relevant info in a dict
     Assumes the "lsblk -lb" returns in the following format:
         NAME  MAJ:MIN  RM  SIZE  RO  TYPE  MOUNTPOINT
 
-    example = {
-        "disk_info" = [
-            {
-                dev_name: sda2
-                size: 200000
-                type: part
-                mountpoint: /
-            },
-            {
-                ......
-            }
-        ]
-    }
+    Output in the following format:
+    [
+        ("dev_name", size, "type", "mountpoint"),
+    ]
+
+    eg: [("sda2", 200000, "part", "/"),(...)]
     """
 
     lsblk_data = raw_lsblk_data.decode("utf-8")
@@ -48,18 +41,16 @@ def _parse_lsblk_output(raw_lsblk_data: bytes) -> dict:
     for entry in split_lsblk_data:
         if entry == "":
             continue
-
-        dict_entry = dict()
         cleaned_entry = re.split("[ ]+", entry)
-        dict_entry["dev_name"] = cleaned_entry[0]
-        dict_entry["size"] = cleaned_entry[3]
-        dict_entry["type"] = cleaned_entry[5]
-        dict_entry["mountpoint"] = cleaned_entry[6]
-        entries.append(dict_entry)
-
-    output = dict()
-    output["disk_info"] = entries
-    return output
+        entries.append(
+            (
+                cleaned_entry[0],  # Device name
+                int(cleaned_entry[3]),  # Size
+                cleaned_entry[5],  # Type
+                cleaned_entry[6],  # Mountpoint
+            )
+        )
+    return entries
 
 
 class SSHAccessInfo:
@@ -201,10 +192,10 @@ class TargetEndpoint:
             except OSError as e:
                 raise TargetRuntimeError("Error writing to file") from e
 
-    def get_all_available_disk(self) -> dict:
+    def get_all_available_disk(self) -> List[Tuple[str, int, str, str]]:
         """
         Gets a list of availale disks on the remote machine
-        :return: lsblk information in dictionary form
+        :return: lsblk information as list of tuple
         """
         remote_command = "lsblk -lb"
         log.info(f"Executing remote command: {remote_command}")
@@ -216,5 +207,5 @@ class TargetEndpoint:
             for data in host_output.buffers.stdout.rw_buffer:
                 raw_lsblk_data += data
 
-        lsblk_dict = _parse_lsblk_output(raw_lsblk_data)
-        return lsblk_dict
+        lsblk_list = _parse_lsblk_output(raw_lsblk_data)
+        return lsblk_list

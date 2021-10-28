@@ -37,6 +37,19 @@ export interface TaskCollectMemory {}
 
 export interface TaskCollectMemoryResult {}
 
+export interface TaskCollectLsblk {}
+
+export interface LsblkResult {
+  deviceName: string;
+  size: number;
+  type: string;
+  mountpoint: string;
+}
+
+export interface TaskCollectLsblkResult {
+  lsblkResults: LsblkResult[];
+}
+
 const baseTarget: object = {};
 
 export const Target = {
@@ -608,6 +621,235 @@ export const TaskCollectMemoryResult = {
   },
 };
 
+const baseTaskCollectLsblk: object = {};
+
+export const TaskCollectLsblk = {
+  encode(
+    _: TaskCollectLsblk,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskCollectLsblk {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseTaskCollectLsblk } as TaskCollectLsblk;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): TaskCollectLsblk {
+    const message = { ...baseTaskCollectLsblk } as TaskCollectLsblk;
+    return message;
+  },
+
+  toJSON(_: TaskCollectLsblk): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<TaskCollectLsblk>): TaskCollectLsblk {
+    const message = { ...baseTaskCollectLsblk } as TaskCollectLsblk;
+    return message;
+  },
+};
+
+const baseLsblkResult: object = {
+  deviceName: "",
+  size: 0,
+  type: "",
+  mountpoint: "",
+};
+
+export const LsblkResult = {
+  encode(
+    message: LsblkResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.deviceName !== "") {
+      writer.uint32(10).string(message.deviceName);
+    }
+    if (message.size !== 0) {
+      writer.uint32(16).uint64(message.size);
+    }
+    if (message.type !== "") {
+      writer.uint32(26).string(message.type);
+    }
+    if (message.mountpoint !== "") {
+      writer.uint32(34).string(message.mountpoint);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): LsblkResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseLsblkResult } as LsblkResult;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.deviceName = reader.string();
+          break;
+        case 2:
+          message.size = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.type = reader.string();
+          break;
+        case 4:
+          message.mountpoint = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): LsblkResult {
+    const message = { ...baseLsblkResult } as LsblkResult;
+    if (object.deviceName !== undefined && object.deviceName !== null) {
+      message.deviceName = String(object.deviceName);
+    } else {
+      message.deviceName = "";
+    }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = Number(object.size);
+    } else {
+      message.size = 0;
+    }
+    if (object.type !== undefined && object.type !== null) {
+      message.type = String(object.type);
+    } else {
+      message.type = "";
+    }
+    if (object.mountpoint !== undefined && object.mountpoint !== null) {
+      message.mountpoint = String(object.mountpoint);
+    } else {
+      message.mountpoint = "";
+    }
+    return message;
+  },
+
+  toJSON(message: LsblkResult): unknown {
+    const obj: any = {};
+    message.deviceName !== undefined && (obj.deviceName = message.deviceName);
+    message.size !== undefined && (obj.size = message.size);
+    message.type !== undefined && (obj.type = message.type);
+    message.mountpoint !== undefined && (obj.mountpoint = message.mountpoint);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<LsblkResult>): LsblkResult {
+    const message = { ...baseLsblkResult } as LsblkResult;
+    if (object.deviceName !== undefined && object.deviceName !== null) {
+      message.deviceName = object.deviceName;
+    } else {
+      message.deviceName = "";
+    }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = object.size;
+    } else {
+      message.size = 0;
+    }
+    if (object.type !== undefined && object.type !== null) {
+      message.type = object.type;
+    } else {
+      message.type = "";
+    }
+    if (object.mountpoint !== undefined && object.mountpoint !== null) {
+      message.mountpoint = object.mountpoint;
+    } else {
+      message.mountpoint = "";
+    }
+    return message;
+  },
+};
+
+const baseTaskCollectLsblkResult: object = {};
+
+export const TaskCollectLsblkResult = {
+  encode(
+    message: TaskCollectLsblkResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.lsblkResults) {
+      LsblkResult.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): TaskCollectLsblkResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseTaskCollectLsblkResult } as TaskCollectLsblkResult;
+    message.lsblkResults = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.lsblkResults.push(
+            LsblkResult.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TaskCollectLsblkResult {
+    const message = { ...baseTaskCollectLsblkResult } as TaskCollectLsblkResult;
+    message.lsblkResults = [];
+    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
+      for (const e of object.lsblkResults) {
+        message.lsblkResults.push(LsblkResult.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: TaskCollectLsblkResult): unknown {
+    const obj: any = {};
+    if (message.lsblkResults) {
+      obj.lsblkResults = message.lsblkResults.map((e) =>
+        e ? LsblkResult.toJSON(e) : undefined
+      );
+    } else {
+      obj.lsblkResults = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<TaskCollectLsblkResult>
+  ): TaskCollectLsblkResult {
+    const message = { ...baseTaskCollectLsblkResult } as TaskCollectLsblkResult;
+    message.lsblkResults = [];
+    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
+      for (const e of object.lsblkResults) {
+        message.lsblkResults.push(LsblkResult.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
@@ -659,6 +901,13 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
 
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;

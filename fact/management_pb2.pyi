@@ -21,7 +21,9 @@ class CreateTaskRequest(google.protobuf.message.Message):
     TASK_COLLECT_MEMORY_FIELD_NUMBER: builtins.int
     TARGET_FIELD_NUMBER: builtins.int
     @property
-    def task_none(self) -> fact.tasks_pb2.TaskNone: ...
+    def task_none(self) -> fact.tasks_pb2.TaskNone:
+        """TODO: Shorten these"""
+        pass
     @property
     def task_collect_disk(self) -> fact.tasks_pb2.TaskCollectDisk: ...
     @property
