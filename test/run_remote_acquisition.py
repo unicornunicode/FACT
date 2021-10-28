@@ -1,9 +1,8 @@
-from fact.target import (
-    TargetEndpoint,
-    SSHAccessInfo,
-    SSHProxyInfo,
-    SSHAccessInfoOptional,
-)
+from pathlib import Path
+from uuid import uuid4
+
+from fact.target import (TargetEndpoint,SSHAccessInfo,)
+from fact.storage import Session, Artifact, Task, Storage
 
 import logging
 
@@ -12,23 +11,26 @@ logging.basicConfig(level=logging.DEBUG)
 
 if __name__ == "__main__":
     username = "your_remote_username"
-    host = ["127.0.0.1"]
+    host = "127.0.0.1"
     port = 22
+    pkey = "/path/to/pkey/file"
+
+    artefact_name = "name"
+    artefact_type = "disk"
+    storage_folder = "/path/to/folder"
     test_keywords = [""]
 
-    client_info = SSHAccessInfo(username, host, port)
-    optional_info = SSHAccessInfoOptional()
-    proxy_info = SSHProxyInfo()
+    a = Artifact(artefact_name, artefact_type)
+    t = Task(str(uuid4()))
+    s = Storage(Path(storage_folder))
 
-    target = TargetEndpoint(client_info, proxy_info, optional_info)
+    client_info = SSHAccessInfo(username, host, str(port), pkey)
+    target = TargetEndpoint(client_info)
 
     if "image" in test_keywords:
-        save_location = "/home/user/Desktop/lsblk_data_remote"
-        remote_image_path = "/dev/sda"
-
-        file_io = open(save_location, "wb")
-        target.collect_image(remote_image_path, file_io)
-        file_io.close()
+        with Session(s, t, a) as sess:
+            remote_image_path = Path("/dev/loop2")
+            target.collect_image(remote_image_path, sess)
 
     if "lsblk" in test_keywords:
         dic = target.get_all_available_disk()
