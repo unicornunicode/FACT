@@ -34,6 +34,7 @@ from ..tasks_pb2 import (
     TaskCollectDisk,
     CollectDiskSelector,
     TaskCollectMemory,
+    TaskCollectLsblk,
     SSHAccess,
 )
 from ..controller_pb2_grpc import (
@@ -55,6 +56,7 @@ from .database import (
     Base,
     Worker,
     Target,
+    TargetLsblkResult,
     Task,
     TaskType,
     TaskStatus,
@@ -177,13 +179,42 @@ class Controller:
                 worker: Worker = (await session.execute(stmt)).scalar_one()
                 worker.hostname = hostname
 
+    async def _update_target_lsblk_results(
+        self, task_uuid: UUID, results: Iterable[Tuple[str, int, str, str]]
+    ) -> None:
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Task).where(
+                    Task.status == TaskStatus.RUNNING, Task.uuid == task_uuid
+                )
+                task = (await session.execute(stmt)).scalar_one()
+                for device_name, size, type, mountpoint in results:
+                    stmt_lsblk_result = select(TargetLsblkResult).where(
+                        TargetLsblkResult.target == task.target,
+                        TargetLsblkResult.device_name == device_name,
+                    )
+                    lsblk_result = (
+                        await session.execute(stmt_lsblk_result)
+                    ).scalar_one_or_none()
+                    if lsblk_result is not None:
+                        task.size = size
+                        task.type = type
+                        task.mountpoint = mountpoint
+                        continue
+                    lsblk_result = TargetLsblkResult(
+                        target=task.target,
+                        device_name=device_name,
+                        size=size,
+                        type=type,
+                        mountpoint=mountpoint,
+                    )
+                    session.add(lsblk_result)
+
     async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
         async with self.session() as session:
             async with session.begin():
-                stmt = (
-                    select(Task)
-                    .where(Task.status == TaskStatus.WAITING, Task.worker == uuid)
-                    .limit(1)
+                stmt = select(Task).where(
+                    Task.status == TaskStatus.WAITING, Task.worker == uuid
                 )
                 task = (await session.execute(stmt)).scalar_one_or_none()
                 if task is None:
@@ -195,6 +226,15 @@ class Controller:
                 await session.flush()  # TODO: Is this necessary?
                 session.expunge_all()
                 return task, target
+
+    async def _complete_task(self, uuid: UUID) -> None:
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Task).where(
+                    Task.status == TaskStatus.RUNNING, Task.uuid == uuid
+                )
+                task = (await session.execute(stmt)).scalar_one()
+                task.status = TaskStatus.COMPLETE
 
     def _assign_task_to_worker(self, workers: List[Worker], task: Task) -> bool:
         # TODO: Actually schedule across multiple workers
@@ -271,9 +311,13 @@ class Management(ManagementServicer):
             uuid = await self.controller._create_task(
                 target_uuid=target_uuid, task_type=TaskType.task_collect_memory
             )
+        elif task_type == "task_collect_lsblk":
+            uuid = await self.controller._create_task(
+                target_uuid=target_uuid, task_type=TaskType.task_collect_lsblk
+            )
         else:
             context.abort(StatusCode.INVALID_ARGUMENT)
-            raise Exception("Unreachable: Invalid task type")
+            raise Exception(f"Unreachable: Invalid task type {task_type}")
         return CreateTaskResult(uuid=uuid.bytes)
 
     async def ListTask(
@@ -298,6 +342,9 @@ class Management(ManagementServicer):
                 if task.type == TaskType.task_collect_memory
                 else None
             )
+            task_collect_lsblk = (
+                TaskCollectLsblk() if task.type == TaskType.task_collect_lsblk else None
+            )
             list_tasks.append(
                 ListTask(
                     uuid=task.uuid.bytes if task.uuid is not None else None,
@@ -317,6 +364,7 @@ class Management(ManagementServicer):
                     task_none=task_none,
                     task_collect_disk=task_collect_disk,
                     task_collect_memory=task_collect_memory,
+                    task_collect_lsblk=task_collect_lsblk,
                     worker=task.worker.bytes if task.worker is not None else None,
                 )
             )
@@ -338,7 +386,7 @@ class Management(ManagementServicer):
             )
         else:
             context.abort(StatusCode.INVALID_ARGUMENT)
-            raise Exception("Unreachable: Invalid task type")
+            raise Exception(f"Unreachable: Invalid target type {target_type}")
         return CreateTargetResult(uuid=uuid.bytes)
 
     async def ListTarget(
@@ -446,16 +494,37 @@ class WorkerTasks(WorkerTasksServicer):
                 target=task_target,
                 task_collect_memory=task_collect_memory,
             )
+        elif task.type == TaskType.task_collect_lsblk:
+            task_collect_lsblk = TaskCollectLsblk()
+            return WorkerTask(
+                uuid=task.uuid.bytes if task.uuid is not None else None,
+                target=task_target,
+                task_collect_lsblk=task_collect_lsblk,
+            )
         elif task.type == TaskType.task_none:
             return WorkerTask(
                 uuid=task.uuid.bytes if task.uuid is not None else None,
                 task_none=TaskNone(),
             )
         else:
-            raise Exception("Unreachable: Invalid task type")
+            raise Exception(f"Unreachable: Invalid task type {task.type}")
 
-    async def _complete_task(self, task_uuid: UUID) -> None:
-        pass
+    async def _complete_task(self, result: WorkerTaskResult) -> None:
+        task_uuid = UUID(bytes=result.uuid)
+        task_type = result.WhichOneof("task")
+        if task_type == "task_collect_lsblk":
+            lsblk_results = []
+            for lsblk_result in result.task_collect_lsblk.lsblk_results:
+                lsblk_results.append(
+                    (
+                        lsblk_result.device_name,
+                        lsblk_result.size,
+                        lsblk_result.type,
+                        lsblk_result.mountpoint,
+                    )
+                )
+            await self.controller._update_target_lsblk_results(task_uuid, lsblk_results)
+        await self.controller._complete_task(task_uuid)
 
     async def Session(
         self, request: AsyncIterator[SessionResults], context: ServicerContext
@@ -490,7 +559,7 @@ class WorkerTasks(WorkerTasksServicer):
             # Read subsequent results
             worker_task_result: WorkerTaskResult = session_result.worker_task_result
             log.debug(worker_task_result)
-            await self._complete_task(UUID(bytes=worker_task_result.uuid))
+            await self._complete_task(worker_task_result)
 
 
 # vim: set et ts=4 sw=4:

@@ -22,6 +22,7 @@ const CreateTask = ({onComplete}: Props) => {
 				},
 			} : undefined,
 			taskCollectMemory: data.task === 'collectMemory' ? {} : undefined,
+			taskCollectLsblk: data.task === 'collectLsblk' ? {} : undefined,
 		});
 		await onComplete(uuid);
 	};
