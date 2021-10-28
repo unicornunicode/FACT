@@ -91,7 +91,7 @@ class Worker:
 
     async def _handle_task_obtain_lsblk(
         self, task_uuid: UUID, target: Target, task: TaskCollectLsblk
-    ) -> list:
+    ) -> list[LsblkResult]:
         access_type = target.WhichOneof("access")
         if access_type == "ssh":
             host = target.ssh.host
@@ -110,16 +110,16 @@ class Worker:
 
             # Convert to grpc compatible version
             grpc_lsblk_results = []
-            for entry in lsblk_result:
+            for device_name, size, type, mountpoint in lsblk_result:
                 grpc_lsblk_results.append(
                     LsblkResult(
-                        device_name=entry[0],
-                        size=entry[1],
-                        type=entry[2],
-                        mountpoint=entry[3],
+                        device_name=device_name,
+                        size=size,
+                        type=type,
+                        mountpoint=mountpoint,
                     )
                 )
-            return lsblk_result
+            return grpc_lsblk_results
 
         raise Exception("Invalid remote access type")
 

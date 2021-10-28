@@ -44,10 +44,10 @@ def _parse_lsblk_output(raw_lsblk_data: bytes) -> list[Tuple[str, int, str, str]
         cleaned_entry = re.split("[ ]+", entry)
         entries.append(
             (
-                cleaned_entry[0],
-                int(cleaned_entry[3]),
-                cleaned_entry[5],
-                cleaned_entry[6],
+                cleaned_entry[0],  # Device name
+                int(cleaned_entry[3]),  # Size
+                cleaned_entry[5],  # Type
+                cleaned_entry[6],  # Mountpoint
             )
         )
     return entries
