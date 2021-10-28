@@ -8,6 +8,7 @@ import {managementRpc} from '../../features/grpc';
 import {ManagementClientImpl} from '../../proto/fact/management';
 
 import CreateTarget from '../../features/target/create';
+import SelectTargets from '../../features/target/select';
 
 interface Props {
 	targets: SerializableTarget[];
@@ -36,7 +37,7 @@ const ListTargetPage: NextPage<Props> = ({targets}: Props) => {
 			</Head>
 			<Container fluid>
 				<CreateTarget onComplete={onCreateTarget}/>
-				<pre><code>{JSON.stringify(targets, null, 2)}</code></pre>
+				<SelectTargets targets={targets}/>
 			</Container>
 		</main>
 	);
