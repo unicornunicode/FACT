@@ -7,7 +7,7 @@ import type {SerializableTask} from '../../features/task';
 import {managementRpc} from '../../features/grpc';
 import {ManagementClientImpl} from '../../proto/fact/management';
 
-import CreateTask from '../../features/task/create';
+import ListTask from '../../features/task/list';
 
 interface Props {
 	tasks: SerializableTask[];
@@ -24,22 +24,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 	};
 };
 
-const ListTaskPage: NextPage<Props> = ({tasks}: Props) => {
-	const onCreateTask = async (uuid: Uint8Array) => {
-		console.debug(uuid);
-	};
-
-	return (
-		<main>
-			<Head>
-				<title>Tasks</title>
-			</Head>
-			<Container fluid>
-				<CreateTask onComplete={onCreateTask}/>
-				<pre><code>{JSON.stringify(tasks, null, 2)}</code></pre>
-			</Container>
-		</main>
-	);
-};
+const ListTaskPage: NextPage<Props> = ({tasks}: Props) => (
+	<main>
+		<Head>
+			<title>Tasks</title>
+		</Head>
+		<Container fluid>
+			<ListTask tasks={tasks}/>
+		</Container>
+	</main>
+);
 
 export default ListTaskPage;

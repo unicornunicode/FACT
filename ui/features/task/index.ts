@@ -16,7 +16,7 @@ export function serializeTask(task: ListTask): SerializableTask {
 	return {
 		...serializeUuid(task),
 		target: stringifyUuid(task.target),
-		worker: task.worker === null ? null : stringifyUuid(task.worker),
+		worker: task.worker.length === 0 ? null : stringifyUuid(task.worker),
 		createdAt: task.createdAt?.toISOString() ?? null,
 		assignedAt: task.assignedAt?.toISOString() ?? null,
 		completedAt: task.completedAt?.toISOString() ?? null,
