@@ -7,7 +7,7 @@ import type {SerializableWorker} from '../../features/worker';
 import {managementRpc} from '../../features/grpc';
 import {ManagementClientImpl} from '../../proto/fact/management';
 
-import ListWorker from '../../features/worker/list';
+import WorkerList from '../../features/worker/list';
 
 interface Props {
 	workers: SerializableWorker[];
@@ -24,15 +24,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 	};
 };
 
-const ListWorkerPage: NextPage<Props> = ({workers}: Props) => (
+const WorkerListPage: NextPage<Props> = ({workers}: Props) => (
 	<main>
 		<Head>
 			<title>Workers</title>
 		</Head>
 		<Container fluid>
-			<ListWorker workers={workers}/>
+			<WorkerList workers={workers}/>
 		</Container>
 	</main>
 );
 
-export default ListWorkerPage;
+export default WorkerListPage;

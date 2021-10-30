@@ -9,8 +9,8 @@ import type {SerializableTarget} from '../../features/target';
 import {managementRpc} from '../../features/grpc';
 import {ManagementClientImpl} from '../../proto/fact/management';
 
-import CreateTarget from '../../features/target/create';
-import SelectTargets from '../../features/target/select';
+import TargetCreate from '../../features/target/create';
+import TargetSelect from '../../features/target/select';
 
 interface Props {
 	targets: SerializableTarget[];
@@ -59,9 +59,9 @@ const ListTargetPage: NextPage<Props> = ({targets}: Props) => {
 				<title>Targets</title>
 			</Head>
 			<Container fluid>
-				<SelectTargets targets={targets} onShowAddTarget={handleShowAddTarget}/>
+				<TargetSelect targets={targets} onShowAddTarget={handleShowAddTarget}/>
 			</Container>
-			<CreateTarget modal modalShow={showAddTarget} onComplete={onCreateTarget} onModalClose={handleCloseAddTarget}/>
+			<TargetCreate modal modalShow={showAddTarget} onComplete={onCreateTarget} onModalClose={handleCloseAddTarget}/>
 		</main>
 	);
 };
