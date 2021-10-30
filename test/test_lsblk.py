@@ -2,7 +2,6 @@ from fact.target import _parse_lsblk_output
 
 
 def test_linux_lsblk_parsing():
-
     expected = [
         ("loop9", 33878016, "loop", "/snap/snapd/13170"),
         ("sda", 85899345920, "disk", ""),

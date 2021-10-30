@@ -1,47 +1,32 @@
-from typing import Any
+from pathlib import Path
 
 
-class FACTError(Exception):
-    def __init__(self, message: str, affected_field: Any = ""):
+class FACTError:
+    def __init__(self, message: str):
         self.message = message
-        self.affected_field = affected_field
 
     def __str__(self):
-        return f"{self.message}: {self.affected_field}"
+        return f"FACT error: {self.message}"
 
 
-# Target related errors
-class TargetError(Exception):
+class UnreachableError(FACTError, AssertionError):
     pass
 
 
-class SSHInfoError(FACTError, TargetError):
-    """Raised when SSH-related input fields are not supported or invalid"""
-
-    pass
-
-
-class TargetRuntimeError(FACTError, TargetError):
-    """Raised when Errors occured during interaction or collection from target machines"""
-
-    pass
+class LsblkParseError(FACTError, ValueError):
+    def __init__(self, raw_data: bytes):
+        super().__init__("Failed to parse lsblk data")
+        self.raw_data = raw_data
 
 
-# Misc related errors
-class MiscError(Exception):
-    pass
+class GzipExtensionError(FACTError, AssertionError):
+    def __init__(self, path: Path):
+        super().__init__(f"Path {path} should end with .gz")
 
 
-class GzipDecompressionError(FACTError, MiscError):
-    """Raised when there is a problem with trying to decompress .gz files"""
-
-    pass
-
-
-class FileExistsError(FACTError, MiscError):
-    """Raised when a file already exists and should not be overwritten"""
-
-    pass
+class GzipDecompressionError(FACTError, ValueError):
+    def __init__(self, path: Path):
+        super().__init__(f"Failed to decompress gzipped data at {path}")
 
 
 class StorageModuleException(Exception):

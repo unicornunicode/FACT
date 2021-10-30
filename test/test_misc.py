@@ -1,9 +1,10 @@
 import os
+import pytest
 
 from pathlib import Path
 
 from fact.utils.decompression import decompress_gzip
-from fact.exceptions import GzipDecompressionError
+from fact.exceptions import GzipExtensionError, GzipDecompressionError
 from fact.utils.hashing import calculate_sha256
 
 
@@ -15,24 +16,15 @@ def test_sha256sum_implementation():
     )
 
 
-def test_invalid_gunzip():
-    assert_list = []
-
-    try:
+def test_invalid_gunzip_extension():
+    with pytest.raises(GzipExtensionError):
         decompress_gzip(Path("test/files/raw_data"))
-    except GzipDecompressionError as e:
-        if "no .gz extension" in e.message:
-            assert_list.append(1)
 
-    try:
+
+def test_invalid_gunzip():
+    with pytest.raises(GzipDecompressionError):
         decompress_gzip(Path("test/files/invalid_gzip.gz"))
-    except GzipDecompressionError as e:
-        if "Error reading/processing" in e.message:
-            assert_list.append(2)
-        # Cleanup
-        os.remove("test/files/invalid_gzip")
-
-    assert assert_list == [1, 2]
+    os.remove("test/files/invalid_gzip")
 
 
 def test_gunzip():
@@ -40,5 +32,4 @@ def test_gunzip():
     assert calculate_sha256(Path("test/files/test_data")) == calculate_sha256(
         Path("test/files/raw_data")
     )
-    # cleanup
     os.remove("test/files/test_data")

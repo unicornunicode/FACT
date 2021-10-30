@@ -615,7 +615,7 @@ class WorkerTasks(WorkerTasksServicer):
                 uuid = UUID(bytes=response.worker_acceptance.uuid)
                 yield response
         except Exception as e:
-            log.error(f"failed to exchange handshake: {e}")
+            log.error("Failed to exchange handshake", e)
             context.abort(StatusCode.FAILED_PRECONDITION)
             return
 
@@ -631,7 +631,7 @@ class WorkerTasks(WorkerTasksServicer):
 
             session_result: SessionResults = await request.__anext__()
             if session_result.WhichOneof("result") != "worker_task_result":
-                log.error("recieved an event that is not worker_task_result")
+                log.error("Recieved an event that is not worker_task_result")
                 context.abort(StatusCode.FAILED_PRECONDITION)
                 return
 
