@@ -11,11 +11,11 @@ grpcio = "^1.41.0"
 SQLAlchemy = "^1.4.25"
 
 [tool.poetry.dev-dependencies]
+# Drivers
+aiosqlite = "^0.17.0"
 # Tools
 grpcio-tools = "^1.41.0"
 mkcommit = "^1.0.3"
-# Drivers
-aiosqlite = "^0.17.0"
 # Code quality
 flake8 = "^3.9.2"
 flake8-bugbear = "^21.9.2"
