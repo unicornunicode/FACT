@@ -28,7 +28,9 @@ export interface CreateTaskResult {
   uuid: Uint8Array;
 }
 
-export interface ListTaskRequest {}
+export interface ListTaskRequest {
+  limit: number;
+}
 
 export interface ListTaskResult {
   tasks: ListTask[];
@@ -386,13 +388,16 @@ export const CreateTaskResult = {
   },
 };
 
-const baseListTaskRequest: object = {};
+const baseListTaskRequest: object = { limit: 0 };
 
 export const ListTaskRequest = {
   encode(
-    _: ListTaskRequest,
+    message: ListTaskRequest,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
+    if (message.limit !== 0) {
+      writer.uint32(8).uint64(message.limit);
+    }
     return writer;
   },
 
@@ -403,6 +408,9 @@ export const ListTaskRequest = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.limit = longToNumber(reader.uint64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -411,18 +419,29 @@ export const ListTaskRequest = {
     return message;
   },
 
-  fromJSON(_: any): ListTaskRequest {
+  fromJSON(object: any): ListTaskRequest {
     const message = { ...baseListTaskRequest } as ListTaskRequest;
+    if (object.limit !== undefined && object.limit !== null) {
+      message.limit = Number(object.limit);
+    } else {
+      message.limit = 0;
+    }
     return message;
   },
 
-  toJSON(_: ListTaskRequest): unknown {
+  toJSON(message: ListTaskRequest): unknown {
     const obj: any = {};
+    message.limit !== undefined && (obj.limit = message.limit);
     return obj;
   },
 
-  fromPartial(_: DeepPartial<ListTaskRequest>): ListTaskRequest {
+  fromPartial(object: DeepPartial<ListTaskRequest>): ListTaskRequest {
     const message = { ...baseListTaskRequest } as ListTaskRequest;
+    if (object.limit !== undefined && object.limit !== null) {
+      message.limit = object.limit;
+    } else {
+      message.limit = 0;
+    }
     return message;
   },
 };
@@ -2025,6 +2044,13 @@ function fromJsonTimestamp(o: any): Date {
   } else {
     return fromTimestamp(Timestamp.fromJSON(o));
   }
+}
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
 }
 
 if (_m0.util.Long !== Long) {
