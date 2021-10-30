@@ -2,8 +2,9 @@ import asyncio
 import logging
 import tempfile
 import os
+from contextlib import contextmanager
 from pathlib import Path
-from typing import List, Optional, AsyncIterator
+from typing import List, Optional, Literal, Generator, AsyncIterator
 
 # Protocol
 from grpc.aio import insecure_channel
@@ -37,6 +38,27 @@ from fact.target import (
     SSHAccessInfo,
     TargetEndpoint,
 )
+from fact.storage import (
+    Session,
+    Storage,
+    Task,
+    Artifact,
+)
+
+
+@contextmanager
+def _storage_open(
+    storage: Storage,
+    task_uuid: UUID,
+    artifact_name: str,
+    artifact_type: Literal["disk"],
+) -> Generator[Session, None, None]:
+    # TODO: Move this into storage
+    task = Task(str(task_uuid))
+    artifact = Artifact(artifact_name, artifact_type)
+    with Session(storage, task, artifact) as s:
+        yield s
+
 
 log = logging.getLogger(__name__)
 
@@ -47,12 +69,16 @@ class Worker:
     """
 
     _controller_addr: str
+    _storage: Storage
     _storage_dir: Path
     _uuid_file: Path
     _uuid: Optional[UUID] = None
 
     def __init__(self, controller_addr: str, storage_dir: Path):
         self._controller_addr = controller_addr
+
+        # TODO: S3 storage abstraction
+        self._storage = Storage(storage_dir)
 
         self._storage_dir = storage_dir
         self._ensure_storage_dir()
@@ -89,19 +115,13 @@ class Worker:
         """
         return platform.node()
 
-    async def _handle_task_obtain_lsblk(
-        self, task_uuid: UUID, target: Target, task: TaskCollectLsblk
-    ) -> List[LsblkResult]:
+    @contextmanager
+    def _remote_open(self, target: Target) -> Generator[TargetEndpoint, None, None]:
         access_type = target.WhichOneof("access")
         if access_type == "ssh":
-            host = target.ssh.host
-            user = target.ssh.user
-            port = target.ssh.port
-            private_key = target.ssh.private_key
-
             with tempfile.NamedTemporaryFile("w+") as f:
-                f.write(private_key)
-                if not private_key.endswith("\n"):
+                f.write(target.ssh.private_key)
+                if not target.ssh.private_key.endswith("\n"):
                     f.write("\n")
                 f.flush()
 
@@ -109,38 +129,47 @@ class Worker:
                 os.chmod(private_key_path, 0o600)
 
                 core_access = SSHAccessInfo(
-                    user=user,
-                    host=host,
-                    port=str(port),
+                    user=target.ssh.user,
+                    host=target.ssh.host,
+                    port=str(target.ssh.port),
                     privateKey_path=private_key_path,
                 )
-                remote = TargetEndpoint(core_access)
+                yield TargetEndpoint(core_access)
+        else:
+            raise Exception(f"Invalid remote access type {access_type}")
 
-                try:
-                    lsblk_result = remote.get_all_available_disk()
-                except Exception as e:
-                    log.error(f"Failed to perform SSH: {e}")
-                    return []
+    async def _handle_task_obtain_lsblk(
+        self, task_uuid: UUID, target: Target, task: TaskCollectLsblk
+    ) -> List[LsblkResult]:
+        with self._remote_open(target) as remote:
+            try:
+                lsblk_result = remote.get_all_available_disk()
+            except Exception as e:
+                log.error(f"Failed to perform SSH: {e}")
+                return []
 
-            # Convert to grpc compatible version
-            grpc_lsblk_results = []
-            for device_name, size, type, mountpoint in lsblk_result:
-                grpc_lsblk_results.append(
-                    LsblkResult(
-                        device_name=device_name,
-                        size=size,
-                        type=type,
-                        mountpoint=mountpoint,
-                    )
+        # Convert to grpc compatible version
+        grpc_lsblk_results = []
+        for device_name, size, type, mountpoint in lsblk_result:
+            grpc_lsblk_results.append(
+                LsblkResult(
+                    device_name=device_name,
+                    size=size,
+                    type=type,
+                    mountpoint=mountpoint,
                 )
-            return grpc_lsblk_results
-
-        raise Exception(f"Invalid remote access type {access_type}")
+            )
+        return grpc_lsblk_results
 
     async def _handle_task_collect_disk(
         self, task_uuid: UUID, target: Target, task: TaskCollectDisk
     ) -> None:
-        log.error("Task collect_disk not implemented")
+        with _storage_open(self._storage, task_uuid, task.selector.path, "disk") as f:
+            with self._remote_open(target) as remote:
+                try:
+                    remote.collect_image(task.selector.path, f)
+                except Exception as e:
+                    log.error(f"Failed to collect disk: {e}")
 
     async def _handle_task_collect_memory(
         self, task_uuid: UUID, target: Target, task: TaskCollectMemory
