@@ -10,13 +10,17 @@ import styles from './select-form.module.css';
 import type {SerializableTarget} from '.';
 
 interface Props {
-	target: SerializableTarget;
+	target: SerializableTarget | null;
 	children?: (selection: string) => JSX.Element[] | JSX.Element | string;
 }
 
 const SelectTargetsFormDisks = ({target, children}: Props) => {
 	const [disks, setDisks] = useState<LsblkResult[] | null>(null);
 	useEffect(() => {
+		if (target === null) {
+			return;
+		}
+
 		const uuid = uuidParse(target.uuid) as Uint8Array;
 		const fetchLsblkResult = async (): Promise<void> => {
 			const rpc = await managementRpc();
@@ -29,7 +33,7 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 	}, [target]);
 	const renderDisk = (disk: LsblkResult) => (
 		<tr key={disk.deviceName}>
-			{children === undefined ? '' : <td>{children(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>}
+			{children === undefined || target === null ? '' : <td>{children(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>}
 			<td className="text-nowrap">{disk.deviceName}</td>
 			<td>{disk.type}</td>
 			<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
