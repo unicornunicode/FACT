@@ -121,10 +121,12 @@ class Controller:
                 session.add(task)
         return uuid
 
-    async def _list_task(self) -> Iterable[Task]:
+    async def _list_task(self, limit: Optional[int] = None) -> Iterable[Task]:
         async with self.session() as session:
             async with session.begin():
-                stmt = select(Task)
+                stmt = select(Task).order_by(Task.created_at.desc())
+                if limit is not None and limit > 0:
+                    stmt = stmt.limit(limit)
                 tasks = (await session.execute(stmt)).scalars().all()
                 session.expunge_all()
                 return tasks
@@ -361,7 +363,7 @@ class Management(ManagementServicer):
         self, request: ListTaskRequest, context: ServicerContext
     ) -> ListTaskResult:
         list_tasks = []
-        tasks = await self.controller._list_task()
+        tasks = await self.controller._list_task(limit=request.limit)
         for task in tasks:
             task_none = TaskNone() if task.type == TaskType.task_none else None
             task_collect_disk = (

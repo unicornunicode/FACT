@@ -58,8 +58,13 @@ global___CreateTaskResult = CreateTaskResult
 
 class ListTaskRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
+    LIMIT_FIELD_NUMBER: builtins.int
+    limit: builtins.int = ...
     def __init__(self,
+        *,
+        limit : builtins.int = ...,
         ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal[u"limit",b"limit"]) -> None: ...
 global___ListTaskRequest = ListTaskRequest
 
 class ListTaskResult(google.protobuf.message.Message):

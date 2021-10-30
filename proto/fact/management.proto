@@ -29,7 +29,7 @@ message CreateTaskResult {
 }
 
 message ListTaskRequest {
-
+	uint64 limit = 1;
 }
 
 message ListTaskResult {

@@ -22,3 +22,15 @@ export function serializeTask(task: ListTask): SerializableTask {
 		completedAt: task.completedAt?.toISOString() ?? null,
 	};
 }
+
+export function sortCompletedAt(a: SerializableTask, b: SerializableTask) {
+	if (a.createdAt === null) {
+		return -1;
+	}
+
+	if (b.createdAt === null) {
+		return 1;
+	}
+
+	return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+}
