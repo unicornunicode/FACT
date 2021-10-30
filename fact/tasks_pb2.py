@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"\n\n\x08TaskNone\"\x10\n\x0eTaskNoneResult\"9\n\x0fTaskCollectDisk\x12&\n\x08selector\x18\x02 \x01(\x0b\x32\x14.CollectDiskSelector\"\x17\n\x15TaskCollectDiskResult\"#\n\x13\x43ollectDiskSelector\x12\x0c\n\x04path\x18\x01 \x01(\t\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult\"\x12\n\x10TaskCollectLsblk\"R\n\x0bLsblkResult\x12\x13\n\x0b\x64\x65vice_name\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\x04\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x12\n\nmountpoint\x18\x04 \x01(\t\"=\n\x16TaskCollectLsblkResult\x12#\n\rlsblk_results\x18\x01 \x03(\x0b\x32\x0c.LsblkResultb\x06proto3'
+  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"\n\n\x08TaskNone\"\x10\n\x0eTaskNoneResult\"9\n\x0fTaskCollectDisk\x12&\n\x08selector\x18\x02 \x01(\x0b\x32\x14.CollectDiskSelector\"\x17\n\x15TaskCollectDiskResult\"#\n\x13\x43ollectDiskSelector\x12\x0c\n\x04path\x18\x01 \x01(\t\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult\"\x15\n\x13TaskCollectDiskinfo\"U\n\x0eTargetDiskinfo\x12\x13\n\x0b\x64\x65vice_name\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\x04\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x12\n\nmountpoint\x18\x04 \x01(\t\"?\n\x19TaskCollectDiskinfoResult\x12\"\n\tdiskinfos\x18\x01 \x03(\x0b\x32\x0f.TargetDiskinfob\x06proto3'
 )
 
 
@@ -325,9 +325,9 @@ _TASKCOLLECTMEMORYRESULT = _descriptor.Descriptor(
 )
 
 
-_TASKCOLLECTLSBLK = _descriptor.Descriptor(
-  name='TaskCollectLsblk',
-  full_name='TaskCollectLsblk',
+_TASKCOLLECTDISKINFO = _descriptor.Descriptor(
+  name='TaskCollectDiskinfo',
+  full_name='TaskCollectDiskinfo',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -346,41 +346,41 @@ _TASKCOLLECTLSBLK = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=397,
-  serialized_end=415,
+  serialized_end=418,
 )
 
 
-_LSBLKRESULT = _descriptor.Descriptor(
-  name='LsblkResult',
-  full_name='LsblkResult',
+_TARGETDISKINFO = _descriptor.Descriptor(
+  name='TargetDiskinfo',
+  full_name='TargetDiskinfo',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='device_name', full_name='LsblkResult.device_name', index=0,
+      name='device_name', full_name='TargetDiskinfo.device_name', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='size', full_name='LsblkResult.size', index=1,
+      name='size', full_name='TargetDiskinfo.size', index=1,
       number=2, type=4, cpp_type=4, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='type', full_name='LsblkResult.type', index=2,
+      name='type', full_name='TargetDiskinfo.type', index=2,
       number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='mountpoint', full_name='LsblkResult.mountpoint', index=3,
+      name='mountpoint', full_name='TargetDiskinfo.mountpoint', index=3,
       number=4, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -398,21 +398,21 @@ _LSBLKRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=417,
-  serialized_end=499,
+  serialized_start=420,
+  serialized_end=505,
 )
 
 
-_TASKCOLLECTLSBLKRESULT = _descriptor.Descriptor(
-  name='TaskCollectLsblkResult',
-  full_name='TaskCollectLsblkResult',
+_TASKCOLLECTDISKINFORESULT = _descriptor.Descriptor(
+  name='TaskCollectDiskinfoResult',
+  full_name='TaskCollectDiskinfoResult',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='lsblk_results', full_name='TaskCollectLsblkResult.lsblk_results', index=0,
+      name='diskinfos', full_name='TaskCollectDiskinfoResult.diskinfos', index=0,
       number=1, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
@@ -430,8 +430,8 @@ _TASKCOLLECTLSBLKRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=501,
-  serialized_end=562,
+  serialized_start=507,
+  serialized_end=570,
 )
 
 _TARGET.fields_by_name['ssh'].message_type = _SSHACCESS
@@ -439,7 +439,7 @@ _TARGET.oneofs_by_name['access'].fields.append(
   _TARGET.fields_by_name['ssh'])
 _TARGET.fields_by_name['ssh'].containing_oneof = _TARGET.oneofs_by_name['access']
 _TASKCOLLECTDISK.fields_by_name['selector'].message_type = _COLLECTDISKSELECTOR
-_TASKCOLLECTLSBLKRESULT.fields_by_name['lsblk_results'].message_type = _LSBLKRESULT
+_TASKCOLLECTDISKINFORESULT.fields_by_name['diskinfos'].message_type = _TARGETDISKINFO
 DESCRIPTOR.message_types_by_name['Target'] = _TARGET
 DESCRIPTOR.message_types_by_name['SSHAccess'] = _SSHACCESS
 DESCRIPTOR.message_types_by_name['TaskNone'] = _TASKNONE
@@ -449,9 +449,9 @@ DESCRIPTOR.message_types_by_name['TaskCollectDiskResult'] = _TASKCOLLECTDISKRESU
 DESCRIPTOR.message_types_by_name['CollectDiskSelector'] = _COLLECTDISKSELECTOR
 DESCRIPTOR.message_types_by_name['TaskCollectMemory'] = _TASKCOLLECTMEMORY
 DESCRIPTOR.message_types_by_name['TaskCollectMemoryResult'] = _TASKCOLLECTMEMORYRESULT
-DESCRIPTOR.message_types_by_name['TaskCollectLsblk'] = _TASKCOLLECTLSBLK
-DESCRIPTOR.message_types_by_name['LsblkResult'] = _LSBLKRESULT
-DESCRIPTOR.message_types_by_name['TaskCollectLsblkResult'] = _TASKCOLLECTLSBLKRESULT
+DESCRIPTOR.message_types_by_name['TaskCollectDiskinfo'] = _TASKCOLLECTDISKINFO
+DESCRIPTOR.message_types_by_name['TargetDiskinfo'] = _TARGETDISKINFO
+DESCRIPTOR.message_types_by_name['TaskCollectDiskinfoResult'] = _TASKCOLLECTDISKINFORESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Target = _reflection.GeneratedProtocolMessageType('Target', (_message.Message,), {
@@ -517,26 +517,26 @@ TaskCollectMemoryResult = _reflection.GeneratedProtocolMessageType('TaskCollectM
   })
 _sym_db.RegisterMessage(TaskCollectMemoryResult)
 
-TaskCollectLsblk = _reflection.GeneratedProtocolMessageType('TaskCollectLsblk', (_message.Message,), {
-  'DESCRIPTOR' : _TASKCOLLECTLSBLK,
+TaskCollectDiskinfo = _reflection.GeneratedProtocolMessageType('TaskCollectDiskinfo', (_message.Message,), {
+  'DESCRIPTOR' : _TASKCOLLECTDISKINFO,
   '__module__' : 'fact.tasks_pb2'
-  # @@protoc_insertion_point(class_scope:TaskCollectLsblk)
+  # @@protoc_insertion_point(class_scope:TaskCollectDiskinfo)
   })
-_sym_db.RegisterMessage(TaskCollectLsblk)
+_sym_db.RegisterMessage(TaskCollectDiskinfo)
 
-LsblkResult = _reflection.GeneratedProtocolMessageType('LsblkResult', (_message.Message,), {
-  'DESCRIPTOR' : _LSBLKRESULT,
+TargetDiskinfo = _reflection.GeneratedProtocolMessageType('TargetDiskinfo', (_message.Message,), {
+  'DESCRIPTOR' : _TARGETDISKINFO,
   '__module__' : 'fact.tasks_pb2'
-  # @@protoc_insertion_point(class_scope:LsblkResult)
+  # @@protoc_insertion_point(class_scope:TargetDiskinfo)
   })
-_sym_db.RegisterMessage(LsblkResult)
+_sym_db.RegisterMessage(TargetDiskinfo)
 
-TaskCollectLsblkResult = _reflection.GeneratedProtocolMessageType('TaskCollectLsblkResult', (_message.Message,), {
-  'DESCRIPTOR' : _TASKCOLLECTLSBLKRESULT,
+TaskCollectDiskinfoResult = _reflection.GeneratedProtocolMessageType('TaskCollectDiskinfoResult', (_message.Message,), {
+  'DESCRIPTOR' : _TASKCOLLECTDISKINFORESULT,
   '__module__' : 'fact.tasks_pb2'
-  # @@protoc_insertion_point(class_scope:TaskCollectLsblkResult)
+  # @@protoc_insertion_point(class_scope:TaskCollectDiskinfoResult)
   })
-_sym_db.RegisterMessage(TaskCollectLsblkResult)
+_sym_db.RegisterMessage(TaskCollectDiskinfoResult)
 
 
 # @@protoc_insertion_point(module_scope)

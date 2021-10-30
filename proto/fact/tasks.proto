@@ -45,17 +45,17 @@ message TaskCollectMemoryResult {
 
 }
 
-message TaskCollectLsblk {
+message TaskCollectDiskinfo {
 
 }
 
-message LsblkResult {
+message TargetDiskinfo {
     string device_name = 1;
     uint64 size = 2;
     string type = 3;
     string mountpoint = 4;
 }
 
-message TaskCollectLsblkResult{
-    repeated LsblkResult lsblk_results = 1;
+message TaskCollectDiskinfoResult {
+    repeated TargetDiskinfo diskinfos = 1;
 }

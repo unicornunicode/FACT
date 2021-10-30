@@ -37,17 +37,17 @@ export interface TaskCollectMemory {}
 
 export interface TaskCollectMemoryResult {}
 
-export interface TaskCollectLsblk {}
+export interface TaskCollectDiskinfo {}
 
-export interface LsblkResult {
+export interface TargetDiskinfo {
   deviceName: string;
   size: number;
   type: string;
   mountpoint: string;
 }
 
-export interface TaskCollectLsblkResult {
-  lsblkResults: LsblkResult[];
+export interface TaskCollectDiskinfoResult {
+  diskinfos: TargetDiskinfo[];
 }
 
 const baseTarget: object = {};
@@ -621,20 +621,20 @@ export const TaskCollectMemoryResult = {
   },
 };
 
-const baseTaskCollectLsblk: object = {};
+const baseTaskCollectDiskinfo: object = {};
 
-export const TaskCollectLsblk = {
+export const TaskCollectDiskinfo = {
   encode(
-    _: TaskCollectLsblk,
+    _: TaskCollectDiskinfo,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): TaskCollectLsblk {
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskCollectDiskinfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTaskCollectLsblk } as TaskCollectLsblk;
+    const message = { ...baseTaskCollectDiskinfo } as TaskCollectDiskinfo;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -646,32 +646,32 @@ export const TaskCollectLsblk = {
     return message;
   },
 
-  fromJSON(_: any): TaskCollectLsblk {
-    const message = { ...baseTaskCollectLsblk } as TaskCollectLsblk;
+  fromJSON(_: any): TaskCollectDiskinfo {
+    const message = { ...baseTaskCollectDiskinfo } as TaskCollectDiskinfo;
     return message;
   },
 
-  toJSON(_: TaskCollectLsblk): unknown {
+  toJSON(_: TaskCollectDiskinfo): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial(_: DeepPartial<TaskCollectLsblk>): TaskCollectLsblk {
-    const message = { ...baseTaskCollectLsblk } as TaskCollectLsblk;
+  fromPartial(_: DeepPartial<TaskCollectDiskinfo>): TaskCollectDiskinfo {
+    const message = { ...baseTaskCollectDiskinfo } as TaskCollectDiskinfo;
     return message;
   },
 };
 
-const baseLsblkResult: object = {
+const baseTargetDiskinfo: object = {
   deviceName: "",
   size: 0,
   type: "",
   mountpoint: "",
 };
 
-export const LsblkResult = {
+export const TargetDiskinfo = {
   encode(
-    message: LsblkResult,
+    message: TargetDiskinfo,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.deviceName !== "") {
@@ -689,10 +689,10 @@ export const LsblkResult = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): LsblkResult {
+  decode(input: _m0.Reader | Uint8Array, length?: number): TargetDiskinfo {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseLsblkResult } as LsblkResult;
+    const message = { ...baseTargetDiskinfo } as TargetDiskinfo;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -716,8 +716,8 @@ export const LsblkResult = {
     return message;
   },
 
-  fromJSON(object: any): LsblkResult {
-    const message = { ...baseLsblkResult } as LsblkResult;
+  fromJSON(object: any): TargetDiskinfo {
+    const message = { ...baseTargetDiskinfo } as TargetDiskinfo;
     if (object.deviceName !== undefined && object.deviceName !== null) {
       message.deviceName = String(object.deviceName);
     } else {
@@ -741,7 +741,7 @@ export const LsblkResult = {
     return message;
   },
 
-  toJSON(message: LsblkResult): unknown {
+  toJSON(message: TargetDiskinfo): unknown {
     const obj: any = {};
     message.deviceName !== undefined && (obj.deviceName = message.deviceName);
     message.size !== undefined && (obj.size = message.size);
@@ -750,8 +750,8 @@ export const LsblkResult = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<LsblkResult>): LsblkResult {
-    const message = { ...baseLsblkResult } as LsblkResult;
+  fromPartial(object: DeepPartial<TargetDiskinfo>): TargetDiskinfo {
+    const message = { ...baseTargetDiskinfo } as TargetDiskinfo;
     if (object.deviceName !== undefined && object.deviceName !== null) {
       message.deviceName = object.deviceName;
     } else {
@@ -776,15 +776,15 @@ export const LsblkResult = {
   },
 };
 
-const baseTaskCollectLsblkResult: object = {};
+const baseTaskCollectDiskinfoResult: object = {};
 
-export const TaskCollectLsblkResult = {
+export const TaskCollectDiskinfoResult = {
   encode(
-    message: TaskCollectLsblkResult,
+    message: TaskCollectDiskinfoResult,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    for (const v of message.lsblkResults) {
-      LsblkResult.encode(v!, writer.uint32(10).fork()).ldelim();
+    for (const v of message.diskinfos) {
+      TargetDiskinfo.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -792,17 +792,19 @@ export const TaskCollectLsblkResult = {
   decode(
     input: _m0.Reader | Uint8Array,
     length?: number
-  ): TaskCollectLsblkResult {
+  ): TaskCollectDiskinfoResult {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTaskCollectLsblkResult } as TaskCollectLsblkResult;
-    message.lsblkResults = [];
+    const message = {
+      ...baseTaskCollectDiskinfoResult,
+    } as TaskCollectDiskinfoResult;
+    message.diskinfos = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.lsblkResults.push(
-            LsblkResult.decode(reader, reader.uint32())
+          message.diskinfos.push(
+            TargetDiskinfo.decode(reader, reader.uint32())
           );
           break;
         default:
@@ -813,37 +815,41 @@ export const TaskCollectLsblkResult = {
     return message;
   },
 
-  fromJSON(object: any): TaskCollectLsblkResult {
-    const message = { ...baseTaskCollectLsblkResult } as TaskCollectLsblkResult;
-    message.lsblkResults = [];
-    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
-      for (const e of object.lsblkResults) {
-        message.lsblkResults.push(LsblkResult.fromJSON(e));
+  fromJSON(object: any): TaskCollectDiskinfoResult {
+    const message = {
+      ...baseTaskCollectDiskinfoResult,
+    } as TaskCollectDiskinfoResult;
+    message.diskinfos = [];
+    if (object.diskinfos !== undefined && object.diskinfos !== null) {
+      for (const e of object.diskinfos) {
+        message.diskinfos.push(TargetDiskinfo.fromJSON(e));
       }
     }
     return message;
   },
 
-  toJSON(message: TaskCollectLsblkResult): unknown {
+  toJSON(message: TaskCollectDiskinfoResult): unknown {
     const obj: any = {};
-    if (message.lsblkResults) {
-      obj.lsblkResults = message.lsblkResults.map((e) =>
-        e ? LsblkResult.toJSON(e) : undefined
+    if (message.diskinfos) {
+      obj.diskinfos = message.diskinfos.map((e) =>
+        e ? TargetDiskinfo.toJSON(e) : undefined
       );
     } else {
-      obj.lsblkResults = [];
+      obj.diskinfos = [];
     }
     return obj;
   },
 
   fromPartial(
-    object: DeepPartial<TaskCollectLsblkResult>
-  ): TaskCollectLsblkResult {
-    const message = { ...baseTaskCollectLsblkResult } as TaskCollectLsblkResult;
-    message.lsblkResults = [];
-    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
-      for (const e of object.lsblkResults) {
-        message.lsblkResults.push(LsblkResult.fromPartial(e));
+    object: DeepPartial<TaskCollectDiskinfoResult>
+  ): TaskCollectDiskinfoResult {
+    const message = {
+      ...baseTaskCollectDiskinfoResult,
+    } as TaskCollectDiskinfoResult;
+    message.diskinfos = [];
+    if (object.diskinfos !== undefined && object.diskinfos !== null) {
+      for (const e of object.diskinfos) {
+        message.diskinfos.push(TargetDiskinfo.fromPartial(e));
       }
     }
     return message;

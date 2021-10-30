@@ -74,7 +74,7 @@ const Select = ({targets, onShowAddTarget}: Props) => {
 			// eslint-disable-next-line no-await-in-loop
 			await client.CreateTask({
 				target: new Uint8Array(parseUuid(target)),
-				taskCollectLsblk: {},
+				taskCollectDiskinfo: {},
 			});
 		}
 	}, [targetSelection]);

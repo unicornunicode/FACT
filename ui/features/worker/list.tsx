@@ -9,7 +9,7 @@ interface Props {
 
 const List = ({workers}: Props) => {
 	const renderWorker = (worker: SerializableWorker) => (
-		<tr>
+		<tr key={worker.uuid}>
 			<td>{worker.hostname}</td>
 			<td><small className="text-muted">{worker.uuid}</small></td>
 		</tr>

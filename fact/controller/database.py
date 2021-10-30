@@ -27,7 +27,7 @@ class TaskType(enum.Enum):
     task_none = "task_none"
     task_collect_disk = "task_collect_disk"
     task_collect_memory = "task_collect_memory"
-    task_collect_lsblk = "task_collect_lsblk"
+    task_collect_diskinfo = "task_collect_diskinfo"
 
 
 class Task(Base):
@@ -61,14 +61,15 @@ class Target(Base):
     ssh_become_password = Column(String, nullable=True)
 
 
-class TargetLsblkResult(Base):
-    __tablename__ = "target_lsblk_result"
+class TargetDiskinfo(Base):
+    __tablename__ = "target_diskinfo"
 
     target = Column(UUID, primary_key=True, nullable=False)
     device_name = Column(String, primary_key=True, nullable=False)
     size = Column(Integer, nullable=False)
     type = Column(String, nullable=False)
     mountpoint = Column(String, nullable=False)
+    collected_at = Column(DateTime, nullable=True)
 
 
 # vim: set et ts=4 sw=4:

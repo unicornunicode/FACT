@@ -36,7 +36,7 @@ message WorkerTask {
         TaskNone task_none = 3;
         TaskCollectDisk task_collect_disk = 4;
         TaskCollectMemory task_collect_memory = 5;
-        TaskCollectLsblk task_collect_lsblk = 6;
+        TaskCollectDiskinfo task_collect_diskinfo = 6;
     }
 }
 
@@ -46,7 +46,7 @@ message WorkerTaskResult {
         TaskNoneResult task_none = 2;
         TaskCollectDiskResult task_collect_disk = 3;
         TaskCollectMemoryResult task_collect_memory = 4;
-        TaskCollectLsblkResult task_collect_lsblk = 5;
+        TaskCollectDiskinfoResult task_collect_diskinfo = 5;
     }
 }
 

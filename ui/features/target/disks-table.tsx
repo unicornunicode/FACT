@@ -1,20 +1,20 @@
 import Table from 'react-bootstrap/Table';
 import filesize from 'filesize';
 
-import type {LsblkResult} from '../../proto/fact/tasks';
+import type {TargetDiskinfo} from '../../proto/fact/tasks';
 import styles from './select-form.module.css';
 import type {SerializableTarget, SelectCheckbox} from '.';
 
 interface Props {
 	target: SerializableTarget | null;
-	disks: LsblkResult[] | null;
+	disks: TargetDiskinfo[] | null;
 	checkbox?: SelectCheckbox;
 }
 
 const DisksTable = ({target, disks, checkbox}: Props) => {
-	const renderDisk = (disk: LsblkResult) => (
+	const renderDisk = (disk: TargetDiskinfo) => (
 		<tr key={disk.deviceName}>
-			{checkbox === undefined ? '' : <td>{target === null ? '' : checkbox(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>}
+			{checkbox && <td>{target && checkbox(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>}
 			<td className="text-nowrap">{disk.deviceName}</td>
 			<td>{disk.type}</td>
 			<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
@@ -42,7 +42,7 @@ const DisksTable = ({target, disks, checkbox}: Props) => {
 		<Table size="sm" className="mb-0">
 			<tbody>
 				<tr>
-					{checkbox === undefined ? '' : <th className={styles.colCheck}/>}
+					{checkbox && <th className={styles.colCheck}/>}
 					<th>Disk</th>
 					<th className={styles.colType}>Type</th>
 					<th className={styles.colSize}>Size</th>

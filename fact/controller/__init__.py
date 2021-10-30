@@ -26,8 +26,9 @@ from ..management_pb2 import (
     ListTarget,
     GetTargetRequest,
     GetTargetResult,
-    ListTargetLsblkRequest,
-    ListTargetLsblkResult,
+    ListTargetDiskinfoRequest,
+    ListTargetDiskinfoResult,
+    ListTargetDiskinfo,
     ListWorkerRequest,
     ListWorkerResult,
     ListWorker,
@@ -38,8 +39,7 @@ from ..tasks_pb2 import (
     TaskCollectDisk,
     CollectDiskSelector,
     TaskCollectMemory,
-    TaskCollectLsblk,
-    LsblkResult,
+    TaskCollectDiskinfo,
     SSHAccess,
 )
 from ..controller_pb2_grpc import (
@@ -61,7 +61,7 @@ from .database import (
     Base,
     Worker,
     Target,
-    TargetLsblkResult,
+    TargetDiskinfo,
     Task,
     TaskType,
     TaskStatus,
@@ -194,7 +194,7 @@ class Controller:
                 worker: Worker = (await session.execute(stmt)).scalar_one()
                 worker.hostname = hostname
 
-    async def _update_target_lsblk_results(
+    async def _update_target_diskinfos(
         self, task_uuid: UUID, results: Iterable[Tuple[str, int, str, str]]
     ) -> None:
         async with self.session() as session:
@@ -204,44 +204,44 @@ class Controller:
                 )
                 task = (await session.execute(stmt)).scalar_one()
                 for device_name, size, type, mountpoint in results:
-                    stmt_lsblk_result = select(TargetLsblkResult).where(
-                        TargetLsblkResult.target == task.target,
-                        TargetLsblkResult.device_name == device_name,
+                    stmt_diskinfo = select(TargetDiskinfo).where(
+                        TargetDiskinfo.target == task.target,
+                        TargetDiskinfo.device_name == device_name,
                     )
-                    lsblk_result = (
-                        await session.execute(stmt_lsblk_result)
+                    diskinfo = (
+                        await session.execute(stmt_diskinfo)
                     ).scalar_one_or_none()
-                    if lsblk_result is not None:
-                        lsblk_result.size = size
-                        lsblk_result.type = type
-                        lsblk_result.mountpoint = mountpoint
+                    if diskinfo is not None:
+                        diskinfo.size = size
+                        diskinfo.type = type
+                        diskinfo.mountpoint = mountpoint
                         continue
-                    lsblk_result = TargetLsblkResult(
+                    diskinfo = TargetDiskinfo(
                         target=task.target,
                         device_name=device_name,
                         size=size,
                         type=type,
                         mountpoint=mountpoint,
                     )
-                    session.add(lsblk_result)
+                    session.add(diskinfo)
 
-    async def _list_target_lsblk_results(
+    async def _list_target_diskinfos(
         self, uuid: UUID
     ) -> Iterable[Tuple[str, int, str, str]]:
         async with self.session() as session:
             async with session.begin():
-                stmt = select(TargetLsblkResult).where(
-                    TargetLsblkResult.target == uuid,
+                stmt = select(TargetDiskinfo).where(
+                    TargetDiskinfo.target == uuid,
                 )
-                lsblk_results = (await session.execute(stmt)).scalars().all()
+                diskinfos = (await session.execute(stmt)).scalars().all()
                 results = []
-                for lsblk_result in lsblk_results:
+                for diskinfo in diskinfos:
                     results.append(
                         (
-                            lsblk_result.device_name,
-                            lsblk_result.size,
-                            lsblk_result.type,
-                            lsblk_result.mountpoint,
+                            diskinfo.device_name,
+                            diskinfo.size,
+                            diskinfo.type,
+                            diskinfo.mountpoint,
                         )
                     )
                 return results
@@ -350,9 +350,9 @@ class Management(ManagementServicer):
             uuid = await self.controller._create_task(
                 target_uuid=target_uuid, task_type=TaskType.task_collect_memory
             )
-        elif task_type == "task_collect_lsblk":
+        elif task_type == "task_collect_diskinfo":
             uuid = await self.controller._create_task(
-                target_uuid=target_uuid, task_type=TaskType.task_collect_lsblk
+                target_uuid=target_uuid, task_type=TaskType.task_collect_diskinfo
             )
         else:
             context.abort(StatusCode.INVALID_ARGUMENT)
@@ -381,8 +381,10 @@ class Management(ManagementServicer):
                 if task.type == TaskType.task_collect_memory
                 else None
             )
-            task_collect_lsblk = (
-                TaskCollectLsblk() if task.type == TaskType.task_collect_lsblk else None
+            task_collect_diskinfo = (
+                TaskCollectDiskinfo()
+                if task.type == TaskType.task_collect_diskinfo
+                else None
             )
             list_tasks.append(
                 ListTask(
@@ -403,7 +405,7 @@ class Management(ManagementServicer):
                     task_none=task_none,
                     task_collect_disk=task_collect_disk,
                     task_collect_memory=task_collect_memory,
-                    task_collect_lsblk=task_collect_lsblk,
+                    task_collect_diskinfo=task_collect_diskinfo,
                     worker=task.worker.bytes if task.worker is not None else None,
                 )
             )
@@ -476,22 +478,22 @@ class Management(ManagementServicer):
             )
         )
 
-    async def ListTargetLsblk(
-        self, request: ListTargetLsblkRequest, context: ServicerContext
-    ) -> ListTargetLsblkResult:
+    async def ListTargetDiskinfo(
+        self, request: ListTargetDiskinfoRequest, context: ServicerContext
+    ) -> ListTargetDiskinfoResult:
         target_uuid = UUID(bytes=request.uuid)
-        lsblk_results = await self.controller._list_target_lsblk_results(target_uuid)
-        results = []
-        for device_name, size, type, mountpoint in lsblk_results:
-            results.append(
-                LsblkResult(
+        diskinfos = await self.controller._list_target_diskinfos(target_uuid)
+        list_diskinfos = []
+        for device_name, size, type, mountpoint in diskinfos:
+            list_diskinfos.append(
+                ListTargetDiskinfo(
                     device_name=device_name,
                     size=size,
                     type=type,
                     mountpoint=mountpoint,
                 )
             )
-        return ListTargetLsblkResult(lsblk_results=results)
+        return ListTargetDiskinfoResult(diskinfos=list_diskinfos)
 
     async def ListWorker(
         self, request: ListWorkerRequest, context: ServicerContext
@@ -573,12 +575,12 @@ class WorkerTasks(WorkerTasksServicer):
                 target=task_target,
                 task_collect_memory=task_collect_memory,
             )
-        elif task.type == TaskType.task_collect_lsblk:
-            task_collect_lsblk = TaskCollectLsblk()
+        elif task.type == TaskType.task_collect_diskinfo:
+            task_collect_diskinfo = TaskCollectDiskinfo()
             return WorkerTask(
                 uuid=task.uuid.bytes if task.uuid is not None else None,
                 target=task_target,
-                task_collect_lsblk=task_collect_lsblk,
+                task_collect_diskinfo=task_collect_diskinfo,
             )
         elif task.type == TaskType.task_none:
             return WorkerTask(
@@ -591,18 +593,18 @@ class WorkerTasks(WorkerTasksServicer):
     async def _complete_task(self, result: WorkerTaskResult) -> None:
         task_uuid = UUID(bytes=result.uuid)
         task_type = result.WhichOneof("task")
-        if task_type == "task_collect_lsblk":
-            lsblk_results = []
-            for lsblk_result in result.task_collect_lsblk.lsblk_results:
-                lsblk_results.append(
+        if task_type == "task_collect_diskinfo":
+            diskinfos = []
+            for diskinfo in result.task_collect_diskinfo.diskinfos:
+                diskinfos.append(
                     (
-                        lsblk_result.device_name,
-                        lsblk_result.size,
-                        lsblk_result.type,
-                        lsblk_result.mountpoint,
+                        diskinfo.device_name,
+                        diskinfo.size,
+                        diskinfo.type,
+                        diskinfo.mountpoint,
                     )
                 )
-            await self.controller._update_target_lsblk_results(task_uuid, lsblk_results)
+            await self.controller._update_target_diskinfos(task_uuid, diskinfos)
         await self.controller._complete_task(task_uuid)
 
     async def Session(

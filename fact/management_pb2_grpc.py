@@ -39,10 +39,10 @@ class ManagementStub(object):
                 request_serializer=fact_dot_management__pb2.GetTargetRequest.SerializeToString,
                 response_deserializer=fact_dot_management__pb2.GetTargetResult.FromString,
                 )
-        self.ListTargetLsblk = channel.unary_unary(
-                '/Management/ListTargetLsblk',
-                request_serializer=fact_dot_management__pb2.ListTargetLsblkRequest.SerializeToString,
-                response_deserializer=fact_dot_management__pb2.ListTargetLsblkResult.FromString,
+        self.ListTargetDiskinfo = channel.unary_unary(
+                '/Management/ListTargetDiskinfo',
+                request_serializer=fact_dot_management__pb2.ListTargetDiskinfoRequest.SerializeToString,
+                response_deserializer=fact_dot_management__pb2.ListTargetDiskinfoResult.FromString,
                 )
         self.ListWorker = channel.unary_unary(
                 '/Management/ListWorker',
@@ -84,7 +84,7 @@ class ManagementServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def ListTargetLsblk(self, request, context):
+    def ListTargetDiskinfo(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -124,10 +124,10 @@ def add_ManagementServicer_to_server(servicer, server):
                     request_deserializer=fact_dot_management__pb2.GetTargetRequest.FromString,
                     response_serializer=fact_dot_management__pb2.GetTargetResult.SerializeToString,
             ),
-            'ListTargetLsblk': grpc.unary_unary_rpc_method_handler(
-                    servicer.ListTargetLsblk,
-                    request_deserializer=fact_dot_management__pb2.ListTargetLsblkRequest.FromString,
-                    response_serializer=fact_dot_management__pb2.ListTargetLsblkResult.SerializeToString,
+            'ListTargetDiskinfo': grpc.unary_unary_rpc_method_handler(
+                    servicer.ListTargetDiskinfo,
+                    request_deserializer=fact_dot_management__pb2.ListTargetDiskinfoRequest.FromString,
+                    response_serializer=fact_dot_management__pb2.ListTargetDiskinfoResult.SerializeToString,
             ),
             'ListWorker': grpc.unary_unary_rpc_method_handler(
                     servicer.ListWorker,
@@ -230,7 +230,7 @@ class Management(object):
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def ListTargetLsblk(request,
+    def ListTargetDiskinfo(request,
             target,
             options=(),
             channel_credentials=None,
@@ -240,9 +240,9 @@ class Management(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/Management/ListTargetLsblk',
-            fact_dot_management__pb2.ListTargetLsblkRequest.SerializeToString,
-            fact_dot_management__pb2.ListTargetLsblkResult.FromString,
+        return grpc.experimental.unary_unary(request, target, '/Management/ListTargetDiskinfo',
+            fact_dot_management__pb2.ListTargetDiskinfoRequest.SerializeToString,
+            fact_dot_management__pb2.ListTargetDiskinfoResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

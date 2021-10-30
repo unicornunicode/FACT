@@ -8,9 +8,8 @@ import {
   TaskNone,
   TaskCollectDisk,
   TaskCollectMemory,
-  TaskCollectLsblk,
+  TaskCollectDiskinfo,
   SSHAccess,
-  LsblkResult,
 } from "../fact/tasks";
 
 export const protobufPackage = "";
@@ -20,7 +19,7 @@ export interface CreateTaskRequest {
   taskNone: TaskNone | undefined;
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
-  taskCollectLsblk: TaskCollectLsblk | undefined;
+  taskCollectDiskinfo: TaskCollectDiskinfo | undefined;
   target: Uint8Array;
 }
 
@@ -47,7 +46,7 @@ export interface ListTask {
   taskNone: TaskNone | undefined;
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
-  taskCollectLsblk: TaskCollectLsblk | undefined;
+  taskCollectDiskinfo: TaskCollectDiskinfo | undefined;
   /** Worker UUID */
   worker: Uint8Array;
 }
@@ -113,18 +112,26 @@ export interface GetTargetResult {
   target: ListTarget | undefined;
 }
 
-export interface ListTargetLsblkRequest {
-  uuid: Uint8Array;
-}
-
-export interface ListTargetLsblkResult {
-  lsblkResults: LsblkResult[];
-}
-
 export interface ListTarget {
   uuid: Uint8Array;
   name: string;
   ssh: SSHAccess | undefined;
+}
+
+export interface ListTargetDiskinfoRequest {
+  uuid: Uint8Array;
+}
+
+export interface ListTargetDiskinfoResult {
+  diskinfos: ListTargetDiskinfo[];
+}
+
+export interface ListTargetDiskinfo {
+  deviceName: string;
+  size: number;
+  type: string;
+  mountpoint: string;
+  collectedAt: Date | undefined;
 }
 
 export interface ListWorkerRequest {}
@@ -160,9 +167,9 @@ export const CreateTaskRequest = {
         writer.uint32(26).fork()
       ).ldelim();
     }
-    if (message.taskCollectLsblk !== undefined) {
-      TaskCollectLsblk.encode(
-        message.taskCollectLsblk,
+    if (message.taskCollectDiskinfo !== undefined) {
+      TaskCollectDiskinfo.encode(
+        message.taskCollectDiskinfo,
         writer.uint32(42).fork()
       ).ldelim();
     }
@@ -196,7 +203,7 @@ export const CreateTaskRequest = {
           );
           break;
         case 5:
-          message.taskCollectLsblk = TaskCollectLsblk.decode(
+          message.taskCollectDiskinfo = TaskCollectDiskinfo.decode(
             reader,
             reader.uint32()
           );
@@ -241,14 +248,14 @@ export const CreateTaskRequest = {
       message.taskCollectMemory = undefined;
     }
     if (
-      object.taskCollectLsblk !== undefined &&
-      object.taskCollectLsblk !== null
+      object.taskCollectDiskinfo !== undefined &&
+      object.taskCollectDiskinfo !== null
     ) {
-      message.taskCollectLsblk = TaskCollectLsblk.fromJSON(
-        object.taskCollectLsblk
+      message.taskCollectDiskinfo = TaskCollectDiskinfo.fromJSON(
+        object.taskCollectDiskinfo
       );
     } else {
-      message.taskCollectLsblk = undefined;
+      message.taskCollectDiskinfo = undefined;
     }
     if (object.target !== undefined && object.target !== null) {
       message.target = bytesFromBase64(object.target);
@@ -270,9 +277,9 @@ export const CreateTaskRequest = {
       (obj.taskCollectMemory = message.taskCollectMemory
         ? TaskCollectMemory.toJSON(message.taskCollectMemory)
         : undefined);
-    message.taskCollectLsblk !== undefined &&
-      (obj.taskCollectLsblk = message.taskCollectLsblk
-        ? TaskCollectLsblk.toJSON(message.taskCollectLsblk)
+    message.taskCollectDiskinfo !== undefined &&
+      (obj.taskCollectDiskinfo = message.taskCollectDiskinfo
+        ? TaskCollectDiskinfo.toJSON(message.taskCollectDiskinfo)
         : undefined);
     message.target !== undefined &&
       (obj.target = base64FromBytes(
@@ -309,14 +316,14 @@ export const CreateTaskRequest = {
       message.taskCollectMemory = undefined;
     }
     if (
-      object.taskCollectLsblk !== undefined &&
-      object.taskCollectLsblk !== null
+      object.taskCollectDiskinfo !== undefined &&
+      object.taskCollectDiskinfo !== null
     ) {
-      message.taskCollectLsblk = TaskCollectLsblk.fromPartial(
-        object.taskCollectLsblk
+      message.taskCollectDiskinfo = TaskCollectDiskinfo.fromPartial(
+        object.taskCollectDiskinfo
       );
     } else {
-      message.taskCollectLsblk = undefined;
+      message.taskCollectDiskinfo = undefined;
     }
     if (object.target !== undefined && object.target !== null) {
       message.target = object.target;
@@ -562,9 +569,9 @@ export const ListTask = {
         writer.uint32(74).fork()
       ).ldelim();
     }
-    if (message.taskCollectLsblk !== undefined) {
-      TaskCollectLsblk.encode(
-        message.taskCollectLsblk,
+    if (message.taskCollectDiskinfo !== undefined) {
+      TaskCollectDiskinfo.encode(
+        message.taskCollectDiskinfo,
         writer.uint32(90).fork()
       ).ldelim();
     }
@@ -624,7 +631,7 @@ export const ListTask = {
           );
           break;
         case 11:
-          message.taskCollectLsblk = TaskCollectLsblk.decode(
+          message.taskCollectDiskinfo = TaskCollectDiskinfo.decode(
             reader,
             reader.uint32()
           );
@@ -697,14 +704,14 @@ export const ListTask = {
       message.taskCollectMemory = undefined;
     }
     if (
-      object.taskCollectLsblk !== undefined &&
-      object.taskCollectLsblk !== null
+      object.taskCollectDiskinfo !== undefined &&
+      object.taskCollectDiskinfo !== null
     ) {
-      message.taskCollectLsblk = TaskCollectLsblk.fromJSON(
-        object.taskCollectLsblk
+      message.taskCollectDiskinfo = TaskCollectDiskinfo.fromJSON(
+        object.taskCollectDiskinfo
       );
     } else {
-      message.taskCollectLsblk = undefined;
+      message.taskCollectDiskinfo = undefined;
     }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = bytesFromBase64(object.worker);
@@ -742,9 +749,9 @@ export const ListTask = {
       (obj.taskCollectMemory = message.taskCollectMemory
         ? TaskCollectMemory.toJSON(message.taskCollectMemory)
         : undefined);
-    message.taskCollectLsblk !== undefined &&
-      (obj.taskCollectLsblk = message.taskCollectLsblk
-        ? TaskCollectLsblk.toJSON(message.taskCollectLsblk)
+    message.taskCollectDiskinfo !== undefined &&
+      (obj.taskCollectDiskinfo = message.taskCollectDiskinfo
+        ? TaskCollectDiskinfo.toJSON(message.taskCollectDiskinfo)
         : undefined);
     message.worker !== undefined &&
       (obj.worker = base64FromBytes(
@@ -811,14 +818,14 @@ export const ListTask = {
       message.taskCollectMemory = undefined;
     }
     if (
-      object.taskCollectLsblk !== undefined &&
-      object.taskCollectLsblk !== null
+      object.taskCollectDiskinfo !== undefined &&
+      object.taskCollectDiskinfo !== null
     ) {
-      message.taskCollectLsblk = TaskCollectLsblk.fromPartial(
-        object.taskCollectLsblk
+      message.taskCollectDiskinfo = TaskCollectDiskinfo.fromPartial(
+        object.taskCollectDiskinfo
       );
     } else {
-      message.taskCollectLsblk = undefined;
+      message.taskCollectDiskinfo = undefined;
     }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = object.worker;
@@ -1196,146 +1203,6 @@ export const GetTargetResult = {
   },
 };
 
-const baseListTargetLsblkRequest: object = {};
-
-export const ListTargetLsblkRequest = {
-  encode(
-    message: ListTargetLsblkRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.uuid.length !== 0) {
-      writer.uint32(10).bytes(message.uuid);
-    }
-    return writer;
-  },
-
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): ListTargetLsblkRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListTargetLsblkRequest } as ListTargetLsblkRequest;
-    message.uuid = new Uint8Array();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.uuid = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ListTargetLsblkRequest {
-    const message = { ...baseListTargetLsblkRequest } as ListTargetLsblkRequest;
-    message.uuid = new Uint8Array();
-    if (object.uuid !== undefined && object.uuid !== null) {
-      message.uuid = bytesFromBase64(object.uuid);
-    }
-    return message;
-  },
-
-  toJSON(message: ListTargetLsblkRequest): unknown {
-    const obj: any = {};
-    message.uuid !== undefined &&
-      (obj.uuid = base64FromBytes(
-        message.uuid !== undefined ? message.uuid : new Uint8Array()
-      ));
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<ListTargetLsblkRequest>
-  ): ListTargetLsblkRequest {
-    const message = { ...baseListTargetLsblkRequest } as ListTargetLsblkRequest;
-    if (object.uuid !== undefined && object.uuid !== null) {
-      message.uuid = object.uuid;
-    } else {
-      message.uuid = new Uint8Array();
-    }
-    return message;
-  },
-};
-
-const baseListTargetLsblkResult: object = {};
-
-export const ListTargetLsblkResult = {
-  encode(
-    message: ListTargetLsblkResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    for (const v of message.lsblkResults) {
-      LsblkResult.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): ListTargetLsblkResult {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseListTargetLsblkResult } as ListTargetLsblkResult;
-    message.lsblkResults = [];
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.lsblkResults.push(
-            LsblkResult.decode(reader, reader.uint32())
-          );
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): ListTargetLsblkResult {
-    const message = { ...baseListTargetLsblkResult } as ListTargetLsblkResult;
-    message.lsblkResults = [];
-    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
-      for (const e of object.lsblkResults) {
-        message.lsblkResults.push(LsblkResult.fromJSON(e));
-      }
-    }
-    return message;
-  },
-
-  toJSON(message: ListTargetLsblkResult): unknown {
-    const obj: any = {};
-    if (message.lsblkResults) {
-      obj.lsblkResults = message.lsblkResults.map((e) =>
-        e ? LsblkResult.toJSON(e) : undefined
-      );
-    } else {
-      obj.lsblkResults = [];
-    }
-    return obj;
-  },
-
-  fromPartial(
-    object: DeepPartial<ListTargetLsblkResult>
-  ): ListTargetLsblkResult {
-    const message = { ...baseListTargetLsblkResult } as ListTargetLsblkResult;
-    message.lsblkResults = [];
-    if (object.lsblkResults !== undefined && object.lsblkResults !== null) {
-      for (const e of object.lsblkResults) {
-        message.lsblkResults.push(LsblkResult.fromPartial(e));
-      }
-    }
-    return message;
-  },
-};
-
 const baseListTarget: object = { name: "" };
 
 export const ListTarget = {
@@ -1427,6 +1294,295 @@ export const ListTarget = {
       message.ssh = SSHAccess.fromPartial(object.ssh);
     } else {
       message.ssh = undefined;
+    }
+    return message;
+  },
+};
+
+const baseListTargetDiskinfoRequest: object = {};
+
+export const ListTargetDiskinfoRequest = {
+  encode(
+    message: ListTargetDiskinfoRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.uuid.length !== 0) {
+      writer.uint32(10).bytes(message.uuid);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ListTargetDiskinfoRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseListTargetDiskinfoRequest,
+    } as ListTargetDiskinfoRequest;
+    message.uuid = new Uint8Array();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.uuid = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListTargetDiskinfoRequest {
+    const message = {
+      ...baseListTargetDiskinfoRequest,
+    } as ListTargetDiskinfoRequest;
+    message.uuid = new Uint8Array();
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = bytesFromBase64(object.uuid);
+    }
+    return message;
+  },
+
+  toJSON(message: ListTargetDiskinfoRequest): unknown {
+    const obj: any = {};
+    message.uuid !== undefined &&
+      (obj.uuid = base64FromBytes(
+        message.uuid !== undefined ? message.uuid : new Uint8Array()
+      ));
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListTargetDiskinfoRequest>
+  ): ListTargetDiskinfoRequest {
+    const message = {
+      ...baseListTargetDiskinfoRequest,
+    } as ListTargetDiskinfoRequest;
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = object.uuid;
+    } else {
+      message.uuid = new Uint8Array();
+    }
+    return message;
+  },
+};
+
+const baseListTargetDiskinfoResult: object = {};
+
+export const ListTargetDiskinfoResult = {
+  encode(
+    message: ListTargetDiskinfoResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.diskinfos) {
+      ListTargetDiskinfo.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ListTargetDiskinfoResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseListTargetDiskinfoResult,
+    } as ListTargetDiskinfoResult;
+    message.diskinfos = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.diskinfos.push(
+            ListTargetDiskinfo.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListTargetDiskinfoResult {
+    const message = {
+      ...baseListTargetDiskinfoResult,
+    } as ListTargetDiskinfoResult;
+    message.diskinfos = [];
+    if (object.diskinfos !== undefined && object.diskinfos !== null) {
+      for (const e of object.diskinfos) {
+        message.diskinfos.push(ListTargetDiskinfo.fromJSON(e));
+      }
+    }
+    return message;
+  },
+
+  toJSON(message: ListTargetDiskinfoResult): unknown {
+    const obj: any = {};
+    if (message.diskinfos) {
+      obj.diskinfos = message.diskinfos.map((e) =>
+        e ? ListTargetDiskinfo.toJSON(e) : undefined
+      );
+    } else {
+      obj.diskinfos = [];
+    }
+    return obj;
+  },
+
+  fromPartial(
+    object: DeepPartial<ListTargetDiskinfoResult>
+  ): ListTargetDiskinfoResult {
+    const message = {
+      ...baseListTargetDiskinfoResult,
+    } as ListTargetDiskinfoResult;
+    message.diskinfos = [];
+    if (object.diskinfos !== undefined && object.diskinfos !== null) {
+      for (const e of object.diskinfos) {
+        message.diskinfos.push(ListTargetDiskinfo.fromPartial(e));
+      }
+    }
+    return message;
+  },
+};
+
+const baseListTargetDiskinfo: object = {
+  deviceName: "",
+  size: 0,
+  type: "",
+  mountpoint: "",
+};
+
+export const ListTargetDiskinfo = {
+  encode(
+    message: ListTargetDiskinfo,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.deviceName !== "") {
+      writer.uint32(10).string(message.deviceName);
+    }
+    if (message.size !== 0) {
+      writer.uint32(16).uint64(message.size);
+    }
+    if (message.type !== "") {
+      writer.uint32(26).string(message.type);
+    }
+    if (message.mountpoint !== "") {
+      writer.uint32(34).string(message.mountpoint);
+    }
+    if (message.collectedAt !== undefined) {
+      Timestamp.encode(
+        toTimestamp(message.collectedAt),
+        writer.uint32(42).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ListTargetDiskinfo {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseListTargetDiskinfo } as ListTargetDiskinfo;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.deviceName = reader.string();
+          break;
+        case 2:
+          message.size = longToNumber(reader.uint64() as Long);
+          break;
+        case 3:
+          message.type = reader.string();
+          break;
+        case 4:
+          message.mountpoint = reader.string();
+          break;
+        case 5:
+          message.collectedAt = fromTimestamp(
+            Timestamp.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ListTargetDiskinfo {
+    const message = { ...baseListTargetDiskinfo } as ListTargetDiskinfo;
+    if (object.deviceName !== undefined && object.deviceName !== null) {
+      message.deviceName = String(object.deviceName);
+    } else {
+      message.deviceName = "";
+    }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = Number(object.size);
+    } else {
+      message.size = 0;
+    }
+    if (object.type !== undefined && object.type !== null) {
+      message.type = String(object.type);
+    } else {
+      message.type = "";
+    }
+    if (object.mountpoint !== undefined && object.mountpoint !== null) {
+      message.mountpoint = String(object.mountpoint);
+    } else {
+      message.mountpoint = "";
+    }
+    if (object.collectedAt !== undefined && object.collectedAt !== null) {
+      message.collectedAt = fromJsonTimestamp(object.collectedAt);
+    } else {
+      message.collectedAt = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: ListTargetDiskinfo): unknown {
+    const obj: any = {};
+    message.deviceName !== undefined && (obj.deviceName = message.deviceName);
+    message.size !== undefined && (obj.size = message.size);
+    message.type !== undefined && (obj.type = message.type);
+    message.mountpoint !== undefined && (obj.mountpoint = message.mountpoint);
+    message.collectedAt !== undefined &&
+      (obj.collectedAt = message.collectedAt.toISOString());
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<ListTargetDiskinfo>): ListTargetDiskinfo {
+    const message = { ...baseListTargetDiskinfo } as ListTargetDiskinfo;
+    if (object.deviceName !== undefined && object.deviceName !== null) {
+      message.deviceName = object.deviceName;
+    } else {
+      message.deviceName = "";
+    }
+    if (object.size !== undefined && object.size !== null) {
+      message.size = object.size;
+    } else {
+      message.size = 0;
+    }
+    if (object.type !== undefined && object.type !== null) {
+      message.type = object.type;
+    } else {
+      message.type = "";
+    }
+    if (object.mountpoint !== undefined && object.mountpoint !== null) {
+      message.mountpoint = object.mountpoint;
+    } else {
+      message.mountpoint = "";
+    }
+    if (object.collectedAt !== undefined && object.collectedAt !== null) {
+      message.collectedAt = object.collectedAt;
+    } else {
+      message.collectedAt = undefined;
     }
     return message;
   },
@@ -1639,10 +1795,10 @@ export interface Management {
     request: DeepPartial<GetTargetRequest>,
     metadata?: grpc.Metadata
   ): Promise<GetTargetResult>;
-  ListTargetLsblk(
-    request: DeepPartial<ListTargetLsblkRequest>,
+  ListTargetDiskinfo(
+    request: DeepPartial<ListTargetDiskinfoRequest>,
     metadata?: grpc.Metadata
-  ): Promise<ListTargetLsblkResult>;
+  ): Promise<ListTargetDiskinfoResult>;
   ListWorker(
     request: DeepPartial<ListWorkerRequest>,
     metadata?: grpc.Metadata
@@ -1659,7 +1815,7 @@ export class ManagementClientImpl implements Management {
     this.CreateTarget = this.CreateTarget.bind(this);
     this.ListTarget = this.ListTarget.bind(this);
     this.GetTarget = this.GetTarget.bind(this);
-    this.ListTargetLsblk = this.ListTargetLsblk.bind(this);
+    this.ListTargetDiskinfo = this.ListTargetDiskinfo.bind(this);
     this.ListWorker = this.ListWorker.bind(this);
   }
 
@@ -1718,13 +1874,13 @@ export class ManagementClientImpl implements Management {
     );
   }
 
-  ListTargetLsblk(
-    request: DeepPartial<ListTargetLsblkRequest>,
+  ListTargetDiskinfo(
+    request: DeepPartial<ListTargetDiskinfoRequest>,
     metadata?: grpc.Metadata
-  ): Promise<ListTargetLsblkResult> {
+  ): Promise<ListTargetDiskinfoResult> {
     return this.rpc.unary(
-      ManagementListTargetLsblkDesc,
-      ListTargetLsblkRequest.fromPartial(request),
+      ManagementListTargetDiskinfoDesc,
+      ListTargetDiskinfoRequest.fromPartial(request),
       metadata
     );
   }
@@ -1855,20 +2011,20 @@ export const ManagementGetTargetDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const ManagementListTargetLsblkDesc: UnaryMethodDefinitionish = {
-  methodName: "ListTargetLsblk",
+export const ManagementListTargetDiskinfoDesc: UnaryMethodDefinitionish = {
+  methodName: "ListTargetDiskinfo",
   service: ManagementDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return ListTargetLsblkRequest.encode(this).finish();
+      return ListTargetDiskinfoRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...ListTargetLsblkResult.decode(data),
+        ...ListTargetDiskinfoResult.decode(data),
         toObject() {
           return this;
         },

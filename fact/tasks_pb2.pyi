@@ -110,13 +110,13 @@ class TaskCollectMemoryResult(google.protobuf.message.Message):
         ) -> None: ...
 global___TaskCollectMemoryResult = TaskCollectMemoryResult
 
-class TaskCollectLsblk(google.protobuf.message.Message):
+class TaskCollectDiskinfo(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
     def __init__(self,
         ) -> None: ...
-global___TaskCollectLsblk = TaskCollectLsblk
+global___TaskCollectDiskinfo = TaskCollectDiskinfo
 
-class LsblkResult(google.protobuf.message.Message):
+class TargetDiskinfo(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
     DEVICE_NAME_FIELD_NUMBER: builtins.int
     SIZE_FIELD_NUMBER: builtins.int
@@ -134,16 +134,16 @@ class LsblkResult(google.protobuf.message.Message):
         mountpoint : typing.Text = ...,
         ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal[u"device_name",b"device_name",u"mountpoint",b"mountpoint",u"size",b"size",u"type",b"type"]) -> None: ...
-global___LsblkResult = LsblkResult
+global___TargetDiskinfo = TargetDiskinfo
 
-class TaskCollectLsblkResult(google.protobuf.message.Message):
+class TaskCollectDiskinfoResult(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor = ...
-    LSBLK_RESULTS_FIELD_NUMBER: builtins.int
+    DISKINFOS_FIELD_NUMBER: builtins.int
     @property
-    def lsblk_results(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___LsblkResult]: ...
+    def diskinfos(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___TargetDiskinfo]: ...
     def __init__(self,
         *,
-        lsblk_results : typing.Optional[typing.Iterable[global___LsblkResult]] = ...,
+        diskinfos : typing.Optional[typing.Iterable[global___TargetDiskinfo]] = ...,
         ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal[u"lsblk_results",b"lsblk_results"]) -> None: ...
-global___TaskCollectLsblkResult = TaskCollectLsblkResult
+    def ClearField(self, field_name: typing_extensions.Literal[u"diskinfos",b"diskinfos"]) -> None: ...
+global___TaskCollectDiskinfoResult = TaskCollectDiskinfoResult

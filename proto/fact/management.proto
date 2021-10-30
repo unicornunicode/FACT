@@ -9,7 +9,7 @@ service Management {
 	rpc CreateTarget(CreateTargetRequest) returns (CreateTargetResult);
 	rpc ListTarget(ListTargetRequest) returns (ListTargetResult);
 	rpc GetTarget(GetTargetRequest) returns (GetTargetResult);
-	rpc ListTargetLsblk(ListTargetLsblkRequest) returns (ListTargetLsblkResult);
+	rpc ListTargetDiskinfo(ListTargetDiskinfoRequest) returns (ListTargetDiskinfoResult);
     rpc ListWorker(ListWorkerRequest) returns (ListWorkerResult);
 }
 
@@ -19,7 +19,7 @@ message CreateTaskRequest {
         TaskNone task_none = 1;
         TaskCollectDisk task_collect_disk = 2;
         TaskCollectMemory task_collect_memory = 3;
-		TaskCollectLsblk task_collect_lsblk = 5;
+		TaskCollectDiskinfo task_collect_diskinfo = 5;
     }
     bytes target = 4;
 }
@@ -53,7 +53,7 @@ message ListTask {
         TaskNone task_none = 7;
         TaskCollectDisk task_collect_disk = 8;
         TaskCollectMemory task_collect_memory = 9;
-		TaskCollectLsblk task_collect_lsblk = 11;
+		TaskCollectDiskinfo task_collect_diskinfo = 11;
     }
 
     bytes worker = 10; // Worker UUID
@@ -86,21 +86,28 @@ message GetTargetResult {
 	ListTarget target = 1;
 }
 
-message ListTargetLsblkRequest {
-	bytes uuid = 1;
-}
-
-message ListTargetLsblkResult {
-	repeated LsblkResult lsblk_results = 1;
-}
-	
-
 message ListTarget {
 	bytes uuid = 1;
 	string name = 3;
     oneof access {
         SSHAccess ssh = 2;
     }
+}
+
+message ListTargetDiskinfoRequest {
+	bytes uuid = 1;
+}
+
+message ListTargetDiskinfoResult {
+	repeated ListTargetDiskinfo diskinfos = 1;
+}
+
+message ListTargetDiskinfo {
+    string device_name = 1;
+    uint64 size = 2;
+    string type = 3;
+    string mountpoint = 4;
+	google.protobuf.Timestamp collected_at = 5;
 }
 
 message ListWorkerRequest {
