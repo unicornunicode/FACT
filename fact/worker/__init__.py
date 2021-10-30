@@ -20,9 +20,9 @@ from ..tasks_pb2 import (
     TaskCollectDiskResult,
     TaskCollectMemory,
     TaskCollectMemoryResult,
-    TaskCollectLsblk,
-    LsblkResult,
-    TaskCollectLsblkResult,
+    TaskCollectDiskinfo,
+    TargetDiskinfo,
+    TaskCollectDiskinfoResult,
 )
 from ..controller_pb2_grpc import WorkerTasksStub
 from ..utils.stream import Stream
@@ -125,28 +125,28 @@ class Worker:
         else:
             raise Exception(f"Invalid remote access type {access_type}")
 
-    async def _handle_task_obtain_lsblk(
-        self, task_uuid: UUID, target: Target, task: TaskCollectLsblk
-    ) -> List[LsblkResult]:
+    async def _handle_task_obtain_diskinfo(
+        self, task_uuid: UUID, target: Target, task: TaskCollectDiskinfo
+    ) -> List[TargetDiskinfo]:
         remote = self._remote(target)
         try:
-            lsblk_result = remote.get_all_available_disk()
+            diskinfo_result = remote.get_all_available_disk()
         except Exception as e:
             log.error("Failed to perform SSH", e)
             return []
 
         # Convert to grpc compatible version
-        grpc_lsblk_results = []
-        for device_name, size, type, mountpoint in lsblk_result:
-            grpc_lsblk_results.append(
-                LsblkResult(
+        grpc_diskinfo_results = []
+        for device_name, size, type, mountpoint in diskinfo_result:
+            grpc_diskinfo_results.append(
+                TargetDiskinfo(
                     device_name=device_name,
                     size=size,
                     type=type,
                     mountpoint=mountpoint,
                 )
             )
-        return grpc_lsblk_results
+        return grpc_diskinfo_results
 
     async def _handle_task_collect_disk(
         self, task_uuid: UUID, target: Target, task: TaskCollectDisk
@@ -187,13 +187,13 @@ class Worker:
             return WorkerTaskResult(
                 uuid=task_uuid.bytes, task_collect_memory=TaskCollectMemoryResult()
             )
-        if task_type == "task_collect_lsblk":
-            lsblk_results = await self._handle_task_obtain_lsblk(
-                task_uuid, task.target, task.task_collect_lsblk
+        if task_type == "task_collect_diskinfo":
+            diskinfos = await self._handle_task_obtain_diskinfo(
+                task_uuid, task.target, task.task_collect_diskinfo
             )
             return WorkerTaskResult(
                 uuid=task_uuid.bytes,
-                task_collect_lsblk=TaskCollectLsblkResult(lsblk_results=lsblk_results),
+                task_collect_diskinfo=TaskCollectDiskinfoResult(diskinfos=diskinfos),
             )
         raise Exception("Unreachable: Invalid task type")
 

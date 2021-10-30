@@ -19,7 +19,7 @@ const renderType = (task: SerializableTask): string => {
 		return 'Capture memory';
 	}
 
-	if (task.taskCollectLsblk !== undefined) {
+	if (task.taskCollectDiskinfo !== undefined) {
 		return 'Scan disks';
 	}
 
@@ -44,7 +44,7 @@ const renderOptions = (task: SerializableTask): JSX.Element | string => {
 		return '';
 	}
 
-	if (task.taskCollectLsblk !== undefined) {
+	if (task.taskCollectDiskinfo !== undefined) {
 		return '';
 	}
 
@@ -54,18 +54,26 @@ const renderOptions = (task: SerializableTask): JSX.Element | string => {
 const renderDetails = (task: SerializableTask, simple: boolean | undefined): JSX.Element => (
 	<Table size="sm" className="mb-0">
 		<tbody>
-			{task.target ? (
+			{simple ?? (
+				<tr>
+					<th>UUID</th>
+					<td><small className="text-muted">{task.uuid}</small></td>
+				</tr>
+			)}
+			{task.target && (
 				<tr>
 					<th>Target</th>
 					<td><small className="text-muted"><Link href={`/target/${task.target}`}>{task.target}</Link></small></td>
 				</tr>
-			) : ''}
-			{simple ? '' : (
+			)}
+			{simple ?? (
 				<>
-					<tr>
-						<th>Worker</th>
-						<td><small className="text-muted">{task.worker}</small></td>
-					</tr>
+					{task.worker && (
+						<tr>
+							<th>Worker</th>
+							<td><small className="text-muted">{task.worker}</small></td>
+						</tr>
+					)}
 					<tr>
 						<th>Created</th>
 						<td>{task.createdAt ? new Date(task.createdAt).toLocaleString() : ''}</td>
