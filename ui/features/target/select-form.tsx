@@ -65,7 +65,7 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 		if (targets === null) {
 			return (
 				<tr>
-					<td colSpan={4} className="p-2 text-center fst-italic text-muted">
+					<td colSpan={3} className="p-2 text-center fst-italic text-muted">
 						Loading
 					</td>
 				</tr>
@@ -75,7 +75,7 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 		if (targets.length === 0) {
 			return (
 				<tr>
-					<td colSpan={4} className="p-2 text-center fst-italic">
+					<td colSpan={3} className="p-2 text-center fst-italic">
 						No known targets. Add one
 					</td>
 				</tr>
@@ -92,7 +92,6 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 					<tr>
 						<th className={styles.colCheck}/>
 						<th>Target</th>
-						<th>Access</th>
 						<th className={styles.colUUID}>UUID</th>
 					</tr>
 				</thead>

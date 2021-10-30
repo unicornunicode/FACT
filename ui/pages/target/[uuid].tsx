@@ -37,7 +37,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({params}) =>
 const GetTargetPage: NextPage<Props> = ({target}: Props) => (
 	<main>
 		<Head>
-			<title>Target {target.uuid}</title>
+			<title>Target {target.name}</title>
 		</Head>
 		<Container fluid>
 			<TargetInfo target={target}/>
