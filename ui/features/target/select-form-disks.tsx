@@ -11,7 +11,7 @@ import type {SerializableTarget} from '.';
 
 interface Props {
 	target: SerializableTarget;
-	children: (selection: string) => JSX.Element[] | JSX.Element | string;
+	children?: (selection: string) => JSX.Element[] | JSX.Element | string;
 }
 
 const SelectTargetsFormDisks = ({target, children}: Props) => {
@@ -29,7 +29,7 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 	}, [target]);
 	const renderDisk = (disk: LsblkResult) => (
 		<tr key={disk.deviceName}>
-			<td>{children(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>
+			{children === undefined ? '' : <td>{children(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>}
 			<td className="text-nowrap">{disk.deviceName}</td>
 			<td>{disk.type}</td>
 			<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
@@ -57,7 +57,7 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 		<Table size="sm" className="mb-0">
 			<tbody>
 				<tr>
-					<th className={styles.colCheck}/>
+					{children === undefined ? '' : <th className={styles.colCheck}/>}
 					<th>Disk</th>
 					<th className={styles.colType}>Type</th>
 					<th className={styles.colSize}>Size</th>
