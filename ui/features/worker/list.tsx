@@ -4,7 +4,7 @@ import styles from './list.module.css';
 import type {SerializableWorker} from '.';
 
 interface Props {
-	workers: SerializableWorker[];
+	workers: SerializableWorker[] | null;
 }
 
 const ListWorker = ({workers}: Props) => {
@@ -15,6 +15,30 @@ const ListWorker = ({workers}: Props) => {
 		</tr>
 	);
 
+	const renderWorkers = (workers: SerializableWorker[] | null) => {
+		if (workers === null) {
+			return (
+				<tr>
+					<td colSpan={2} className="p-2 text-center fst-italic text-muted">
+						Loading
+					</td>
+				</tr>
+			);
+		}
+
+		if (workers.length === 0) {
+			return (
+				<tr>
+					<td colSpan={2} className="p-2 text-center fst-italic">
+						No known workers. Add one by starting it
+					</td>
+				</tr>
+			);
+		}
+
+		return workers.map(worker => renderWorker(worker));
+	};
+
 	return (
 		<Table>
 			<thead>
@@ -23,9 +47,7 @@ const ListWorker = ({workers}: Props) => {
 					<th className={styles.colUUID}>UUID</th>
 				</tr>
 			</thead>
-			<tbody>
-				{workers.map(worker => renderWorker(worker))}
-			</tbody>
+			<tbody>{renderWorkers(workers)}</tbody>
 		</Table>
 	);
 };

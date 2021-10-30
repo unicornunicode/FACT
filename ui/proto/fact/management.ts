@@ -103,6 +103,14 @@ export interface ListTargetResult {
   targets: ListTarget[];
 }
 
+export interface GetTargetRequest {
+  uuid: Uint8Array;
+}
+
+export interface GetTargetResult {
+  target: ListTarget | undefined;
+}
+
 export interface ListTargetLsblkRequest {
   uuid: Uint8Array;
 }
@@ -1047,6 +1055,128 @@ export const ListTargetResult = {
   },
 };
 
+const baseGetTargetRequest: object = {};
+
+export const GetTargetRequest = {
+  encode(
+    message: GetTargetRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.uuid.length !== 0) {
+      writer.uint32(10).bytes(message.uuid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetTargetRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGetTargetRequest } as GetTargetRequest;
+    message.uuid = new Uint8Array();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.uuid = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetTargetRequest {
+    const message = { ...baseGetTargetRequest } as GetTargetRequest;
+    message.uuid = new Uint8Array();
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = bytesFromBase64(object.uuid);
+    }
+    return message;
+  },
+
+  toJSON(message: GetTargetRequest): unknown {
+    const obj: any = {};
+    message.uuid !== undefined &&
+      (obj.uuid = base64FromBytes(
+        message.uuid !== undefined ? message.uuid : new Uint8Array()
+      ));
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<GetTargetRequest>): GetTargetRequest {
+    const message = { ...baseGetTargetRequest } as GetTargetRequest;
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = object.uuid;
+    } else {
+      message.uuid = new Uint8Array();
+    }
+    return message;
+  },
+};
+
+const baseGetTargetResult: object = {};
+
+export const GetTargetResult = {
+  encode(
+    message: GetTargetResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.target !== undefined) {
+      ListTarget.encode(message.target, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetTargetResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGetTargetResult } as GetTargetResult;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.target = ListTarget.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetTargetResult {
+    const message = { ...baseGetTargetResult } as GetTargetResult;
+    if (object.target !== undefined && object.target !== null) {
+      message.target = ListTarget.fromJSON(object.target);
+    } else {
+      message.target = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: GetTargetResult): unknown {
+    const obj: any = {};
+    message.target !== undefined &&
+      (obj.target = message.target
+        ? ListTarget.toJSON(message.target)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<GetTargetResult>): GetTargetResult {
+    const message = { ...baseGetTargetResult } as GetTargetResult;
+    if (object.target !== undefined && object.target !== null) {
+      message.target = ListTarget.fromPartial(object.target);
+    } else {
+      message.target = undefined;
+    }
+    return message;
+  },
+};
+
 const baseListTargetLsblkRequest: object = {};
 
 export const ListTargetLsblkRequest = {
@@ -1486,6 +1616,10 @@ export interface Management {
     request: DeepPartial<ListTargetRequest>,
     metadata?: grpc.Metadata
   ): Promise<ListTargetResult>;
+  GetTarget(
+    request: DeepPartial<GetTargetRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<GetTargetResult>;
   ListTargetLsblk(
     request: DeepPartial<ListTargetLsblkRequest>,
     metadata?: grpc.Metadata
@@ -1505,6 +1639,7 @@ export class ManagementClientImpl implements Management {
     this.ListTask = this.ListTask.bind(this);
     this.CreateTarget = this.CreateTarget.bind(this);
     this.ListTarget = this.ListTarget.bind(this);
+    this.GetTarget = this.GetTarget.bind(this);
     this.ListTargetLsblk = this.ListTargetLsblk.bind(this);
     this.ListWorker = this.ListWorker.bind(this);
   }
@@ -1549,6 +1684,17 @@ export class ManagementClientImpl implements Management {
     return this.rpc.unary(
       ManagementListTargetDesc,
       ListTargetRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetTarget(
+    request: DeepPartial<GetTargetRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<GetTargetResult> {
+    return this.rpc.unary(
+      ManagementGetTargetDesc,
+      GetTargetRequest.fromPartial(request),
       metadata
     );
   }
@@ -1660,6 +1806,28 @@ export const ManagementListTargetDesc: UnaryMethodDefinitionish = {
     deserializeBinary(data: Uint8Array) {
       return {
         ...ListTargetResult.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const ManagementGetTargetDesc: UnaryMethodDefinitionish = {
+  methodName: "GetTarget",
+  service: ManagementDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetTargetRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...GetTargetResult.decode(data),
         toObject() {
           return this;
         },

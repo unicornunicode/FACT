@@ -37,13 +37,23 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 		</tr>
 	);
 
-	const renderLoading = () => (
-		<div className="p-2 text-center text-muted">
-			Loading...
-		</div>
-	);
+	if (disks === null) {
+		return (
+			<div className="p-2 text-center fst-italic text-muted">
+				Loading...
+			</div>
+		);
+	}
 
-	return disks === null ? renderLoading() : (
+	if (disks.length === 0) {
+		return (
+			<div className="p-2 text-center fst-italic">
+				No known disks
+			</div>
+		);
+	}
+
+	return (
 		<Table size="sm" className="mb-0">
 			<tbody>
 				<tr>

@@ -15,7 +15,7 @@ export interface SelectTargetsFormData {
 type SelectMode = null | 'target' | 'target+disk' | 'disk';
 
 interface Props {
-	targets: SerializableTarget[];
+	targets: SerializableTarget[] | null;
 	mode: SelectMode;
 	onUpdate: (data: SelectTargetsFormData) => Promise<void>;
 }
@@ -61,6 +61,30 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 		</Fragment>
 	);
 
+	const renderTargets = (targets: SerializableTarget[] | null) => {
+		if (targets === null) {
+			return (
+				<tr>
+					<td colSpan={4} className="p-2 text-center fst-italic text-muted">
+						Loading
+					</td>
+				</tr>
+			);
+		}
+
+		if (targets.length === 0) {
+			return (
+				<tr>
+					<td colSpan={4} className="p-2 text-center fst-italic">
+						No known targets. Add one
+					</td>
+				</tr>
+			);
+		}
+
+		return targets.map(target => renderTarget(target, mode));
+	};
+
 	return (
 		<Form>
 			<Table>
@@ -72,9 +96,7 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 						<th className={styles.colUUID}>UUID</th>
 					</tr>
 				</thead>
-				<tbody>
-					{targets.map(target => renderTarget(target, mode))}
-				</tbody>
+				<tbody>{renderTargets(targets)}</tbody>
 			</Table>
 		</Form>
 	);

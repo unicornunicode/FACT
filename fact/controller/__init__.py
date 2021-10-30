@@ -24,6 +24,8 @@ from ..management_pb2 import (
     ListTargetRequest,
     ListTargetResult,
     ListTarget,
+    GetTargetRequest,
+    GetTargetResult,
     ListTargetLsblkRequest,
     ListTargetLsblkResult,
     ListWorkerRequest,
@@ -160,6 +162,14 @@ class Controller:
                 targets = (await session.execute(stmt)).scalars().all()
                 session.expunge_all()
                 return targets
+
+    async def _get_target(self, uuid: UUID) -> Target:
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Target).where(Target.uuid == uuid)
+                target = (await session.execute(stmt)).scalar_one()
+                session.expunge_all()
+                return target
 
     async def _list_worker(self) -> Iterable[Worker]:
         async with self.session() as session:
@@ -440,6 +450,29 @@ class Management(ManagementServicer):
                 )
             )
         return ListTargetResult(targets=list_targets)
+
+    async def GetTarget(
+        self, request: GetTargetRequest, context: ServicerContext
+    ) -> GetTargetResult:
+        target_uuid = UUID(bytes=request.uuid)
+        target = await self.controller._get_target(target_uuid)
+        ssh = None
+        if target.ssh_host is not None:
+            ssh = SSHAccess(
+                host=target.ssh_host or "",
+                user=target.ssh_user or "",
+                port=target.ssh_port or 0,
+                private_key=target.ssh_private_key or "",
+                become=target.ssh_become or False,
+                become_password=target.ssh_become_password or "",
+            )
+        return GetTargetResult(
+            target=ListTarget(
+                uuid=target.uuid.bytes if target.uuid is not None else None,
+                name=target.name or "",
+                ssh=ssh,
+            )
+        )
 
     async def ListTargetLsblk(
         self, request: ListTargetLsblkRequest, context: ServicerContext
