@@ -12,8 +12,8 @@ import type {SerializableWorker} from '../features/worker';
 import {ManagementClientImpl} from '../proto/fact/management';
 import {managementRpc} from '../features/grpc';
 
-import ListTask from '../features/task/list';
-import ListWorker from '../features/worker/list';
+import TaskList from '../features/task/list';
+import WorkerList from '../features/worker/list';
 
 const Home: NextPage = () => {
 	const [tasks, setTasks] = useState<SerializableTask[]>([]);
@@ -48,10 +48,10 @@ const Home: NextPage = () => {
 			</Head>
 			<Container fluid>
 				<h2>Recent Tasks</h2>
-				<ListTask simple tasks={tasks}/>
+				<TaskList simple tasks={tasks}/>
 				<div className="m-3 text-center"><Link passHref href="/task"><Button variant="link">Show more</Button></Link></div>
 				<h2>Workers</h2>
-				<ListWorker workers={workers}/>
+				<WorkerList workers={workers}/>
 			</Container>
 		</main>
 	);

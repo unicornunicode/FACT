@@ -3,12 +3,12 @@ import type {FormEvent} from 'react';
 import Table from 'react-bootstrap/Table';
 import Form from 'react-bootstrap/Form';
 
-import SelectTargetsFormTarget from './select-form-target';
-import SelectTargetsFormDisks from './select-form-disks';
+import SelectFormTarget from './select-form-target';
+import Disks from './disks';
 import styles from './select-form.module.css';
 import type {SerializableTarget} from '.';
 
-export interface SelectTargetsFormData {
+export interface SelectFormData {
 	selection: string[];
 }
 
@@ -17,10 +17,10 @@ type SelectMode = null | 'target' | 'target+disk' | 'disk';
 interface Props {
 	targets: SerializableTarget[] | null;
 	mode: SelectMode;
-	onUpdate: (data: SelectTargetsFormData) => Promise<void>;
+	onUpdate: (data: SelectFormData) => Promise<void>;
 }
 
-const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
+const SelectForm = ({targets, mode, onUpdate}: Props) => {
 	const [selection, setSelection] = useState<string[]>([]);
 	const selectionUpdate = (key: string, value: boolean) => {
 		if (selection.includes(key)) {
@@ -47,15 +47,11 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 
 	const renderTarget = (target: SerializableTarget, mode: SelectMode) => (
 		<Fragment key={target.uuid}>
-			<SelectTargetsFormTarget target={target}>
-				{selection => mode?.startsWith('target') ? renderCheck(selection) : ''}
-			</SelectTargetsFormTarget>
+			<SelectFormTarget target={target} checkbox={selection => mode?.startsWith('target') ? renderCheck(selection) : ''}/>
 			<tr>
 				<td/>
 				<td colSpan={3} className="p-0">
-					<SelectTargetsFormDisks target={target}>
-						{selection => mode?.endsWith('disk') ? renderCheck(selection) : ''}
-					</SelectTargetsFormDisks>
+					<Disks target={target} checkbox={selection => mode?.endsWith('disk') ? renderCheck(selection) : ''}/>
 				</td>
 			</tr>
 		</Fragment>
@@ -101,4 +97,4 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 	);
 };
 
-export default SelectTargetsForm;
+export default SelectForm;

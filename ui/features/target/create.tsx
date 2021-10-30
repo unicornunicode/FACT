@@ -1,8 +1,8 @@
 import {ManagementClientImpl} from '../../proto/fact/management';
 import {managementRpc} from '../grpc';
 
-import CreateTargetForm from './create-form';
-import type {CreateTargetFormData} from './create-form';
+import CreateForm from './create-form';
+import type {CreateFormData} from './create-form';
 
 interface Props {
 	onComplete: (uuid: Uint8Array) => Promise<void>;
@@ -11,8 +11,8 @@ interface Props {
 	onModalClose: () => void;
 }
 
-const CreateTarget = ({onComplete, modal, modalShow, onModalClose}: Props) => {
-	const onSubmit = async (data: CreateTargetFormData) => {
+const Create = ({onComplete, modal, modalShow, onModalClose}: Props) => {
+	const onSubmit = async (data: CreateFormData) => {
 		const rpc = await managementRpc();
 		const client = new ManagementClientImpl(rpc);
 		const {uuid} = await client.CreateTarget({
@@ -30,8 +30,8 @@ const CreateTarget = ({onComplete, modal, modalShow, onModalClose}: Props) => {
 	};
 
 	return (
-		<CreateTargetForm modal={modal} modalShow={modalShow} onSubmit={onSubmit} onModalClose={onModalClose}/>
+		<CreateForm modal={modal} modalShow={modalShow} onSubmit={onSubmit} onModalClose={onModalClose}/>
 	);
 };
 
-export default CreateTarget;
+export default Create;

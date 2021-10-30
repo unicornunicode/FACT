@@ -9,7 +9,7 @@ import type {SerializableTask} from '../../features/task';
 import {managementRpc} from '../../features/grpc';
 import {ManagementClientImpl} from '../../proto/fact/management';
 
-import ListTask from '../../features/task/list';
+import TaskList from '../../features/task/list';
 
 interface Props {
 	tasks: SerializableTask[];
@@ -45,7 +45,7 @@ const ListTaskPage: NextPage<Props> = ({tasks}: Props) => {
 				<title>Tasks</title>
 			</Head>
 			<Container fluid>
-				<ListTask tasks={tasks}/>
+				<TaskList tasks={tasks}/>
 			</Container>
 		</main>
 	);

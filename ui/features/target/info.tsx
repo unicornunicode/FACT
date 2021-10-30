@@ -1,6 +1,6 @@
 import Table from 'react-bootstrap/Table';
 
-import TargetSelectFormDisks from './select-form-disks';
+import Disks from './disks';
 import type {SerializableTarget} from '.';
 
 interface Props {
@@ -32,7 +32,7 @@ const renderAccess = (target: SerializableTarget | null) => {
 	return 'Unknown';
 };
 
-const TargetInfo = ({target}: Props) => (
+const Info = ({target}: Props) => (
 	<Table>
 		<tbody>
 			<tr>
@@ -49,10 +49,10 @@ const TargetInfo = ({target}: Props) => (
 			</tr>
 			<tr>
 				<th>Disks</th>
-				<td className="p-0"><TargetSelectFormDisks target={target}/></td>
+				<td className="p-0"><Disks target={target}/></td>
 			</tr>
 		</tbody>
 	</Table>
 );
 
-export default TargetInfo;
+export default Info;

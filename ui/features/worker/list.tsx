@@ -7,7 +7,7 @@ interface Props {
 	workers: SerializableWorker[] | null;
 }
 
-const ListWorker = ({workers}: Props) => {
+const List = ({workers}: Props) => {
 	const renderWorker = (worker: SerializableWorker) => (
 		<tr>
 			<td>{worker.hostname}</td>
@@ -52,4 +52,4 @@ const ListWorker = ({workers}: Props) => {
 	);
 };
 
-export default ListWorker;
+export default List;

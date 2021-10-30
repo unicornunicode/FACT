@@ -10,7 +10,7 @@ import {useForm} from 'react-hook-form';
 
 import styles from './create-form.module.css';
 
-export interface CreateTargetFormData {
+export interface CreateFormData {
 	name: string;
 	access: string;
 	sshUser: string;
@@ -22,7 +22,7 @@ export interface CreateTargetFormData {
 }
 
 interface Props {
-	onSubmit: (data: CreateTargetFormData) => Promise<void>;
+	onSubmit: (data: CreateFormData) => Promise<void>;
 	modal: boolean;
 	modalShow: boolean;
 	onModalClose: () => void;
@@ -30,8 +30,8 @@ interface Props {
 
 const sshPrivateKeyPlaceholder = '-----BEGIN OPENSSH PRIVATE KEY-----\naGVoZSB5b3UgZm91bmQgdGhpcyBtZXNzYWdlLCBncmVhdCBqb2I...';
 
-const CreateTargetForm = ({onSubmit, modal, modalShow, onModalClose}: Props) => {
-	const {register, handleSubmit, watch, reset, formState: {isSubmitSuccessful}} = useForm<CreateTargetFormData>({
+const CreateForm = ({onSubmit, modal, modalShow, onModalClose}: Props) => {
+	const {register, handleSubmit, watch, reset, formState: {isSubmitSuccessful}} = useForm<CreateFormData>({
 		defaultValues: {
 			sshPort: 22,
 			sshBecome: true,
@@ -144,4 +144,4 @@ const CreateTargetForm = ({onSubmit, modal, modalShow, onModalClose}: Props) => 
 	);
 };
 
-export default CreateTargetForm;
+export default CreateForm;

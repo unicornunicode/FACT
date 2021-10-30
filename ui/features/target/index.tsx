@@ -8,3 +8,5 @@ export interface SerializableTarget extends Omit<ListTarget, 'uuid'> {
 export function serializeTarget(target: ListTarget): SerializableTarget {
 	return serializeUuid(target);
 }
+
+export type SelectCheckbox = (selection: string) => JSX.Element[] | JSX.Element | string;

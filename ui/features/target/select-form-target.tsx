@@ -1,18 +1,18 @@
 import Link from 'next/link';
 
-import type {SerializableTarget} from '.';
+import type {SerializableTarget, SelectCheckbox} from '.';
 
 interface Props {
 	target: SerializableTarget;
-	children: (selection: string) => JSX.Element[] | JSX.Element | string;
+	checkbox?: SelectCheckbox;
 }
 
-const SelectTargetsFormTarget = ({target, children}: Props) => (
+const SelectFormTarget = ({target, checkbox}: Props) => (
 	<tr>
-		<td>{children(`target.${target.uuid}`)}</td>
+		{checkbox === undefined ? '' : <td>{checkbox(`target.${target.uuid}`)}</td>}
 		<td>{target.name}</td>
 		<td><small className="text-muted"><Link href={`/target/${target.uuid}`}>{target.uuid}</Link></small></td>
 	</tr>
 );
 
-export default SelectTargetsFormTarget;
+export default SelectFormTarget;

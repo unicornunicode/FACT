@@ -84,7 +84,7 @@ const renderDetails = (task: SerializableTask, simple: boolean | undefined): JSX
 	</Table>
 );
 
-const ListTask = ({tasks, simple}: Props) => {
+const List = ({tasks, simple}: Props) => {
 	const renderTask = (task: SerializableTask) => (
 		<tr key={task.uuid}>
 			<td>{listTask_StatusToJSON(task.status)}</td>
@@ -135,4 +135,4 @@ const ListTask = ({tasks, simple}: Props) => {
 	);
 };
 
-export default ListTask;
+export default List;

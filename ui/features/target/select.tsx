@@ -5,8 +5,8 @@ import {parse as parseUuid} from 'uuid';
 import {ManagementClientImpl} from '../../proto/fact/management';
 import {managementRpc} from '../grpc';
 
-import SelectTargetsForm from './select-form';
-import type {SelectTargetsFormData} from './select-form';
+import SelectForm from './select-form';
+import type {SelectFormData} from './select-form';
 import type {SerializableTarget} from '.';
 
 interface Props {
@@ -34,14 +34,14 @@ interface DiskSel {
 	disk: string;
 }
 
-const SelectTargets = ({targets, onShowAddTarget}: Props) => {
-	const [targetSelection, setTargetSelection] = useState<Array<{target: string}>>([]);
-	const [diskSelection, setDiskSelection] = useState<Array<{target: string; disk: string}>>([]);
+const Select = ({targets, onShowAddTarget}: Props) => {
+	const [targetSelection, setTargetSelection] = useState<TargetSel[]>([]);
+	const [diskSelection, setDiskSelection] = useState<DiskSel[]>([]);
 	const [canScanDisks, setCanScanDisks] = useState(false);
 	const [canCaptureDisks, setCanCaptureDisks] = useState(false);
 	const [canCaptureMemory, setCanCaptureMemory] = useState(false);
 
-	const onSelectionUpdate = useCallback(async (data: SelectTargetsFormData) => {
+	const onSelectionUpdate = useCallback(async (data: SelectFormData) => {
 		let selection = data.selection;
 		if (!Array.isArray(selection)) {
 			selection = [selection];
@@ -115,9 +115,9 @@ const SelectTargets = ({targets, onShowAddTarget}: Props) => {
 				<Button disabled={!canCaptureDisks} onClick={onCaptureDisks}>Capture disks</Button>
 				<Button disabled={!canCaptureMemory} onClick={onCaptureMemory}>Capture memory</Button>
 			</div>
-			<SelectTargetsForm targets={targets} mode="target+disk" onUpdate={onSelectionUpdate}/>
+			<SelectForm targets={targets} mode="target+disk" onUpdate={onSelectionUpdate}/>
 		</>
 	);
 };
 
-export default SelectTargets;
+export default Select;
