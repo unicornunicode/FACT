@@ -1,11 +1,11 @@
 import {useState, useEffect} from 'react';
-
 import {parse as uuidParse} from 'uuid';
-import type {TargetDiskinfo} from '../../proto/fact/tasks';
+
 import {ManagementClientImpl} from '../../proto/fact/management';
 import {managementRpc} from '../grpc';
 import DisksTable from './disks-table';
-import type {SelectCheckbox, SerializableTarget} from '.';
+import {serializeTargetDiskinfo} from '.';
+import type {SelectCheckbox, SerializableTarget, SerializableTargetDiskinfo} from '.';
 
 interface Props {
 	target: SerializableTarget | null;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const SelectFormDisks = ({target, checkbox}: Props) => {
-	const [disks, setDisks] = useState<TargetDiskinfo[] | null>(null);
+	const [disks, setDisks] = useState<SerializableTargetDiskinfo[] | null>(null);
 	useEffect(() => {
 		if (target === null) {
 			return;
@@ -24,7 +24,7 @@ const SelectFormDisks = ({target, checkbox}: Props) => {
 			const rpc = await managementRpc();
 			const client = new ManagementClientImpl(rpc);
 			const {diskinfos} = await client.ListTargetDiskinfo({uuid});
-			setDisks(diskinfos);
+			setDisks(diskinfos.map(diskinfo => serializeTargetDiskinfo(diskinfo)));
 		};
 
 		void fetchTargetDiskinfo();
