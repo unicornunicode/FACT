@@ -248,7 +248,7 @@ class Controller:
                 stmt_target = select(Target).where(Target.uuid == task.target)
                 target = (await session.execute(stmt_target)).scalar_one()
                 task.status = TaskStatus.RUNNING
-                task.assignedAt = datetime.utcnow()
+                task.assigned_at = datetime.utcnow()
                 await session.flush()  # TODO: Is this necessary?
                 session.expunge_all()
                 return task, target
@@ -261,7 +261,7 @@ class Controller:
                 )
                 task = (await session.execute(stmt)).scalar_one()
                 task.status = TaskStatus.COMPLETE
-                task.completedAt = datetime.utcnow()
+                task.completed_at = datetime.utcnow()
 
     def _assign_task_to_worker(self, workers: List[Worker], task: Task) -> bool:
         # TODO: Actually schedule across multiple workers
