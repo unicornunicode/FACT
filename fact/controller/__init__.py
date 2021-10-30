@@ -225,26 +225,15 @@ class Controller:
                     )
                     session.add(diskinfo)
 
-    async def _list_target_diskinfos(
-        self, uuid: UUID
-    ) -> Iterable[Tuple[str, int, str, str]]:
+    async def _list_target_diskinfos(self, uuid: UUID) -> Iterable[TargetDiskinfo]:
         async with self.session() as session:
             async with session.begin():
                 stmt = select(TargetDiskinfo).where(
                     TargetDiskinfo.target == uuid,
                 )
                 diskinfos = (await session.execute(stmt)).scalars().all()
-                results = []
-                for diskinfo in diskinfos:
-                    results.append(
-                        (
-                            diskinfo.device_name,
-                            diskinfo.size,
-                            diskinfo.type,
-                            diskinfo.mountpoint,
-                        )
-                    )
-                return results
+                session.expunge_all()
+                return diskinfos
 
     async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
         async with self.session() as session:
@@ -484,13 +473,22 @@ class Management(ManagementServicer):
         target_uuid = UUID(bytes=request.uuid)
         diskinfos = await self.controller._list_target_diskinfos(target_uuid)
         list_diskinfos = []
-        for device_name, size, type, mountpoint in diskinfos:
+        for diskinfo in diskinfos:
             list_diskinfos.append(
                 ListTargetDiskinfo(
-                    device_name=device_name,
-                    size=size,
-                    type=type,
-                    mountpoint=mountpoint,
+                    device_name=diskinfo.device_name
+                    if diskinfo.device_name is not None
+                    else "",
+                    size=diskinfo.size if diskinfo.size is not None else 0,
+                    type=diskinfo.type if diskinfo.type is not None else "",
+                    mountpoint=diskinfo.mountpoint
+                    if diskinfo.mountpoint is not None
+                    else "",
+                    collected_at=Timestamp(
+                        seconds=int(diskinfo.collected_at.timestamp())
+                    )
+                    if diskinfo.collected_at is not None
+                    else None,
                 )
             )
         return ListTargetDiskinfoResult(diskinfos=list_diskinfos)
