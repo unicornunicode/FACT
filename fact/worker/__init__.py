@@ -1,7 +1,5 @@
 import asyncio
 import logging
-import tempfile
-import os
 from contextlib import contextmanager
 from pathlib import Path
 from typing import List, Optional, Literal, Generator, AsyncIterator
@@ -35,9 +33,9 @@ import platform
 
 # FACT
 from fact.target import (
-    SSHAccessInfo,
-    TargetEndpoint,
+    SSHTargetAccess,
 )
+from fact.target.types import TargetAccess
 from fact.storage import (
     Session,
     Storage,
@@ -115,38 +113,27 @@ class Worker:
         """
         return platform.node()
 
-    @contextmanager
-    def _remote_open(self, target: Target) -> Generator[TargetEndpoint, None, None]:
+    def _remote(self, target: Target) -> TargetAccess:
         access_type = target.WhichOneof("access")
         if access_type == "ssh":
-            with tempfile.NamedTemporaryFile("w+") as f:
-                f.write(target.ssh.private_key)
-                if not target.ssh.private_key.endswith("\n"):
-                    f.write("\n")
-                f.flush()
-
-                private_key_path = f.name
-                os.chmod(private_key_path, 0o600)
-
-                core_access = SSHAccessInfo(
-                    user=target.ssh.user,
-                    host=target.ssh.host,
-                    port=str(target.ssh.port),
-                    privateKey_path=private_key_path,
-                )
-                yield TargetEndpoint(core_access)
+            return SSHTargetAccess(
+                host=target.ssh.host,
+                user=target.ssh.user,
+                port=target.ssh.port,
+                private_key=target.ssh.private_key,
+            )
         else:
             raise Exception(f"Invalid remote access type {access_type}")
 
     async def _handle_task_obtain_lsblk(
         self, task_uuid: UUID, target: Target, task: TaskCollectLsblk
     ) -> List[LsblkResult]:
-        with self._remote_open(target) as remote:
-            try:
-                lsblk_result = remote.get_all_available_disk()
-            except Exception as e:
-                log.error(f"Failed to perform SSH: {e}")
-                return []
+        remote = self._remote(target)
+        try:
+            lsblk_result = remote.get_all_available_disk()
+        except Exception as e:
+            log.error("Failed to perform SSH", e)
+            return []
 
         # Convert to grpc compatible version
         grpc_lsblk_results = []
@@ -164,12 +151,12 @@ class Worker:
     async def _handle_task_collect_disk(
         self, task_uuid: UUID, target: Target, task: TaskCollectDisk
     ) -> None:
+        remote = self._remote(target)
         with _storage_open(self._storage, task_uuid, task.selector.path, "disk") as f:
-            with self._remote_open(target) as remote:
-                try:
-                    remote.collect_image(task.selector.path, f)
-                except Exception as e:
-                    log.error(f"Failed to collect disk: {e}")
+            try:
+                remote.collect_image(task.selector.path, f)
+            except Exception as e:
+                log.error("Failed to collect disk", e)
 
     async def _handle_task_collect_memory(
         self, task_uuid: UUID, target: Target, task: TaskCollectMemory
@@ -242,7 +229,7 @@ class Worker:
             try:
                 await self._exchange_handshake(responses, events)
             except Exception as e:
-                log.critical(f"failed to exchange handshake: {e}")
+                log.critical("Failed to exchange handshake", e)
                 raise
 
             async for event in events:
@@ -251,7 +238,7 @@ class Worker:
                 try:
                     result = await self._handle_worker_task(event.worker_task)
                 except Exception as e:
-                    log.critical(f"failed to process incoming tasks: {e}")
+                    log.critical("Failed to process incoming tasks", e)
                     raise
                 await responses.add(SessionResults(worker_task_result=result))
 

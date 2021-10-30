@@ -1,9 +1,14 @@
 import logging
 import re
-from typing import Tuple, List
-import subprocess
+import os
+from subprocess import Popen, DEVNULL, PIPE
+from contextlib import contextmanager
+from tempfile import NamedTemporaryFile
+from typing import IO, Tuple, List, Sequence, Generator
 
-from fact.storage import Session
+from ..exceptions import UnreachableError, LsblkParseError
+from ..storage import Session
+from .types import TargetAccess
 
 log = logging.getLogger(__name__)
 
@@ -42,30 +47,51 @@ def _parse_lsblk_output(raw_lsblk_data: bytes) -> List[Tuple[str, int, str, str]
     return entries
 
 
-class SSHAccessInfo:
-    """Core information needed for SSH connection to the target."""
+class SSHTargetAccess(TargetAccess):
+    host: str
+    user: str
+    port: int
+    private_key: str
 
-    __slots__ = "user", "host", "port", "privateKey_path"
-
-    def __init__(
-        self,
-        user: str,
-        host: str,
-        port: str,
-        privateKey_path: str,
-    ):
-        self.user = user
+    def __init__(self, host: str, user: str, port: int, private_key: str):
         self.host = host
+        self.user = user
         self.port = port
-        self.privateKey_path = privateKey_path
+        self.private_key = private_key
 
+    @contextmanager
+    def do_ssh(
+        self, command: Sequence[str], bufsize: int = 65535
+    ) -> Generator[IO[bytes], None, None]:
+        with NamedTemporaryFile("w") as f:
+            f.write(self.private_key)
+            if not self.private_key.endswith("\n"):
+                f.write("\n")
+            f.flush()
+            private_key_file = f.name
+            os.chmod(private_key_file, 0o600)
 
-class TargetEndpoint:
-    def __init__(self, SSHAccessInfo: SSHAccessInfo):
-        self.SSHAccessInfo = SSHAccessInfo
+            args = [
+                "ssh",
+                "-i",
+                private_key_file,
+                "-l",
+                self.user,
+                "-p",
+                str(self.port),
+                self.host,
+            ]
+            args.extend(command)
+
+            with Popen(
+                args, stdin=DEVNULL, stdout=PIPE, stderr=None, bufsize=bufsize
+            ) as process:
+                if process.stdout is None:
+                    raise UnreachableError("process stdout is None")
+                yield process.stdout
 
     def collect_image(
-        self, remote_path_of_image: str, storage_session: Session
+        self, remote_path_of_image: str, storage_session: Session, bufsize: int = 65535
     ) -> None:
         """
         Collects the image of a file. Can be a disk, or process, or file in general.
@@ -74,68 +100,25 @@ class TargetEndpoint:
         :param storage_session: Storage Session
         """
 
-        dd_if = "if=" + remote_path_of_image
-
-        # This assumes that the remote sudo does not require further password authentication
-        # This also requires that the user has the private key (compulsory)
-        with subprocess.Popen(
-            [
-                "ssh",
-                "-i",
-                self.SSHAccessInfo.privateKey_path,
-                "-l",
-                self.SSHAccessInfo.user,
-                "-p",
-                self.SSHAccessInfo.port,
-                self.SSHAccessInfo.host,
-                "sudo dd",
-                dd_if,
-                "| gzip -1 -",
-            ],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-        ) as p:
-            if p.stdout is None:
-                raise Exception("Unreachable: Process stdout is None")
-
-            while True:
-                res = p.stdout.read()
-                if not res:
-                    break
-                storage_session.write(res)
+        command = ("dd", f"if=/dev/{remote_path_of_image}", " | gzip -1 -")
+        with self.do_ssh(command, bufsize=bufsize) as stdout:
+            while buf := stdout.read(bufsize):
+                storage_session.write(buf)
 
     def get_all_available_disk(self) -> List[Tuple[str, int, str, str]]:
         """
         Gets a list of availale disks on the remote machine
         :return: lsblk information as list of tuple
         """
-        lsblk_command = "lsblk -lb"
-        raw_lsblk_data = b""
-        with subprocess.Popen(
-            [
-                "ssh",
-                "-i",
-                self.SSHAccessInfo.privateKey_path,
-                "-l",
-                self.SSHAccessInfo.user,
-                "-p",
-                self.SSHAccessInfo.port,
-                self.SSHAccessInfo.host,
-                lsblk_command,
-            ],
-            stdin=subprocess.DEVNULL,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-        ) as p:
-            if p.stdout is None:
-                raise Exception("Unreachable: Process stdout is None")
 
-            while True:
-                res = p.stdout.read()
-                if not res:
-                    break
-                raw_lsblk_data += res
+        command = ("lsblk -lb",)
+        with self.do_ssh(command) as stdout:
+            raw_lsblk_data = stdout.read()
 
-        lsblk_list = _parse_lsblk_output(raw_lsblk_data)
-        return lsblk_list
+        try:
+            return _parse_lsblk_output(raw_lsblk_data)
+        except Exception as e:
+            raise LsblkParseError(raw_lsblk_data) from e
+
+
+# vim: set et ts=4 sw=4:

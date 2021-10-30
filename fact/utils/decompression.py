@@ -2,7 +2,7 @@ import gzip
 
 from pathlib import Path
 
-from fact.exceptions import GzipDecompressionError
+from fact.exceptions import GzipExtensionError, GzipDecompressionError
 
 
 def decompress_gzip(gz_path: Path, output_filepath: Path = None, keep_gz: bool = True):
@@ -14,9 +14,7 @@ def decompress_gzip(gz_path: Path, output_filepath: Path = None, keep_gz: bool =
     """
 
     if ".gz" not in gz_path.suffix:
-        raise GzipDecompressionError(
-            "Input file has no .gz extension (required)", gz_path
-        )
+        raise GzipExtensionError(gz_path)
 
     if output_filepath is None:
         output_filepath = gz_path.with_suffix("")
@@ -30,9 +28,7 @@ def decompress_gzip(gz_path: Path, output_filepath: Path = None, keep_gz: bool =
         inf.close()
         outf.close()
     except gzip.BadGzipFile as e:
-        raise GzipDecompressionError(
-            "Error reading/processing gzip file", gz_path
-        ) from e
+        raise GzipDecompressionError(gz_path) from e
 
     if not keep_gz:
         gz_path.unlink()

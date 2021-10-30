@@ -2,8 +2,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from fact.target import (
-    TargetEndpoint,
-    SSHAccessInfo,
+    SSHTargetAccess,
 )
 from fact.storage import Session, Artifact, Task, Storage
 
@@ -16,7 +15,11 @@ if __name__ == "__main__":
     username = "your_remote_username"
     host = "127.0.0.1"
     port = 22
-    pkey = "/path/to/pkey/file"
+    pkey = """
+-----BEGIN OPENSSH PRIVATE KEY-----
+...
+-----END OPENSSH PRIVATE KEY-----
+"""
 
     artefact_name = "name"
     artefact_type = "disk"
@@ -27,8 +30,7 @@ if __name__ == "__main__":
     t = Task(str(uuid4()))
     s = Storage(Path(storage_folder))
 
-    client_info = SSHAccessInfo(username, host, str(port), pkey)
-    target = TargetEndpoint(client_info)
+    target = SSHTargetAccess(host=host, user=username, port=port, private_key=pkey)
 
     if "image" in test_keywords:
         with Session(s, t, a) as sess:
