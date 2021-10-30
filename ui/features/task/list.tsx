@@ -8,6 +8,18 @@ interface Props {
 	tasks: SerializableTask[] | null;
 }
 
+const sortCompletedAt = (a: SerializableTask, b: SerializableTask) => {
+	if (a.createdAt === null) {
+		return -1;
+	}
+
+	if (b.createdAt === null) {
+		return 1;
+	}
+
+	return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+};
+
 const renderType = (task: SerializableTask): string => {
 	if (task.taskCollectDisk !== undefined) {
 		return 'Capture disks';
@@ -109,7 +121,7 @@ const ListTask = ({tasks}: Props) => {
 			);
 		}
 
-		return tasks.map(task => renderTask(task));
+		return tasks.slice().sort(sortCompletedAt).map(task => renderTask(task));
 	};
 
 	return (
