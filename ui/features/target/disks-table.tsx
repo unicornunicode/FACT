@@ -1,24 +1,24 @@
 import Table from 'react-bootstrap/Table';
 import filesize from 'filesize';
 
-import type {TargetDiskinfo} from '../../proto/fact/tasks';
 import styles from './select-form.module.css';
-import type {SerializableTarget, SelectCheckbox} from '.';
+import type {SerializableTarget, SerializableTargetDiskinfo, SelectCheckbox} from '.';
 
 interface Props {
 	target: SerializableTarget | null;
-	disks: TargetDiskinfo[] | null;
+	disks: SerializableTargetDiskinfo[] | null;
 	checkbox?: SelectCheckbox;
 }
 
 const DisksTable = ({target, disks, checkbox}: Props) => {
-	const renderDisk = (disk: TargetDiskinfo) => (
+	const renderDisk = (disk: SerializableTargetDiskinfo) => (
 		<tr key={disk.deviceName}>
 			{checkbox && <td>{target && checkbox(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>}
 			<td className="text-nowrap">{disk.deviceName}</td>
 			<td>{disk.type}</td>
 			<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
 			<td>{disk.mountpoint}</td>
+			<td>{disk.collectedAt ? new Date(disk.collectedAt).toLocaleString() : ''}</td>
 		</tr>
 	);
 
@@ -47,6 +47,7 @@ const DisksTable = ({target, disks, checkbox}: Props) => {
 					<th className={styles.colType}>Type</th>
 					<th className={styles.colSize}>Size</th>
 					<th className={styles.colMount}>Mount</th>
+					<th>Collected</th>
 				</tr>
 				{disks.map(disk => renderDisk(disk))}
 			</tbody>

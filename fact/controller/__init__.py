@@ -199,9 +199,7 @@ class Controller:
     ) -> None:
         async with self.session() as session:
             async with session.begin():
-                stmt = select(Task).where(
-                    Task.status == TaskStatus.RUNNING, Task.uuid == task_uuid
-                )
+                stmt = select(Task).where(Task.uuid == task_uuid)
                 task = (await session.execute(stmt)).scalar_one()
                 for device_name, size, type, mountpoint in results:
                     stmt_diskinfo = select(TargetDiskinfo).where(
@@ -234,6 +232,18 @@ class Controller:
                 diskinfos = (await session.execute(stmt)).scalars().all()
                 session.expunge_all()
                 return diskinfos
+
+    async def _update_target_diskinfo_collected(self, task_uuid: UUID) -> None:
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Task).where(Task.uuid == task_uuid)
+                task = (await session.execute(stmt)).scalar_one()
+                stmt_diskinfo = select(TargetDiskinfo).where(
+                    TargetDiskinfo.target == task.target,
+                    TargetDiskinfo.device_name == task.task_collect_disk_selector_path,
+                )
+                diskinfo = (await session.execute(stmt_diskinfo)).scalar_one()
+                diskinfo.collected_at = datetime.utcnow()
 
     async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
         async with self.session() as session:
@@ -603,6 +613,8 @@ class WorkerTasks(WorkerTasksServicer):
                     )
                 )
             await self.controller._update_target_diskinfos(task_uuid, diskinfos)
+        elif task_type == "task_collect_disk":
+            await self.controller._update_target_diskinfo_collected(task_uuid)
         await self.controller._complete_task(task_uuid)
 
     async def Session(
