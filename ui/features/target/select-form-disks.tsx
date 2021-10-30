@@ -30,7 +30,7 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 	const renderDisk = (disk: LsblkResult) => (
 		<tr key={disk.deviceName}>
 			<td>{children(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>
-			<td>{disk.deviceName}</td>
+			<td className="text-nowrap">{disk.deviceName}</td>
 			<td>{disk.type}</td>
 			<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
 			<td>{disk.mountpoint}</td>
@@ -49,9 +49,9 @@ const SelectTargetsFormDisks = ({target, children}: Props) => {
 				<tr>
 					<th className={styles.colCheck}/>
 					<th>Disk</th>
-					<th>Type</th>
-					<th>Size</th>
-					<th>Mount</th>
+					<th className={styles.colType}>Type</th>
+					<th className={styles.colSize}>Size</th>
+					<th className={styles.colMount}>Mount</th>
 				</tr>
 				{disks?.map(disk => renderDisk(disk))}
 			</tbody>
