@@ -101,6 +101,8 @@ class Worker:
 
             with tempfile.NamedTemporaryFile("w+") as f:
                 f.write(private_key)
+                if not private_key.endswith("\n"):
+                    f.write("\n")
                 f.flush()
 
                 private_key_path = f.name

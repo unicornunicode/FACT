@@ -92,7 +92,9 @@ class TargetEndpoint:
                 dd_if,
                 "| gzip -1 -",
             ],
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
         ) as p:
             if p.stdout is None:
                 raise Exception("Unreachable: Process stdout is None")
@@ -122,7 +124,9 @@ class TargetEndpoint:
                 self.SSHAccessInfo.host,
                 lsblk_command,
             ],
+            stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
         ) as p:
             if p.stdout is None:
                 raise Exception("Unreachable: Process stdout is None")
