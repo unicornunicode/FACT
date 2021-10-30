@@ -94,6 +94,8 @@ class TargetEndpoint:
             ],
             stdout=subprocess.PIPE,
         ) as p:
+            if p.stdout is None:
+                raise Exception("Unreachable: Process stdout is None")
 
             while True:
                 res = p.stdout.read()
@@ -122,6 +124,8 @@ class TargetEndpoint:
             ],
             stdout=subprocess.PIPE,
         ) as p:
+            if p.stdout is None:
+                raise Exception("Unreachable: Process stdout is None")
 
             while True:
                 res = p.stdout.read()
