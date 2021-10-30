@@ -1,9 +1,8 @@
 import logging
-from contextlib import contextmanager
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 import gzip
-from typing import List, Optional, Literal, Generator, AsyncIterator
+from typing import List, Optional, AsyncIterator
 
 # Protocol
 from grpc.aio import insecure_channel
@@ -37,23 +36,9 @@ import platform
 # FACT
 from fact.target import SSHTargetAccess
 from fact.target.types import TargetAccess
-from fact.storage import Session, Storage, Task, Artifact
+from fact.storage import FilesystemStorage, Storage
 from fact.ingestion import DiskAnalyzer
 from fact.ingestion.destinations import DestinationElasticsearch
-
-
-@contextmanager
-def _storage_open(
-    storage: Storage,
-    task_uuid: UUID,
-    artifact_name: str,
-    artifact_type: Literal["disk"],
-) -> Generator[Session, None, None]:
-    # TODO: Move this into storage
-    task = Task(str(task_uuid))
-    artifact = Artifact(artifact_name, artifact_type)
-    with Session(storage, task, artifact) as s:
-        yield s
 
 
 log = logging.getLogger(__name__)
@@ -75,7 +60,7 @@ class Worker:
         self._controller_addr = controller_addr
 
         # TODO: S3 storage abstraction
-        self._storage = Storage(storage_dir)
+        self._storage = FilesystemStorage(storage_dir)
 
         self._storage_dir = storage_dir
         self._ensure_storage_dir()
@@ -157,7 +142,9 @@ class Worker:
         self, task_uuid: UUID, target: Target, task: TaskCollectDisk
     ) -> None:
         remote = self._remote(target)
-        with _storage_open(self._storage, task_uuid, task.device_name, "disk") as f:
+        with self._storage.writer(
+            task_uuid, task.device_name, "disk", compressed=True
+        ) as f:
             try:
                 remote.collect_image(task.device_name, f)
             except Exception as e:
@@ -176,44 +163,34 @@ class Worker:
         # Should not happen: We have already called _setup()
         assert self._ingest_destination is not None
 
-        # HACK: Get the first artifact. We should only have one artifact per
-        # task. A task is never called with multiple disks at the moment.
-        s_task = self._storage.get_task(str(UUID(bytes=task.collected_uuid)))
-        assert s_task is not None
-        # TODO: Rewrite the storage API to avoid using dict
-        s_task_info = s_task.get_task_info()
-        assert s_task_info is not None
-        s_artifact_info = s_task_info.get("artifacts", []).pop()
-        assert s_artifact_info is not None
-        s_artifact = s_task.get_artifact(s_artifact_info)
-        assert s_artifact is not None
-        artifact_name = s_artifact.artifact_name
-        # HACK: Directly obtain a handle to the storage path
-        artifact_path = self._storage.get_task_artifact_path(
-            str(s_task.task_uuid), s_artifact
-        )
+        collected_uuid = UUID(bytes=task.collected_uuid)
 
-        # Decompress the disk for mounting
-        # TODO: Put decompression logic in the storage API
-        with NamedTemporaryFile("wb") as disk_f:
-            with gzip.open(artifact_path, "rb") as f:
+        artifacts = self._storage.list_artifacts(collected_uuid, "disk")
+        if len(artifacts) > 0:
+            raise NotImplementedError("Cannot handle more than one artifact yet")
+        artifact_name = artifacts[0]
+
+        with self._storage.reader(
+            collected_uuid, artifact_name, "disk", decompress=True
+        ) as f:
+            # DiskAnalyzer requires a file. Write the data to a temporary file
+            with NamedTemporaryFile("wb") as disk_f:
                 while buf := f.read(65535):
                     disk_f.write(buf)
-            disk_f.flush()
+                disk_f.flush()
 
-            # TODO: Read disk image from a Writable stream
-            log.debug(disk_f.name)
-            with DiskAnalyzer(Path(disk_f.name)) as analyzer:
-                log.debug(f"Opened! {str(analyzer.loop_device_path)}")
-                for path in analyzer.mount_paths:
-                    log.debug(f"Mounted: {str(path)}")
-                for record in analyzer.analyse():
-                    await self._ingest_destination.index(
-                        UUID(bytes=task.collected_uuid),
-                        task.target_name,
-                        artifact_name,
-                        record,
-                    )
+                log.debug(disk_f.name)
+                with DiskAnalyzer(Path(disk_f.name)) as analyzer:
+                    log.debug(f"Opened! {str(analyzer.loop_device_path)}")
+                    for path in analyzer.mount_paths:
+                        log.debug(f"Mounted: {str(path)}")
+                    for record in analyzer.analyse():
+                        await self._ingest_destination.index(
+                            UUID(bytes=task.collected_uuid),
+                            task.target_name,
+                            artifact_name,
+                            record,
+                        )
 
     async def _handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
         """

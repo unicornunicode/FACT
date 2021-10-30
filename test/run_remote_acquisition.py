@@ -2,7 +2,7 @@ from pathlib import Path
 from uuid import uuid4
 
 from fact.target import SSHTargetAccess
-from fact.storage import Session, Artifact, Task, Storage
+from fact.storage import FilesystemStorage
 
 import logging
 
@@ -20,22 +20,19 @@ if __name__ == "__main__":
 """
 
     artefact_name = "name"
-    artefact_type = "disk"
-    storage_folder = "/path/to/folder"
+    storage_folder = Path("/path/to/folder")
     test_keywords = [""]
 
-    a = Artifact(artefact_name, artefact_type)
-    t = Task(str(uuid4()))
-    s = Storage(Path(storage_folder))
+    s = FilesystemStorage(storage_folder)
 
     target = SSHTargetAccess(
         host=host, user=username, port=port, private_key=pkey, become=True
     )
 
     if "image" in test_keywords:
-        with Session(s, t, a) as sess:
+        with s.writer(uuid4(), artefact_name, "disk") as f:
             remote_image_path = "/dev/loop2"
-            target.collect_image(remote_image_path, sess)
+            target.collect_image(remote_image_path, f)
 
     if "lsblk" in test_keywords:
         dic = target.get_all_available_disk()

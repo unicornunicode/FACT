@@ -1,3 +1,6 @@
+from uuid import UUID
+
+
 class FACTError:
     def __init__(self, message: str):
         self.message = message
@@ -16,46 +19,14 @@ class LsblkParseError(FACTError, ValueError):
         self.raw_data = raw_data
 
 
-class TaskExistsError(FACTError, Exception):
-    def __init__(self, message: str, task_uuid: str):
-        """Exception if Task exists"""
-        super().__init__(f"{task_uuid} -> {message}")
-
-
-class TaskNotFoundError(FACTError, Exception):
-    def __init__(self, message: str, task_uuid: str):
-        """Exception if Task not found"""
-        super().__init__(f"{task_uuid} -> {message}")
-
-
-class TaskInvalidUUID(FACTError, Exception):
-    def __init__(self, message: str, task_uuid: str):
-        """Exception if Task has invalid UUID"""
-        super().__init__(f"{task_uuid} -> {message}")
-
-
 class ArtifactExistsError(FACTError, Exception):
-    def __init__(self, message: str, artifact_info: dict):
-        """Exception if Artifact exists"""
-        super().__init__(f"{str(artifact_info)} -> {message}")
+    def __init__(self, task_uuid: UUID, artifact_name: str, artifact_type: str):
+        super().__init__(f"{task_uuid}: {artifact_type} {artifact_name}")
 
 
 class ArtifactNotFoundError(FACTError, Exception):
-    def __init__(self, message: str, artifact_info: dict):
-        """Exception if Artifact not found"""
-        super().__init__(f"{str(artifact_info)} -> {message}")
-
-
-class ArtifactInvalidName(FACTError, Exception):
-    def __init__(self, message: str, artifact_name: str):
-        """Exception if Artifact has invalid name"""
-        super().__init__(f"{artifact_name} -> {message}")
-
-
-class ArtifactInvalidType(FACTError, Exception):
-    def __init__(self, message: str, artifact_type: str):
-        """Exception if Artifact has invalid type"""
-        super().__init__(f"{artifact_type} -> {message}")
+    def __init__(self, task_uuid: UUID, artifact_name: str, artifact_type: str):
+        super().__init__(f"{task_uuid}: {artifact_type} {artifact_name}")
 
 
 class LoopDeviceSetupError(FACTError, Exception):

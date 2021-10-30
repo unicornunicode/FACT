@@ -7,7 +7,7 @@ from tempfile import NamedTemporaryFile
 from typing import IO, Tuple, List, Sequence, Generator
 
 from ..exceptions import UnreachableError, LsblkParseError
-from ..storage import Session
+from ..storage.types import Writeable
 from .types import TargetAccess
 
 log = logging.getLogger(__name__)
@@ -91,7 +91,7 @@ class SSHTargetAccess(TargetAccess):
                 yield process.stdout
 
     def collect_image(
-        self, remote_path_of_image: str, storage_session: Session, bufsize: int = 65535
+        self, remote_path_of_image: str, w: Writeable, bufsize: int = 65535
     ) -> None:
         """
         Collects the image of a file. Can be a disk, or process, or file in general.
@@ -103,7 +103,7 @@ class SSHTargetAccess(TargetAccess):
         command = ("dd", f"if=/dev/{remote_path_of_image}", " | gzip -1 -")
         with self.do_ssh(command, bufsize=bufsize) as stdout:
             while buf := stdout.read(bufsize):
-                storage_session.write(buf)
+                w.write(buf)
 
     def get_all_available_disk(self) -> List[Tuple[str, int, str, str]]:
         """
