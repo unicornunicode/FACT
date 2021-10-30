@@ -8,6 +8,7 @@ service Management {
     rpc ListTask(ListTaskRequest) returns (ListTaskResult);
 	rpc CreateTarget(CreateTargetRequest) returns (CreateTargetResult);
 	rpc ListTarget(ListTargetRequest) returns (ListTargetResult);
+	rpc GetTarget(GetTargetRequest) returns (GetTargetResult);
 	rpc ListTargetLsblk(ListTargetLsblkRequest) returns (ListTargetLsblkResult);
     rpc ListWorker(ListWorkerRequest) returns (ListWorkerResult);
 }
@@ -75,6 +76,14 @@ message ListTargetRequest {
 
 message ListTargetResult {
 	repeated ListTarget targets = 1;
+}
+
+message GetTargetRequest {
+	bytes uuid = 1;
+}
+
+message GetTargetResult {
+	ListTarget target = 1;
 }
 
 message ListTargetLsblkRequest {

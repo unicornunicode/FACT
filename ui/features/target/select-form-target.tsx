@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import type {SerializableTarget} from '.';
 
 interface Props {
@@ -24,7 +26,7 @@ const SelectTargetsFormTarget = ({target, children}: Props) => (
 		<td>{children(`target.${target.uuid}`)}</td>
 		<td>{target.name}</td>
 		<td>{renderAccess(target)}</td>
-		<td><small className="text-muted">{target.uuid}</small></td>
+		<td><small className="text-muted"><Link href={`/target/${target.uuid}`}>{target.uuid}</Link></small></td>
 	</tr>
 );
 
