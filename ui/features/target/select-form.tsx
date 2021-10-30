@@ -69,7 +69,7 @@ const SelectTargetsForm = ({targets, mode, onUpdate}: Props) => {
 						<th className={styles.colCheck}/>
 						<th>Target</th>
 						<th>Access</th>
-						<th>UUID</th>
+						<th className={styles.colUUID}>UUID</th>
 					</tr>
 				</thead>
 				<tbody>

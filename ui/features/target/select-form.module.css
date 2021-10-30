@@ -1,3 +1,19 @@
 .colCheck {
   width: 2.5em;
 }
+
+.colUUID {
+  width: 20em;
+}
+
+.colType {
+  width: 4em;
+}
+
+.colSize {
+  width: 8em;
+}
+
+.colMount {
+  width: 40%;
+}

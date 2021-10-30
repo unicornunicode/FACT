@@ -95,8 +95,17 @@ const SelectTargets = ({targets, onShowAddTarget}: Props) => {
 		}
 	}, [diskSelection]);
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	const onCaptureMemory = useCallback(async () => {}, []);
+	const onCaptureMemory = useCallback(async () => {
+		const rpc = await managementRpc();
+		const client = new ManagementClientImpl(rpc);
+		for (const {target} of targetSelection) {
+			// eslint-disable-next-line no-await-in-loop
+			await client.CreateTask({
+				target: new Uint8Array(parseUuid(target)),
+				taskCollectMemory: {},
+			});
+		}
+	}, [targetSelection]);
 
 	return (
 		<>
