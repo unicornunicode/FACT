@@ -1,12 +1,11 @@
 import Table from 'react-bootstrap/Table';
 
 import {listTask_StatusToJSON} from '../../proto/fact/management';
-
 import styles from './list.module.css';
 import type {SerializableTask} from '.';
 
 interface Props {
-	tasks: SerializableTask[];
+	tasks: SerializableTask[] | null;
 }
 
 const renderType = (task: SerializableTask): string => {
@@ -50,42 +49,68 @@ const renderOptions = (task: SerializableTask): JSX.Element | string => {
 	return '';
 };
 
+const renderDetails = (task: SerializableTask): JSX.Element => (
+	<Table size="sm" className="mb-0">
+		<tbody>
+			{task.target ? (
+				<tr>
+					<th>Target</th>
+					<td><small className="text-muted">{task.target}</small></td>
+				</tr>
+			) : ''}
+			<tr>
+				<th>Worker</th>
+				<td><small className="text-muted">{task.worker}</small></td>
+			</tr>
+			<tr>
+				<th>Created</th>
+				<td>{task.createdAt ? new Date(task.createdAt).toLocaleString() : ''}</td>
+			</tr>
+			<tr>
+				<th>Assigned</th>
+				<td>{task.assignedAt ? new Date(task.assignedAt).toLocaleString() : ''}</td>
+			</tr>
+			<tr>
+				<th>Completed</th>
+				<td>{task.completedAt ? new Date(task.completedAt).toLocaleString() : ''}</td>
+			</tr>
+		</tbody>
+	</Table>
+);
+
 const ListTask = ({tasks}: Props) => {
 	const renderTask = (task: SerializableTask) => (
 		<tr key={task.uuid}>
 			<td>{listTask_StatusToJSON(task.status)}</td>
 			<td>{renderType(task)}</td>
 			<td className="p-0">{renderOptions(task)}</td>
-			<td className="p-0">
-				<Table size="sm" className="mb-0">
-					<tbody>
-						{task.target ? (
-							<tr>
-								<th>Target</th>
-								<td><small className="text-muted">{task.target}</small></td>
-							</tr>
-						) : ''}
-						<tr>
-							<th>Worker</th>
-							<td><small className="text-muted">{task.worker}</small></td>
-						</tr>
-						<tr>
-							<th>Created</th>
-							<td>{task.createdAt ? new Date(task.createdAt).toLocaleString() : ''}</td>
-						</tr>
-						<tr>
-							<th>Assigned</th>
-							<td>{task.assignedAt ? new Date(task.assignedAt).toLocaleString() : ''}</td>
-						</tr>
-						<tr>
-							<th>Completed</th>
-							<td>{task.completedAt ? new Date(task.completedAt).toLocaleString() : ''}</td>
-						</tr>
-					</tbody>
-				</Table>
-			</td>
+			<td className="p-0">{renderDetails(task)}</td>
 		</tr>
 	);
+
+	const renderTasks = (tasks: SerializableTask[] | null) => {
+		if (tasks === null) {
+			return (
+				<tr>
+					<td colSpan={4} className="p-2 text-center fst-italic text-muted">
+						Loading
+					</td>
+				</tr>
+			);
+		}
+
+		if (tasks.length === 0) {
+			return (
+				<tr>
+					<td colSpan={4} className="p-2 text-center fst-italic">
+						No tasks. Create one in &ldquo;Targets&rdquo;
+					</td>
+				</tr>
+			);
+		}
+
+		return tasks.map(task => renderTask(task));
+	};
 
 	return (
 		<Table>
@@ -98,7 +123,7 @@ const ListTask = ({tasks}: Props) => {
 				</tr>
 			</thead>
 			<tbody>
-				{tasks.map(task => renderTask(task))}
+				{renderTasks(tasks)}
 			</tbody>
 		</Table>
 	);
