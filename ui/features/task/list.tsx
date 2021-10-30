@@ -52,7 +52,7 @@ const renderOptions = (task: SerializableTask): JSX.Element | string => {
 
 const ListTask = ({tasks}: Props) => {
 	const renderTask = (task: SerializableTask) => (
-		<tr>
+		<tr key={task.uuid}>
 			<td>{listTask_StatusToJSON(task.status)}</td>
 			<td>{renderType(task)}</td>
 			<td className="p-0">{renderOptions(task)}</td>

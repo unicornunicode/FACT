@@ -1,5 +1,7 @@
+import {useEffect} from 'react';
 import type {GetServerSideProps, NextPage} from 'next';
 import Head from 'next/head';
+import {useRouter} from 'next/router';
 import Container from 'react-bootstrap/Container';
 
 import {serializeTask} from '../../features/task';
@@ -24,15 +26,29 @@ export const getServerSideProps: GetServerSideProps<Props> = async () => {
 	};
 };
 
-const ListTaskPage: NextPage<Props> = ({tasks}: Props) => (
-	<main>
-		<Head>
-			<title>Tasks</title>
-		</Head>
-		<Container fluid>
-			<ListTask tasks={tasks}/>
-		</Container>
-	</main>
-);
+const ListTaskPage: NextPage<Props> = ({tasks}: Props) => {
+	const router = useRouter();
+
+	useEffect(() => {
+		const interval = setInterval(async () => {
+			await router.replace(router.asPath);
+		}, 10_000);
+
+		return () => {
+			clearInterval(interval);
+		};
+	}, [router]);
+
+	return (
+		<main>
+			<Head>
+				<title>Tasks</title>
+			</Head>
+			<Container fluid>
+				<ListTask tasks={tasks}/>
+			</Container>
+		</main>
+	);
+};
 
 export default ListTaskPage;
