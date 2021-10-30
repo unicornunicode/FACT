@@ -2,11 +2,11 @@ name: markdown
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - '**.md'
+      - "**.md"
 
 jobs:
   format:
@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: .github/workflows/markdown.yml
       - name: Install prettier
         run: npm install --no-save prettier@2
@@ -34,6 +34,5 @@ jobs:
             git commit -m "style: Automatic code formatting" -a
             git push
           fi
-
 
 # vim: set et ts=2 sw=2:
