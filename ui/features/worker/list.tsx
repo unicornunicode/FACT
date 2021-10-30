@@ -1,5 +1,6 @@
 import Table from 'react-bootstrap/Table';
 
+import styles from './list.module.css';
 import type {SerializableWorker} from '.';
 
 interface Props {
@@ -19,7 +20,7 @@ const ListWorker = ({workers}: Props) => {
 			<thead>
 				<tr>
 					<th>Worker</th>
-					<th>UUID</th>
+					<th className={styles.colUUID}>UUID</th>
 				</tr>
 			</thead>
 			<tbody>

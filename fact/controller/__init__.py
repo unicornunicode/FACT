@@ -237,8 +237,10 @@ class Controller:
     async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
         async with self.session() as session:
             async with session.begin():
-                stmt = select(Task).where(
-                    Task.status == TaskStatus.WAITING, Task.worker == uuid
+                stmt = (
+                    select(Task)
+                    .where(Task.status == TaskStatus.WAITING, Task.worker == uuid)
+                    .limit(1)
                 )
                 task = (await session.execute(stmt)).scalar_one_or_none()
                 if task is None:
@@ -259,6 +261,7 @@ class Controller:
                 )
                 task = (await session.execute(stmt)).scalar_one()
                 task.status = TaskStatus.COMPLETE
+                task.completedAt = datetime.utcnow()
 
     def _assign_task_to_worker(self, workers: List[Worker], task: Task) -> bool:
         # TODO: Actually schedule across multiple workers
