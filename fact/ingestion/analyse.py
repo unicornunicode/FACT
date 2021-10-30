@@ -4,7 +4,6 @@ from fact.utils.hashing import calculate_sha256
 from subprocess import Popen, PIPE
 from pathlib import Path
 from tempfile import mkstemp
-import re
 
 from typing import List
 
@@ -40,7 +39,7 @@ class DiskAnalyzer(Analyzer):
         super().__init__(sudo_password, disk_image_path, artifact_hash)
         self.loop_device_path: Path
         self.mount_paths: List[Path]
-        self.file_systems: List
+        self.paritions: List[Path]
 
     def __enter__(self):
         self.setup()
@@ -51,15 +50,15 @@ class DiskAnalyzer(Analyzer):
 
     def setup(self):
         self._setup_loop_device()
-        self._identify_file_systems()
-        self._mount_file_systems()
+        self._identify_partitions()
+        self._mount_paritions()
 
     def cleanup(self):
-        self._unmount_file_systems()
+        self._unmount_paritions()
         self._detach_loop_device()
 
     def analyse(self):
-        return self._traverse_file_systems()
+        return self._traverse_paritions()
 
     def _setup_loop_device(self):
         cmd = [
@@ -69,92 +68,66 @@ class DiskAnalyzer(Analyzer):
             "--find",
             "--show",
             "--read-only",
+            "--partscan",
             self.disk_image_path,
         ]
         with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
             stdout, stderr = proc.communicate(self.sudo_password.encode())
-        if not stderr.decode():
-            self.loop_device_path = stdout.decode().strip()
+        proc_status = proc.wait()
+        if proc_status != 0:
+            print(stderr.decode())  # raise exception with stderr.decode()
         else:
-            pass  # raise exception
+            self.loop_device_path = Path(stdout.decode().strip())
 
     def _detach_loop_device(self):
         cmd = ["sudo", "-S", "losetup", "--detach", self.loop_device_path]
         with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
             _, stderr = proc.communicate(self.sudo_password.encode())
-        if not stderr.decode():
+        proc_status = proc.wait()
+        if proc_status != 0:
+            print(stderr.decode())  # raise exception with stderr.decode()
+        else:
             return
-        else:
-            pass  # raise exception
 
-    def _identify_file_systems(self):
-        sector_size = 512
-        cmd = [
-            "sudo",
-            "-S",
-            "fdisk",
-            "--list",
-            "--sector-size",
-            str(sector_size),
-            self.loop_device_path,
-        ]
-        with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
-            stdout, stderr = proc.communicate(self.sudo_password.encode())
-        if not stderr.decode():
-            fdisk_output = stdout.decode().strip()
-            partition_table = re.search(
-                r"Device\s*Start\s*End\s*Sectors\s*Size\s*Type\s*([.\S\W]*)",
-                fdisk_output,
-            )
+    def _identify_partitions(self):
+        device_path = Path("/dev")
+        self.partitions = []
+        for p in device_path.iterdir():
+            if str(p).startswith(self.loop_device_path) and p != self.loop_device_path:
+                self.partitions.append(p)
 
-            self.file_systems = []
-            if partition_table:
-                records = partition_table.group(1).split("\n")
-                for record in records:
-                    partition = re.split(r"\s+", record)
-                    partition_columns = len(partition)
-                    if partition_columns == 1:
-                        break
-                    elif partition_columns > 5:
-                        diff = 5 - partition_columns
-                        partition = partition[:diff] + " ".join(partition[diff:])
-
-                    if partition[-1] == "Linux filesystem":
-                        start_sector = int(partition[1])
-                        self.file_systems.append(str(start_sector * sector_size))
-                    # TODO: Add more types
-        else:
-            pass  # raise exception
-
-    def _mount_file_systems(self):
+    def _mount_paritions(self):
         try:
-            self.file_systems
+            self.paritions
         except AttributeError:
             raise
 
-        mnt_base_path = "/mnt/diskartf"
-        for idx, fs in enumerate(self.file_systems):
-            fs_mnt_path = Path(mnt_base_path + str(idx))
-            if not fs_mnt_path.exists():
-                fs_mnt_path.mkdir(parents=True)
+        mnt_base_path = Path("/mnt/")
+        for p in self.paritions:
+            p_mnt_path = mnt_base_path / p
+            if not p_mnt_path.exists():
+                p_mnt_path.mkdir(parents=True)
             cmd = [
                 "sudo",
                 "-S",
                 "mount",
                 "--options",
-                f"offset={fs},ro,noload",
+                "noload",
+                "--read-only",
                 self.loop_device_path,
-                fs_mnt_path,
+                p_mnt_path,
             ]
             with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
                 _, stderr = proc.communicate(self.sudo_password.encode())
-            if not stderr.decode():
-                self.mount_paths.append(fs_mnt_path)
-                continue
+            proc_status = proc.wait()
+            if proc_status != 0:
+                print(
+                    stderr.decode()
+                )  # raise exception with stderr.decode() / log error
             else:
-                pass  # raise exception / log error
+                self.mount_paths.append(p_mnt_path)
 
-    def _unmount_file_systems(self):
+    def _unmount_paritions(self):
         try:
             self.mount_paths
         except AttributeError:
@@ -164,12 +137,15 @@ class DiskAnalyzer(Analyzer):
             cmd = ["sudo", "-S", "umount", path]
             with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
                 _, stderr = proc.communicate(self.sudo_password.encode())
-            if not stderr.decode():
-                continue
+            proc_status = proc.wait()
+            if proc_status != 0:
+                print(
+                    stderr.decode()
+                )  # raise exception with stderr.decode() / log error
             else:
-                pass  # raise exception / log error
+                path.rmdir()
 
-    def _traverse_file_systems(self):
+    def _traverse_paritions(self):
         file_system_info = dict()
         # TODO: Traverse with pathlib.Path.rglob("*") and
         # get all info on all files and dirs with pathlib.Path.lstat
