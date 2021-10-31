@@ -60,6 +60,12 @@ class DiskAnalyzer(Analyzer):
     def analyse(self):
         return self._traverse_partitions()
 
+    def _exec_command(self, cmd: list):
+        with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
+            stdout, stderr = proc.communicate(self.sudo_password.encode())
+        proc_status = proc.wait()
+        return proc_status, stdout, stderr
+
     def _setup_loop_device(self):
         cmd = [
             "sudo",
@@ -71,21 +77,17 @@ class DiskAnalyzer(Analyzer):
             "--partscan",
             self.disk_image_path,
         ]
-        with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
-            stdout, stderr = proc.communicate(self.sudo_password.encode())
-        proc_status = proc.wait()
+        proc_status, stdout, stderr = self._exec_command(cmd)
         if proc_status != 0:
-            print(stderr.decode())  # raise exception with stderr.decode()
+            print(stderr.decode().strip())  # raise exception with stderr.decode()
         else:
             self.loop_device_path = Path(stdout.decode().strip())
 
     def _detach_loop_device(self):
         cmd = ["sudo", "-S", "losetup", "--detach", self.loop_device_path]
-        with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
-            _, stderr = proc.communicate(self.sudo_password.encode())
-        proc_status = proc.wait()
+        proc_status, _, stderr = self._exec_command(cmd)
         if proc_status != 0:
-            print(stderr.decode())  # raise exception with stderr.decode()
+            print(stderr.decode().strip())  # raise exception with stderr.decode()
         else:
             return
 
@@ -114,16 +116,15 @@ class DiskAnalyzer(Analyzer):
                 "--options",
                 "noload",
                 "--read-only",
-                self.loop_device_path,
+                p,
                 p_mnt_path,
             ]
-            with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
-                _, stderr = proc.communicate(self.sudo_password.encode())
-            proc_status = proc.wait()
+            proc_status, _, stderr = self._exec_command(cmd)
             if proc_status != 0:
                 print(
-                    stderr.decode()
+                    stderr.decode().strip()
                 )  # raise exception with stderr.decode() / log error
+                p_mnt_path.rmdir()
             else:
                 self.mount_paths.append(p_mnt_path)
 
@@ -135,12 +136,10 @@ class DiskAnalyzer(Analyzer):
 
         for path in self.mount_paths:
             cmd = ["sudo", "-S", "umount", path]
-            with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
-                _, stderr = proc.communicate(self.sudo_password.encode())
-            proc_status = proc.wait()
+            proc_status, _, stderr = self._exec_command(cmd)
             if proc_status != 0:
                 print(
-                    stderr.decode()
+                    stderr.decode().strip()
                 )  # raise exception with stderr.decode() / log error
             else:
                 path.rmdir()
