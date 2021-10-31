@@ -9,7 +9,11 @@ from . import Worker
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    parser = ArgumentParser(description="FACT worker")
+    parser = ArgumentParser(prog="fact.worker", description="FACT worker")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+    )
     parser.add_argument(
         "--controller-addr",
         default="localhost:5123",
@@ -24,6 +28,9 @@ if __name__ == "__main__":
         "(Default: /var/lib/fact)",
     )
     args = parser.parse_args()
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     loop = asyncio.get_event_loop()
 
