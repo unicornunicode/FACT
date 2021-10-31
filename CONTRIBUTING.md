@@ -161,5 +161,4 @@ If you want to clean up the Docker volumes, you can use:
 docker-compose -f docker-compose.dev.yaml down --volumes
 ```
 
-
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
