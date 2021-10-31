@@ -7,15 +7,15 @@ services:
       dockerfile: Dockerfile
       target: dependencies
     command:
-      [
-        "python",
-        "-m",
-        "fact.controller",
-        "--listen-addr",
-        "0.0.0.0:5123",
-        "--debug",
-      ]
+      - python
+      - -m
+      - fact.controller
+      - --listen-addr
+      - 0.0.0.0:5123
+      - --debug
     working_dir: /app
+    networks:
+      - fact
     volumes:
       - .:/app
       - controller-database:/var/lib/fact
@@ -25,15 +25,15 @@ services:
       dockerfile: Dockerfile
       target: dependencies
     command:
-      [
-        "python",
-        "-m",
-        "fact.worker",
-        "--controller-addr",
-        "controller:5123",
-        "--debug",
-      ]
+      - python
+      - -m
+      - fact.worker
+      - --controller-addr
+      - controller:5123
+      - --debug
     working_dir: /app
+    networks:
+      - fact
     volumes:
       - .:/app
       - worker-data:/var/lib/fact
@@ -41,7 +41,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.grpcwebproxy
+      target: production
     command: ["--backend_addr=controller:5123", "--server_http_debug_port=5124"]
+    networks:
+      - fact
     ports:
       - 5124:5124
   ui:
@@ -56,13 +59,13 @@ services:
     # We're using a child directory so that we don't mount our source code over
     # the installed dependencies
     working_dir: /app/ui
-    volumes:
-      - ./ui:/app/ui
     # Use host networking so that we can use MANAGEMENT_ENDPOINT on both the
     # server side and client side
     network_mode: host
     #ports:
     #- 3000:3000
+    volumes:
+      - ./ui:/app/ui
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     environment:
