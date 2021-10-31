@@ -1,4 +1,4 @@
-name: markdown
+name: misc
 
 on:
   push:
@@ -7,6 +7,8 @@ on:
     branches: [main]
     paths:
       - "**.md"
+      - "**.yml"
+      - "**.yaml"
 
 jobs:
   format:
@@ -21,11 +23,11 @@ jobs:
         with:
           node-version: 14.x
           cache: "npm"
-          cache-dependency-path: .github/workflows/markdown.yml
+          cache-dependency-path: .github/workflows/misc.yml
       - name: Install prettier
         run: npm install --no-save prettier@2
       - name: Format
-        run: npx prettier --write '**/*.md'
+        run: npx prettier --write '**/*.md' '**/*.yml' '**/*.yaml'
       - name: Commit changes if any
         run: |
           git config user.name "GitHub Actions"
