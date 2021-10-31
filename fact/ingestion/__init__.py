@@ -65,7 +65,7 @@ class DiskAnalyzer(Analyzer):
     def _exec_command(self, cmd: list):
         with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
             stdout, stderr = proc.communicate(self.sudo_password.encode())
-        proc_status = proc.wait()
+            proc_status = proc.wait()
         return proc_status, stdout, stderr
 
     def _setup_loop_device(self):
@@ -77,7 +77,7 @@ class DiskAnalyzer(Analyzer):
             "--show",
             "--read-only",
             "--partscan",
-            self.disk_image_path,
+            self.decompress_path,
         ]
         proc_status, stdout, stderr = self._exec_command(cmd)
         if proc_status != 0:
@@ -91,13 +91,16 @@ class DiskAnalyzer(Analyzer):
         if proc_status != 0:
             print(stderr.decode().strip())  # raise exception with stderr.decode()
         else:
-            return
+            return True
 
     def _identify_partitions(self):
         device_path = Path("/dev")
         self.partitions = []
         for p in device_path.iterdir():
-            if str(p).startswith(self.loop_device_path) and p != self.loop_device_path:
+            if (
+                str(p).startswith(str(self.loop_device_path))
+                and p != self.loop_device_path
+            ):
                 self.partitions.append(p)
 
     def _mount_partitions(self):
@@ -106,6 +109,7 @@ class DiskAnalyzer(Analyzer):
         except AttributeError:
             raise
 
+        self.mount_paths = []
         mnt_base_path = Path("/mnt/")
         for p in self.partitions:
             p_mnt_path = mnt_base_path / p
