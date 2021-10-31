@@ -35,19 +35,28 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
     parser = ArgumentParser(description="FACT development server")
+    parser.add_argument(
+        "--storage-dir",
+        default=Path("/tmp/fact"),
+        type=Path,
+        help="Folder to store SQLite database, collected disk images, memory "
+        "snapshots and other data (Default: /tmp/fact)",
+    )
     args = parser.parse_args()
+    storage_dir: Path = args.storage_dir.absolute()
+    database: Path = storage_dir / "controller.db"
 
     loop = asyncio.get_event_loop()
 
-    # Ensure /tmp/fact is created
-    Path("/tmp/fact").mkdir(exist_ok=True)
+    # Ensure /tmp/fact is created for the database
+    storage_dir.mkdir(exist_ok=True)
 
     c = Controller(
         listen_addr="localhost:5123",
-        database_addr="sqlite+aiosqlite:///file:/tmp/fact/controller.db?mode=rwc&uri=true",
+        database_addr=f"sqlite+aiosqlite:///file:{database}?mode=rwc&uri=true",
         database_echo=True,
     )
-    w = Worker(controller_addr=c.listen_addr, storage_dir=Path("/tmp/fact"))
+    w = Worker(controller_addr=c.listen_addr, storage_dir=storage_dir)
     p = GRPCWebProxy(listen_addr="0.0.0.0:5124", controller_addr=c.listen_addr)
     try:
         loop.run_until_complete(start_all(c, w, p))
