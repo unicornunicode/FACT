@@ -1,5 +1,11 @@
 from .record import DiskRecord
 
+from fact.exceptions import (
+    LoopDeviceSetupError,
+    LoopDeviceDetachError,
+    MountPartitionError,
+    UnmountPartitionError,
+)
 from fact.utils.decompression import decompress_gzip
 from fact.utils.hashing import calculate_sha256
 
@@ -24,9 +30,7 @@ class Analyzer:
         _, decompress_path = mkstemp(artifact_suffix, self.artifact_path.stem)
         self.decompress_path = Path(decompress_path)
         self.decompress_path.unlink()
-        decompress_gzip(
-            self.artifact_path, self.decompress_path, True
-        )  # Include exception handling
+        decompress_gzip(self.artifact_path, self.decompress_path, True)
 
     def hash_integrity_check(self, expected_hash: str) -> bool:
         actual_hash = calculate_sha256(self.artifact_path)
@@ -63,7 +67,7 @@ class DiskAnalyzer(Analyzer):
         with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
             stdout, stderr = proc.communicate()
             proc_status = proc.wait()
-        return proc_status, stdout, stderr
+        return proc_status, stdout.decode().strip(), stderr.decode().strip()
 
     def _setup_loop_device(self):
         cmd = [
@@ -76,15 +80,15 @@ class DiskAnalyzer(Analyzer):
         ]
         proc_status, stdout, stderr = self._exec_command(cmd)
         if proc_status != 0:
-            print(stderr.decode().strip())  # raise exception with stderr.decode()
+            raise LoopDeviceSetupError(stderr)
         else:
-            self.loop_device_path = Path(stdout.decode().strip())
+            self.loop_device_path = Path(stdout)
 
     def _detach_loop_device(self):
         cmd = ["losetup", "--detach", self.loop_device_path]
         proc_status, _, stderr = self._exec_command(cmd)
         if proc_status != 0:
-            print(stderr.decode().strip())  # raise exception with stderr.decode()
+            raise LoopDeviceDetachError(stderr)
         else:
             return True
 
@@ -120,10 +124,8 @@ class DiskAnalyzer(Analyzer):
             ]
             proc_status, _, stderr = self._exec_command(cmd)
             if proc_status != 0:
-                print(
-                    stderr.decode().strip()
-                )  # raise exception with stderr.decode() / log error
                 p_mnt_path.rmdir()
+                raise MountPartitionError(stderr)
             else:
                 self.mount_paths.append(p_mnt_path)
 
@@ -137,9 +139,7 @@ class DiskAnalyzer(Analyzer):
             cmd = ["umount", path]
             proc_status, _, stderr = self._exec_command(cmd)
             if proc_status != 0:
-                print(
-                    stderr.decode().strip()
-                )  # raise exception with stderr.decode() / log error
+                raise UnmountPartitionError(stderr)
             else:
                 path.rmdir()
 
