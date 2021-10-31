@@ -39,7 +39,7 @@ class DiskAnalyzer(Analyzer):
         super().__init__(sudo_password, disk_image_path, artifact_hash)
         self.loop_device_path: Path
         self.mount_paths: List[Path]
-        self.paritions: List[Path]
+        self.partitions: List[Path]
 
     def __enter__(self):
         self.setup()
@@ -51,14 +51,14 @@ class DiskAnalyzer(Analyzer):
     def setup(self):
         self._setup_loop_device()
         self._identify_partitions()
-        self._mount_paritions()
+        self._mount_partitions()
 
     def cleanup(self):
-        self._unmount_paritions()
+        self._unmount_partitions()
         self._detach_loop_device()
 
     def analyse(self):
-        return self._traverse_paritions()
+        return self._traverse_partitions()
 
     def _setup_loop_device(self):
         cmd = [
@@ -96,14 +96,14 @@ class DiskAnalyzer(Analyzer):
             if str(p).startswith(self.loop_device_path) and p != self.loop_device_path:
                 self.partitions.append(p)
 
-    def _mount_paritions(self):
+    def _mount_partitions(self):
         try:
-            self.paritions
+            self.partitions
         except AttributeError:
             raise
 
         mnt_base_path = Path("/mnt/")
-        for p in self.paritions:
+        for p in self.partitions:
             p_mnt_path = mnt_base_path / p
             if not p_mnt_path.exists():
                 p_mnt_path.mkdir(parents=True)
@@ -127,7 +127,7 @@ class DiskAnalyzer(Analyzer):
             else:
                 self.mount_paths.append(p_mnt_path)
 
-    def _unmount_paritions(self):
+    def _unmount_partitions(self):
         try:
             self.mount_paths
         except AttributeError:
@@ -145,7 +145,7 @@ class DiskAnalyzer(Analyzer):
             else:
                 path.rmdir()
 
-    def _traverse_paritions(self):
+    def _traverse_partitions(self):
         file_system_info = dict()
         # TODO: Traverse with pathlib.Path.rglob("*") and
         # get all info on all files and dirs with pathlib.Path.lstat
