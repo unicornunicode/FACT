@@ -92,6 +92,8 @@ This can be done by running:
 poetry shell
 # Compile the files specified in Makefile if they changed
 make proto
+# Do the same for the UI
+make proto-ts
 ```
 
 When `make` is unavailable, directly invoke the compiler:
