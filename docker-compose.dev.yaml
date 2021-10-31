@@ -1,0 +1,81 @@
+version: '3'
+
+services:
+  controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dependencies
+    command: ["python", "-m", "fact.controller", "--listen-addr", "0.0.0.0:5123", "--debug"]
+    working_dir: /app
+    volumes:
+    - .:/app
+    - controller-database:/var/lib/fact
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dependencies
+    command: ["python", "-m", "fact.worker", "--controller-addr", "controller:5123", "--debug"]
+    working_dir: /app
+    volumes:
+    - .:/app
+    - worker-data:/var/lib/fact
+  grpcwebproxy:
+    build:
+      context: .
+      dockerfile: Dockerfile.grpcwebproxy
+    command: ["--backend_addr=controller:5123", "--server_http_debug_port=5124"]
+    ports:
+    - 5124:5124
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+      target: development-dependencies
+    command: ["npm", "run", "dev"]
+    environment:
+    - NODE_ENV=development
+    - MANAGEMENT_ENDPOINT=http://localhost:5124
+    # We're using a child directory so that we don't mount our source code over
+    # the installed dependencies
+    working_dir: /app/ui
+    volumes:
+    - ./ui:/app/ui
+    # Use host networking so that we can use MANAGEMENT_ENDPOINT on both the
+    # server side and client side
+    network_mode: host
+    #ports:
+    #- 3000:3000
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+    environment:
+    - discovery.type=single-node
+    networks:
+    - fact
+    ports:
+    - 9200:9200
+    volumes:
+    - elasticsearch:/usr/share/elasticsearch/data
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.1
+    environment:
+    - SERVER_NAME=kibana
+    - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+    - fact
+    ports:
+    - 5601:5601
+
+
+networks:
+  fact:
+
+volumes:
+  controller-database:
+  worker-data:
+  elasticsearch:
+  data:
+
+
+# vim: set et ts=2 sw=2:
