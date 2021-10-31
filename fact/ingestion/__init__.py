@@ -13,10 +13,7 @@ from typing import List
 class Analyzer:
     """Base class for all analyzers"""
 
-    def __init__(
-        self, sudo_password: str, artifact_path: Path, artifact_hash: str
-    ) -> None:
-        self.sudo_password = sudo_password
+    def __init__(self, artifact_path: Path, artifact_hash: str) -> None:
         self.artifact_path = artifact_path
         self.decompress_path: Path
         if self.hash_integrity_check(artifact_hash):
@@ -37,8 +34,8 @@ class Analyzer:
 
 
 class DiskAnalyzer(Analyzer):
-    def __init__(self, sudo_password: str, disk_image_path: Path, artifact_hash: str):
-        super().__init__(sudo_password, disk_image_path, artifact_hash)
+    def __init__(self, disk_image_path: Path, artifact_hash: str):
+        super().__init__(disk_image_path, artifact_hash)
         self.loop_device_path: Path
         self.mount_paths: List[Path]
         self.partitions: List[Path]
@@ -64,14 +61,12 @@ class DiskAnalyzer(Analyzer):
 
     def _exec_command(self, cmd: list):
         with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
-            stdout, stderr = proc.communicate(self.sudo_password.encode())
+            stdout, stderr = proc.communicate()
             proc_status = proc.wait()
         return proc_status, stdout, stderr
 
     def _setup_loop_device(self):
         cmd = [
-            "sudo",
-            "-S",
             "losetup",
             "--find",
             "--show",
@@ -86,7 +81,7 @@ class DiskAnalyzer(Analyzer):
             self.loop_device_path = Path(stdout.decode().strip())
 
     def _detach_loop_device(self):
-        cmd = ["sudo", "-S", "losetup", "--detach", self.loop_device_path]
+        cmd = ["losetup", "--detach", self.loop_device_path]
         proc_status, _, stderr = self._exec_command(cmd)
         if proc_status != 0:
             print(stderr.decode().strip())  # raise exception with stderr.decode()
@@ -116,8 +111,6 @@ class DiskAnalyzer(Analyzer):
             if not p_mnt_path.exists():
                 p_mnt_path.mkdir(parents=True)
             cmd = [
-                "sudo",
-                "-S",
                 "mount",
                 "--options",
                 "noload",
@@ -141,7 +134,7 @@ class DiskAnalyzer(Analyzer):
             raise
 
         for path in self.mount_paths:
-            cmd = ["sudo", "-S", "umount", path]
+            cmd = ["umount", path]
             proc_status, _, stderr = self._exec_command(cmd)
             if proc_status != 0:
                 print(
