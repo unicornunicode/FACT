@@ -4,17 +4,28 @@ version = "0.1.0"
 description = "Tool to collect, process and visualise forensic data from clusters of machines"
 authors = []
 license = "MIT"
+include = ["fact/grpcwebproxy/grpcwebproxy"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-grpcio = "^1.41.0"
+grpcio = "^1.41.1"
+protobuf = "^3.19.1"
 SQLAlchemy = "^1.4.25"
+# Drivers
+aiosqlite = { version = "^0.17.0", optional = true }
+asyncpg = { version = "^0.24.0", optional = true }
+aiomysql = { version = "^0.0.21", optional = true }
+
+[tool.poetry.extras]
+sqlite = ["aiomysql"]
+postgres = ["asyncpg"]
+mysql = ["aiomysql"]
 
 [tool.poetry.dev-dependencies]
 # Drivers
 aiosqlite = "^0.17.0"
 # Tools
-grpcio-tools = "^1.41.0"
+grpcio-tools = "^1.41.1"
 mkcommit = "^1.0.3"
 # Code quality
 flake8 = "^3.9.2"
