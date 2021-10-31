@@ -21,8 +21,6 @@ class Analyzer:
     """Base class for all analyzers"""
 
     def __init__(self, artifact_path: Path, artifact_hash: str) -> None:
-        if getegid() != 0:
-            raise PermissionError("Insufficient permissions to initialise Analyzer")
         self.artifact_path = artifact_path
         self.decompress_path: Path
         if self.hash_integrity_check(artifact_hash):
@@ -42,6 +40,10 @@ class Analyzer:
 
 class DiskAnalyzer(Analyzer):
     def __init__(self, disk_image_path: Path, artifact_hash: str):
+        if getegid() != 0:
+            raise PermissionError(
+                f"Insufficient permissions to initialise {self.__class__.__name__}"
+            )
         super().__init__(disk_image_path, artifact_hash)
         self.loop_device_path: Path
         self.mount_paths: List[Path]
