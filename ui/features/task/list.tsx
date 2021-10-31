@@ -60,12 +60,10 @@ const renderDetails = (task: SerializableTask, simple: boolean | undefined): JSX
 					<td><small className="text-muted">{task.uuid}</small></td>
 				</tr>
 			)}
-			{task.target && (
-				<tr>
-					<th>Target</th>
-					<td><small className="text-muted"><Link href={`/target/${task.target}`}>{task.target}</Link></small></td>
-				</tr>
-			)}
+			<tr>
+				<th>Target</th>
+				<td><small className="text-muted">{task.target && <Link href={`/target/${task.target}`}>{task.target}</Link>}</small></td>
+			</tr>
 			{simple ?? (
 				<>
 					{task.worker && (
