@@ -1,0 +1,18 @@
+ARG grpcwebproxy_version=0.14.1
+ARG grpcwebproxy_url=https://github.com/improbable-eng/grpc-web/releases/download/v${grpcwebproxy_version}/grpcwebproxy-v${grpcwebproxy_version}-linux-x86_64.zip
+
+
+FROM docker.io/library/alpine:3.10 AS download
+ARG grpcwebproxy_url
+
+RUN wget --output-document grpcwebproxy.zip ${grpcwebproxy_url} \
+	&& unzip grpcwebproxy.zip \
+	&& mv dist/grpcwebproxy* grpcwebproxy
+
+
+FROM scratch AS production
+
+COPY --from=download /grpcwebproxy /grpcwebproxy
+
+ENTRYPOINT ["/grpcwebproxy", "--backend_tls=false", "--run_tls_server=false", "--server_bind_address=0.0.0.0", "--allow_all_origins"]
+CMD ["--backend_addr=controller:5123", "--server_http_debug_port=5124"]

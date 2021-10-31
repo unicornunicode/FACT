@@ -3,6 +3,7 @@
 - [Python](https://www.python.org/downloads/)
 - [Poetry](https://python-poetry.org)
 - [Node.js](https://nodejs.org)
+- [Elasticsearch and Kibana](https://www.elastic.co/start)
 
 # Setup
 
@@ -15,6 +16,8 @@ Install development dependencies using:
 poetry install --no-root
 # Enter virtual environment
 poetry shell
+# Install grpcwebproxy
+python tools/download-grpcwebproxy.py
 # Optional: Install Git hooks to check your code and commit messages
 python tools/hooks.py install
 # Optional: When working on the UI
@@ -115,5 +118,48 @@ And the UI can be run with
 cd ui
 npm run dev
 ```
+
+# Running (Docker Compose)
+
+If installing the above requirements is something you don't want to do, you can
+use Docker Compose to run a full development environment. Before you start,
+you'll need:
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+If you haven't already, clone the repository.
+
+Build and start every component in development mode using:
+
+```sh
+docker-compose -f docker-compose.dev.yaml up
+# Or to run in the background
+docker-compose -f docker-compose.dev.yaml up --detach
+# Or when dependencies have changed
+docker-compose -f docker-compose.dev.yaml up --build
+```
+
+The controller and worker are started independently. After a code change,
+restart either process using:
+
+```sh
+docker-compose -f docker-compose.dev.yaml restart controller
+docker-compose -f docker-compose.dev.yaml restart worker
+```
+
+The UI is started with `npm run dev`, which automatically loads new changes. If
+a hard restart is needed, that can be done using:
+
+```sh
+docker-compose -f docker-compose.dev.yaml restart ui
+```
+
+If you want to clean up the Docker volumes, you can use:
+
+```sh
+docker-compose -f docker-compose.dev.yaml down --volumes
+```
+
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->

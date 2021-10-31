@@ -1,0 +1,37 @@
+ARG node_tag=16-bullseye-slim
+
+
+FROM docker.io/library/node:${node_tag} AS dependencies
+
+ENV NODE_ENV=production
+
+WORKDIR /app
+COPY ui/package.json ui/package-lock.json ./
+RUN npm clean-install \
+	&& rm -rf ~/.npm ~/.cache
+
+
+FROM dependencies AS development-dependencies
+
+ENV NODE_ENV=development
+
+RUN npm install \
+	&& rm -rf ~/.npm ~/.cache
+
+
+FROM development-dependencies AS build
+
+# Re-enable production build. Without this, builds will attempt to import `react-is`.
+# TODO: Understand the root cause of this bug
+ENV NODE_ENV=production
+
+COPY ui/ ./
+RUN npm run build
+
+
+FROM dependencies AS production
+
+COPY --from=build /app/.next/ ./.next/
+COPY --from=build /app/next.config.js ./
+
+ENTRYPOINT ["npm", "start", "--"]

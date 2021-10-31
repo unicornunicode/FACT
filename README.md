@@ -10,7 +10,9 @@ machines running in the cloud or on-premise.
 
 # Manual Deployment
 
-You'll need Python 3.9+ on your controller node and worker nodes.
+You'll need Python 3.9+ on your controller node and worker nodes, and Node.js
+for the UI. Additionally,
+you'll need to install [grpcwebproxy](https://github.com/improbable-eng/grpc-web/tree/master/go/grpcwebproxy), [Elasticsearch and Kibana](https://www.elastic.co/start).
 
 Install FACT on the controller node and worker nodes with:
 
@@ -18,20 +20,26 @@ Install FACT on the controller node and worker nodes with:
 sudo pip install https://github.com/unicornunicode/FACT.git
 ```
 
-## Controller
-
 Start the controller node using:
 
 ```sh
-python -m fact.controller --listen-addr [::]:5123
+python -m fact.controller --listen-addr [::]:5123 --elasticsearch http://$ELASTICSEARCH_ADDRESS:9200
 ```
-
-## Worker
 
 Start the worker nodes using:
 
 ```sh
 python -m fact.worker --controller-addr $CONTROLLER_ADDRESS:5123
+```
+
+Start the UI using:
+
+```sh
+git clone --depth 1 https://github.com/unicornunicode/FACT.git
+cd ui
+npm ci
+npm run build
+npm start
 ```
 
 # Contributing
