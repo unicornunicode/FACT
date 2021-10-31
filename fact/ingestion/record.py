@@ -3,17 +3,24 @@ from datetime import datetime
 
 
 class Record:
+    """Base record class for all artifacts"""
+
     def __init__(self, file_path: Path):
+        """Initialises the record for the artifact"""
         self.fact_filepath = file_path
         self.fact_analysisdatetime = datetime.now()
 
 
 class DiskRecord(Record):
-    def __init__(self, file_path: Path):
+    """Record class for disk"""
+
+    def __init__(self, file_path: Path) -> None:
+        """Initialises the record for the file/folder on disk"""
         super().__init__(file_path)
         self._get_fs_attributes()
 
-    def _get_fs_attributes(self):
+    def _get_fs_attributes(self) -> None:
+        """Get the stat of the file/folder"""
         os_stat = self.fact_filepath.lstat()
 
         self.fs_mode = os_stat.st_mode

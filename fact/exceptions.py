@@ -72,16 +72,24 @@ class ArtifactInvalidType(FACTError, Exception):
 
 
 class LoopDeviceSetupError(FACTError, Exception):
+    """Exception if loop device fails to setup"""
+
     pass
 
 
 class LoopDeviceDetachError(FACTError, Exception):
+    """Exception if loop device fails to detach"""
+
     pass
 
 
 class MountPartitionError(FACTError, Exception):
+    """Exception if partition fails to mount"""
+
     pass
 
 
 class UnmountPartitionError(FACTError, Exception):
+    """Exception if partition fails to unmount"""
+
     pass
