@@ -66,9 +66,7 @@ from .database import (
     TaskType,
     TaskStatus,
 )
-from .mappings import (
-    task_status_from_db,
-)
+from .mappings import task_status_from_db
 
 
 log = logging.getLogger(__name__)

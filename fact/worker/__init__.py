@@ -32,16 +32,9 @@ from uuid import UUID
 import platform
 
 # FACT
-from fact.target import (
-    SSHTargetAccess,
-)
+from fact.target import SSHTargetAccess
 from fact.target.types import TargetAccess
-from fact.storage import (
-    Session,
-    Storage,
-    Task,
-    Artifact,
-)
+from fact.storage import Session, Storage, Task, Artifact
 
 
 @contextmanager
