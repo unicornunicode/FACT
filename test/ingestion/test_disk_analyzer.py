@@ -8,10 +8,13 @@ from pathlib import Path
 @pytest.fixture
 def init_disk_analyzer():
     disk_gz_path = Path("test/files/disk.raw.gz")
-    dsk_anz = DiskAnalyzer(
-        disk_gz_path,
-        "cfff29e041c818881a58a5ac1ddc68f6fa05b02504485c327822d6df2e131fa5",
-    )
+    try:
+        dsk_anz = DiskAnalyzer(
+            disk_gz_path,
+            "cfff29e041c818881a58a5ac1ddc68f6fa05b02504485c327822d6df2e131fa5",
+        )
+    except PermissionError:
+        pytest.skip()
     return dsk_anz
 
 

@@ -12,6 +12,7 @@ from fact.utils.hashing import calculate_sha256
 from subprocess import Popen, PIPE
 from pathlib import Path
 from tempfile import mkstemp
+from os import getegid
 
 from typing import List
 
@@ -20,6 +21,8 @@ class Analyzer:
     """Base class for all analyzers"""
 
     def __init__(self, artifact_path: Path, artifact_hash: str) -> None:
+        if getegid() != 0:
+            raise PermissionError("Insufficient permissions to initialise Analyzer")
         self.artifact_path = artifact_path
         self.decompress_path: Path
         if self.hash_integrity_check(artifact_hash):
