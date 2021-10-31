@@ -147,7 +147,8 @@ class DiskAnalyzer(Analyzer):
                 path.rmdir()
 
     def _traverse_partitions(self):
-        file_system_info = dict()
-        # TODO: Traverse with pathlib.Path.rglob("*") and
-        # get all info on all files and dirs with pathlib.Path.lstat
-        return file_system_info
+        partitions_records = []
+        for path in self.mount_paths:
+            file_paths = path.rglob("*")
+            partitions_records.append(map(DiskRecord, file_paths))
+        return partitions_records
