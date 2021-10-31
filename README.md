@@ -11,7 +11,7 @@ machines running in the cloud or on-premise.
 # Deployment
 
 For a basic single-node deployment, we recommend using [Docker](https://docs.docker.com/get-docker/)
-and [Docker Compose](https://docs.docker.com/compose/install/). Start the stack 
+and [Docker Compose](https://docs.docker.com/compose/install/). Start the stack
 using:
 
 ```sh
