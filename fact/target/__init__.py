@@ -48,11 +48,6 @@ def _parse_lsblk_output(raw_lsblk_data: bytes) -> List[Tuple[str, int, str, str]
 
 
 class SSHTargetAccess(TargetAccess):
-    host: str
-    user: str
-    port: int
-    private_key: str
-
     def __init__(self, host: str, user: str, port: int, private_key: str):
         self.host = host
         self.user = user
