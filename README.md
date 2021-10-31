@@ -8,39 +8,23 @@
 FACT is a tool to collect, process and visualise forensic data from clusters of
 machines running in the cloud or on-premise.
 
-# Manual Deployment
+# Deployment
 
-You'll need Python 3.9+ on your controller node and worker nodes, and Node.js
-for the UI. Additionally,
-you'll need to install [grpcwebproxy](https://github.com/improbable-eng/grpc-web/tree/master/go/grpcwebproxy), [Elasticsearch and Kibana](https://www.elastic.co/start).
-
-Install FACT on the controller node and worker nodes with:
+For a basic single-node deployment, we recommend using [Docker](https://docs.docker.com/get-docker/)
+and [Docker Compose](https://docs.docker.com/compose/install/). Start the stack 
+using:
 
 ```sh
-sudo pip install https://github.com/unicornunicode/FACT.git
+docker-compose up -d
 ```
 
-Start the controller node using:
+Read [`docker-compose.yaml`](docker-compose.yaml) for configuration and
+requirements.
 
-```sh
-python -m fact.controller --listen-addr [::]:5123 --elasticsearch http://$ELASTICSEARCH_ADDRESS:9200
-```
+## Multi-Node Deployment
 
-Start the worker nodes using:
-
-```sh
-python -m fact.worker --controller-addr $CONTROLLER_ADDRESS:5123
-```
-
-Start the UI using:
-
-```sh
-git clone --depth 1 https://github.com/unicornunicode/FACT.git
-cd ui
-npm ci
-npm run build
-npm start
-```
+We have not yet documented and tested multi-node deployments, thus you are on
+your own for now.
 
 # Contributing
 
