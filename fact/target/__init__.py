@@ -68,6 +68,8 @@ class SSHTargetAccess(TargetAccess):
 
             args = [
                 "ssh",
+                "-o",
+                "StrictHostKeyChecking=no",
                 "-i",
                 private_key_file,
                 "-l",

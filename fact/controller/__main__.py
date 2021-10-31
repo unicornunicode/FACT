@@ -8,7 +8,11 @@ from . import Controller
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
-    parser = ArgumentParser(description="FACT controller")
+    parser = ArgumentParser(prog="fact.controller", description="FACT controller")
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+    )
     parser.add_argument(
         "--listen-addr",
         default="localhost:5123",
@@ -23,6 +27,9 @@ if __name__ == "__main__":
         "(Default: sqlite+aiosqlite:///file:/var/lib/fact/controller.db?mode=rwc&uri=true)",
     )
     args = parser.parse_args()
+
+    if args.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
 
     loop = asyncio.get_event_loop()
 
