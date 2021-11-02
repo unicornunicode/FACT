@@ -8,11 +8,13 @@ from fact.exceptions import (
     ArtifactInvalidName,
     ArtifactInvalidType,
 )
+from fact.utils.hashing import calculate_sha256
 
 from pathlib import Path
 from uuid import UUID
 from typing import BinaryIO, List, Union
 import logging
+import json
 
 log = logging.getLogger(__name__)
 
@@ -195,20 +197,21 @@ class Storage:
             |__ Task
     """
 
-    def __init__(self, data_dir: Path) -> None:
+    def __init__(self, data_dir: Path, check_integrity: bool = True) -> None:
         """Initialises a Storage object
 
         :param data_dir: Data directory for storage
+        :param check_integrity: Whether to perform integrity check on exisiting storage
         :raises:
-            DirectoryExistsError: Directory exists already
             PermissionError: Insufficient permission to create directory
         """
         self.data_dir = data_dir
         self.tasks: List[Task] = []
+        self.integrity_file_path = self.data_dir / "Artifact_SHASUM.json"
 
         if self.data_dir.exists():
             log.info("Existing directory found. Attempting to restore Storage.")
-            self._restore_storage()
+            self._restore_storage(check_integrity)
         else:
             try:
                 self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -329,8 +332,47 @@ class Storage:
         tasks = [task.get_task_info() for task in self.tasks]
         return {"data_dir": data_dir, "tasks": tasks}
 
-    def _restore_storage(self) -> None:
-        """Restores instance from files and folders in self.data_dir"""
+    def get_task_artifact_hash(self, task_uuid: str, artifact: Artifact):
+        pruned_fpath = (
+            Path(task_uuid) / artifact.get_artifact_type() / artifact.artifact_name
+        )
+
+        if not self.integrity_file_path.exists():
+            raise  # IntegrityFileNotFound
+        with open(self.integrity_file_path, "r") as f:
+            hashes_dict: dict = json.load(f)
+
+        hash_result: Union[str, None] = hashes_dict.get(str(pruned_fpath))
+        if not hash_result:
+            raise  # ArtifactIntegrityNotFound
+        return hash_result
+
+    def add_task_artifact_hash(self, task_uuid: str, artifact: Artifact) -> None:
+        pruned_fpath = (
+            Path(task_uuid) / artifact.get_artifact_type() / artifact.artifact_name
+        )
+        task_artifact_path = self.data_dir / pruned_fpath
+
+        if not self.integrity_file_path.exists():
+            hashes_dict: dict = dict()
+        else:
+            with open(self.integrity_file_path, "r") as f:
+                hashes_dict = json.load(f)
+
+        artifact_hash = calculate_sha256(task_artifact_path)
+        hash_result: Union[str, None] = hashes_dict.get(str(pruned_fpath))
+        if hash_result:
+            raise  # ArtifactIntegrityExistsError
+        hashes_dict[str(pruned_fpath)] = artifact_hash
+
+        with open(self.integrity_file_path, "w") as f:
+            json.dump(hashes_dict, f)
+
+    def _restore_storage(self, check_integrity: bool) -> None:
+        """Restores instance from files and folders in self.data_dir
+
+        :param check_integrity: Whether to perform integrity check on exisiting storage
+        """
         file_paths = self.data_dir.rglob("*")
         for fpath in file_paths:
             pruned_fpath = fpath.relative_to(self.data_dir)
@@ -373,7 +415,19 @@ class Storage:
                     )
                     continue
                 else:
-                    self.add_task_artifact(task_uuid_str, artifact)
+                    expected_hash = self.get_task_artifact_hash(task_uuid_str, artifact)
+                    if not Storage.hash_integrity_check(fpath, expected_hash):
+                        log.warning(
+                            f"Integrity check failed: SHA256({fpath}) != {expected_hash}. "
+                            + f"Skipping reconstruction of {pruned_fpath}."
+                        )
+                    else:
+                        self.add_task_artifact(task_uuid_str, artifact)
+
+    @staticmethod
+    def hash_integrity_check(artifact_path: Path, expected_hash: str):
+        actual_hash = calculate_sha256(artifact_path)
+        return actual_hash == expected_hash
 
 
 class Session:
@@ -415,5 +469,9 @@ class Session:
         """Close self.file_io"""
         try:
             self.file_io.close()
+
+            # Add artifact hash to integrity file
+            task_uuid = self.task.get_task_uuid()
+            self.storage.add_task_artifact_hash(task_uuid, self.artifact)
         except AttributeError:
             raise
