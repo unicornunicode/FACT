@@ -9,7 +9,7 @@ from fact.exceptions import (
 from fact.utils.decompression import decompress_gzip
 from fact.utils.hashing import calculate_sha256
 
-from subprocess import Popen, PIPE
+import subprocess
 from pathlib import Path
 from tempfile import mkstemp
 from os import getegid
@@ -56,7 +56,8 @@ class DiskAnalyzer(Analyzer):
         """
         if getegid() != 0:
             raise PermissionError(
-                f"Insufficient permissions to initialise {self.__class__.__name__}: Need to be root to set up and mount disk images."
+                f"Insufficient permissions to initialise {self.__class__.__name__}"
+                ": Need to be root to set up and mount disk images."
             )
         super().__init__(disk_image_path, artifact_hash)
         self.loop_device_path: Path
@@ -85,16 +86,14 @@ class DiskAnalyzer(Analyzer):
         """Wrapper function to call various functions to analyse disk image"""
         return self._traverse_partitions()
 
-    def _exec_command(self, cmd: List) -> Tuple[int, str, str]:
+    def _exec_command(self, args: List) -> Tuple[int, str, str]:
         """Calls subprocess.Popen for commandline tools
 
-        :param cmd: A list of commands and arguments to execute
+        :param args: A list of commands and arguments to execute
         :returns: A tuple of process status, STDOUT and STDERR
         """
-        with Popen(cmd, stdin=DEVNULL, stdout=PIPE, stderr=PIPE) as proc:
-            stdout, stderr = proc.communicate()
-            proc_status = proc.wait()
-        return proc_status, stdout.decode().strip(), stderr.decode().strip()
+        cmd = subprocess.run(args, capture_output=True)
+        return cmd.returncode, cmd.stdout.decode().strip(), cmd.stderr.decode().strip()
 
     def _setup_loop_device(self) -> None:
         """Setups the disk image as a loop device
@@ -102,7 +101,7 @@ class DiskAnalyzer(Analyzer):
         :raises:
             LoopDeviceSetupError: Failure to setup the loop device
         """
-        cmd = [
+        args = [
             "losetup",
             "--find",
             "--show",
@@ -110,8 +109,8 @@ class DiskAnalyzer(Analyzer):
             "--partscan",
             self.decompress_path,
         ]
-        proc_status, stdout, stderr = self._exec_command(cmd)
-        if proc_status != 0:
+        returncode, stdout, stderr = self._exec_command(args)
+        if returncode != 0:
             raise LoopDeviceSetupError(stderr)
         self.loop_device_path = Path(stdout)
 
@@ -123,9 +122,9 @@ class DiskAnalyzer(Analyzer):
             LoopDeviceDetachError: Failure to detach the loop device
         """
         assert self.loop_device_path is not None
-        cmd = ["losetup", "--detach", self.loop_device_path]
-        proc_status, _, stderr = self._exec_command(cmd)
-        if proc_status != 0:
+        args = ["losetup", "--detach", self.loop_device_path]
+        returncode, _, stderr = self._exec_command(args)
+        if returncode != 0:
             raise LoopDeviceDetachError(stderr)
 
     def _identify_partitions(self) -> None:
@@ -154,15 +153,15 @@ class DiskAnalyzer(Analyzer):
             p_mnt_path = mnt_base_path / p
             if not p_mnt_path.exists():
                 p_mnt_path.mkdir(parents=True)
-            cmd = [
+            args = [
                 "mount",
                 "--options",
                 "ro,noload",
                 p,
                 p_mnt_path,
             ]
-            proc_status, _, stderr = self._exec_command(cmd)
-            if proc_status != 0:
+            returncode, _, stderr = self._exec_command(args)
+            if returncode != 0:
                 p_mnt_path.rmdir()
                 raise MountPartitionError(stderr)
             self.mount_paths.append(p_mnt_path)
@@ -177,9 +176,9 @@ class DiskAnalyzer(Analyzer):
         assert self.mount_paths is not None
 
         for path in self.mount_paths:
-            cmd = ["umount", path]
-            proc_status, _, stderr = self._exec_command(cmd)
-            if proc_status != 0:
+            args = ["umount", path]
+            returncode, _, stderr = self._exec_command(args)
+            if returncode != 0:
                 raise UnmountPartitionError(stderr)
             path.rmdir()
 
