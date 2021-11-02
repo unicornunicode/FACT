@@ -3,7 +3,6 @@ from .record import DiskRecord
 from fact.exceptions import (
     LoopDeviceSetupError,
     LoopDeviceDetachError,
-    MountPartitionError,
     UnmountPartitionError,
 )
 from fact.utils.decompression import decompress_gzip
@@ -15,6 +14,9 @@ from tempfile import mkstemp
 from os import getegid
 
 from typing import List, Tuple
+import logging
+
+log = logging.getLogger(__name__)
 
 
 class Analyzer:
@@ -163,8 +165,9 @@ class DiskAnalyzer(Analyzer):
             returncode, _, stderr = self._exec_command(args)
             if returncode != 0:
                 p_mnt_path.rmdir()
-                raise MountPartitionError(stderr)
-            self.mount_paths.append(p_mnt_path)
+                log.warning(stderr)
+            else:
+                self.mount_paths.append(p_mnt_path)
 
     def _unmount_partitions(self) -> None:
         """Unmount the partitions mounted previously

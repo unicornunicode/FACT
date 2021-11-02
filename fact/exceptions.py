@@ -83,12 +83,6 @@ class LoopDeviceDetachError(FACTError, Exception):
     pass
 
 
-class MountPartitionError(FACTError, Exception):
-    """Exception if partition fails to mount"""
-
-    pass
-
-
 class UnmountPartitionError(FACTError, Exception):
     """Exception if partition fails to unmount"""
 
