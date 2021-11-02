@@ -56,7 +56,7 @@ class DiskAnalyzer(Analyzer):
         """
         if getegid() != 0:
             raise PermissionError(
-                f"Insufficient permissions to initialise {self.__class__.__name__}"
+                f"Insufficient permissions to initialise {self.__class__.__name__}: Need to be root to set up and mount disk images."
             )
         super().__init__(disk_image_path, artifact_hash)
         self.loop_device_path: Path
@@ -81,7 +81,7 @@ class DiskAnalyzer(Analyzer):
         self._unmount_partitions()
         self._detach_loop_device()
 
-    def analyse(self) -> List:
+    def analyse(self) -> List[DiskRecord]:
         """Wrapper function to call various functions to analyse disk image"""
         return self._traverse_partitions()
 
@@ -91,7 +91,7 @@ class DiskAnalyzer(Analyzer):
         :param cmd: A list of commands and arguments to execute
         :returns: A tuple of process status, STDOUT and STDERR
         """
-        with Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE) as proc:
+        with Popen(cmd, stdin=DEVNULL, stdout=PIPE, stderr=PIPE) as proc:
             stdout, stderr = proc.communicate()
             proc_status = proc.wait()
         return proc_status, stdout.decode().strip(), stderr.decode().strip()
@@ -122,10 +122,7 @@ class DiskAnalyzer(Analyzer):
             AttributeError: No loop device was initially set up
             LoopDeviceDetachError: Failure to detach the loop device
         """
-        try:
-            self.loop_device_path
-        except AttributeError:
-            raise
+        assert self.loop_device_path is not None
         cmd = ["losetup", "--detach", self.loop_device_path]
         proc_status, _, stderr = self._exec_command(cmd)
         if proc_status != 0:
@@ -149,13 +146,10 @@ class DiskAnalyzer(Analyzer):
             AttributeError: No partition search was initialised
             MountPartitionError: Failure to mount the partition
         """
-        try:
-            self.partitions
-        except AttributeError:
-            raise
+        assert self.partitions is not None
 
         self.mount_paths = []
-        mnt_base_path = Path("/mnt/")
+        mnt_base_path = Path("/tmp/fact/ingestion")
         for p in self.partitions:
             p_mnt_path = mnt_base_path / p
             if not p_mnt_path.exists():
@@ -163,8 +157,7 @@ class DiskAnalyzer(Analyzer):
             cmd = [
                 "mount",
                 "--options",
-                "noload",
-                "--read-only",
+                "ro,noload",
                 p,
                 p_mnt_path,
             ]
@@ -181,10 +174,7 @@ class DiskAnalyzer(Analyzer):
             AttributeError: No partitions were mounted
             UnmountPartitionError: Failure to unmount the partition
         """
-        try:
-            self.mount_paths
-        except AttributeError:
-            raise
+        assert self.mount_paths is not None
 
         for path in self.mount_paths:
             cmd = ["umount", path]
@@ -193,7 +183,7 @@ class DiskAnalyzer(Analyzer):
                 raise UnmountPartitionError(stderr)
             path.rmdir()
 
-    def _traverse_partitions(self) -> List:
+    def _traverse_partitions(self) -> List[DiskRecord]:
         """Traverse the mounted partitions
 
         :returns: List of map generators of DiskRecord for each file

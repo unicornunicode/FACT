@@ -50,4 +50,4 @@ def test_cleanup_disk(init_disk_analyzer):
     for mp in dsk_anz.mount_paths:
         assert not mp.exists()
 
-    assert dsk_anz._detach_loop_device() is None
+    dsk_anz._detach_loop_device()
