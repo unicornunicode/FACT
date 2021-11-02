@@ -150,7 +150,7 @@ class DiskAnalyzer(Analyzer):
         self.mount_paths = []
         mnt_base_path = Path("/tmp/fact/ingestion")
         for p in self.partitions:
-            p_mnt_path = mnt_base_path / p
+            p_mnt_path = mnt_base_path / p.name
             if not p_mnt_path.exists():
                 p_mnt_path.mkdir(parents=True)
             args = [
