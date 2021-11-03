@@ -245,7 +245,9 @@ class Controller:
                 diskinfo.collected_at = datetime.utcnow()
                 diskinfo.collected_uuid = task.uuid
 
-    async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
+    async def _pop_worker_next_task(
+        self, uuid: UUID
+    ) -> Tuple[Optional[Task], Optional[Target]]:
         async with self.session() as session:
             async with session.begin():
                 stmt = (
@@ -255,9 +257,9 @@ class Controller:
                 )
                 task = (await session.execute(stmt)).scalar_one_or_none()
                 if task is None:
-                    return None
+                    return None, None
                 stmt_target = select(Target).where(Target.uuid == task.target)
-                target = (await session.execute(stmt_target)).scalar_one()
+                target = (await session.execute(stmt_target)).scalar_one_or_none()
                 task.status = TaskStatus.RUNNING
                 task.assigned_at = datetime.utcnow()
                 await session.flush()  # TODO: Is this necessary?
@@ -333,7 +335,7 @@ class Management(ManagementServicer):
     async def CreateTask(
         self, request: CreateTaskRequest, context: ServicerContext
     ) -> CreateTaskResult:
-        target_uuid = UUID(bytes=request.target)
+        target_uuid = UUID(bytes=request.target) if request.target != b"" else None
         task_type = request.WhichOneof("task")
         if task_type == "task_collect_disk":
             uuid = await self.controller._create_task(
@@ -570,9 +572,9 @@ class WorkerTasks(WorkerTasksServicer):
 
     async def _pop_task(self, worker_uuid: UUID) -> Optional[WorkerTask]:
         next_task = await self.controller._pop_worker_next_task(worker_uuid)
-        if next_task is None:
-            return None
         task, target = next_task
+        if task is None:
+            return None
 
         assert task.uuid is not None
         ssh = (
@@ -584,12 +586,12 @@ class WorkerTasks(WorkerTasksServicer):
                 become=target.ssh_become or False,
                 become_password=target.ssh_become_password or "",
             )
-            if target.uuid is not None
+            if target is not None and target.uuid is not None
             else None
         )
         task_target = (
             ProtoTarget(uuid=target.uuid.bytes, ssh=ssh)
-            if target.uuid is not None
+            if target is not None and target.uuid is not None
             else None
         )
         if task.type == TaskType.task_collect_disk:

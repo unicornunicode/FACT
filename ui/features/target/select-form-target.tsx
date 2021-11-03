@@ -9,7 +9,7 @@ interface Props {
 
 const SelectFormTarget = ({target, checkbox}: Props) => (
 	<tr>
-		{checkbox && <td>{checkbox(`target.${target.uuid}`)}</td>}
+		{checkbox && <td>{checkbox([`target.${target.uuid}`])}</td>}
 		<td>{target.name}</td>
 		<td><small className="text-muted"><Link href={`/target/${target.uuid}`}>{target.uuid}</Link></small></td>
 	</tr>

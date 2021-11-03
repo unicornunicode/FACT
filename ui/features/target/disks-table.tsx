@@ -11,16 +11,27 @@ interface Props {
 }
 
 const DisksTable = ({target, disks, checkbox}: Props) => {
-	const renderDisk = (disk: SerializableTargetDiskinfo) => (
-		<tr key={disk.deviceName}>
-			{checkbox && <td>{target && checkbox(`target.${target.uuid}+disk.${disk.deviceName}`)}</td>}
-			<td className="text-nowrap">{disk.deviceName}</td>
-			<td>{disk.type}</td>
-			<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
-			<td>{disk.mountpoint}</td>
-			<td>{disk.collectedAt ? new Date(disk.collectedAt).toLocaleString() : ''}</td>
-		</tr>
-	);
+	const renderDisk = (disk: SerializableTargetDiskinfo) => {
+		const selects = [];
+		if (target) {
+			selects.push(`target.${target.uuid}+disk.${disk.deviceName}`);
+		}
+
+		if (disk.collectedUuid !== null) {
+			selects.push(`task.${disk.collectedUuid}`);
+		}
+
+		return (
+			<tr key={disk.deviceName}>
+				{checkbox && <td>{checkbox(selects)}</td>}
+				<td className="text-nowrap">{disk.deviceName}</td>
+				<td>{disk.type}</td>
+				<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
+				<td>{disk.mountpoint}</td>
+				<td>{disk.collectedAt ? new Date(disk.collectedAt).toLocaleString() : ''}</td>
+			</tr>
+		);
+	};
 
 	if (disks === null) {
 		return (
