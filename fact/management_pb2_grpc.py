@@ -24,6 +24,11 @@ class ManagementStub(object):
                 request_serializer=fact_dot_management__pb2.ListTaskRequest.SerializeToString,
                 response_deserializer=fact_dot_management__pb2.ListTaskResult.FromString,
                 )
+        self.GetTask = channel.unary_unary(
+                '/Management/GetTask',
+                request_serializer=fact_dot_management__pb2.GetTaskRequest.SerializeToString,
+                response_deserializer=fact_dot_management__pb2.GetTaskResult.FromString,
+                )
         self.CreateTarget = channel.unary_unary(
                 '/Management/CreateTarget',
                 request_serializer=fact_dot_management__pb2.CreateTargetRequest.SerializeToString,
@@ -61,6 +66,12 @@ class ManagementServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def ListTask(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetTask(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -108,6 +119,11 @@ def add_ManagementServicer_to_server(servicer, server):
                     servicer.ListTask,
                     request_deserializer=fact_dot_management__pb2.ListTaskRequest.FromString,
                     response_serializer=fact_dot_management__pb2.ListTaskResult.SerializeToString,
+            ),
+            'GetTask': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetTask,
+                    request_deserializer=fact_dot_management__pb2.GetTaskRequest.FromString,
+                    response_serializer=fact_dot_management__pb2.GetTaskResult.SerializeToString,
             ),
             'CreateTarget': grpc.unary_unary_rpc_method_handler(
                     servicer.CreateTarget,
@@ -175,6 +191,23 @@ class Management(object):
         return grpc.experimental.unary_unary(request, target, '/Management/ListTask',
             fact_dot_management__pb2.ListTaskRequest.SerializeToString,
             fact_dot_management__pb2.ListTaskResult.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetTask(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/Management/GetTask',
+            fact_dot_management__pb2.GetTaskRequest.SerializeToString,
+            fact_dot_management__pb2.GetTaskResult.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

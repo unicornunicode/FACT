@@ -49,7 +49,9 @@ const Home: NextPage = () => {
 			<Container fluid>
 				<h2>Recent Tasks</h2>
 				<TaskList simple tasks={tasks}/>
-				<div className="m-3 text-center"><Link passHref href="/task"><Button variant="link">Show more</Button></Link></div>
+				<div className="m-3 text-center">
+					<Link passHref href="/task"><Button variant="link">Show details</Button></Link>
+				</div>
 				<h2>Workers</h2>
 				<WorkerList workers={workers}/>
 			</Container>

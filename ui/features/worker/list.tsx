@@ -1,5 +1,6 @@
 import Table from 'react-bootstrap/Table';
 
+import Uuid from '../uuid';
 import styles from './list.module.css';
 import type {SerializableWorker} from '.';
 
@@ -11,7 +12,7 @@ const List = ({workers}: Props) => {
 	const renderWorker = (worker: SerializableWorker) => (
 		<tr key={worker.uuid}>
 			<td>{worker.hostname}</td>
-			<td><small className="text-muted">{worker.uuid}</small></td>
+			<td><Uuid uuid={worker.uuid}/></td>
 		</tr>
 	);
 

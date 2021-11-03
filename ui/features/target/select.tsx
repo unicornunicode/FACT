@@ -146,7 +146,7 @@ const Select = ({targets, onShowAddTarget}: Props) => {
 				<Button disabled={!canScanDisks} onClick={onScanDisks}>{renderCount('Scan disks', targetSelection)}</Button>
 				<Button disabled={!canCaptureDisks} onClick={onCaptureDisks}>{renderCount('Capture disks', diskSelection)}</Button>
 				<Button disabled={!canCaptureMemory} onClick={onCaptureMemory}>{renderCount('Capture memory', targetSelection)}</Button>
-				<Button disabled={!canIngest} onClick={onIngest}>{renderCount('Run ingestion', taskSelection)}</Button>
+				<Button disabled={!canIngest} onClick={onIngest}>{renderCount('Ingest captures', taskSelection)}</Button>
 			</div>
 			<SelectForm targets={targets} mode="target+disk+task" onUpdate={onSelectionUpdate}/>
 		</>
