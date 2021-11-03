@@ -3,6 +3,7 @@
 To install FACT for deployment
 
 1. [Docker Compose Single-node Deployment](#docker-compose-single-node-deployment)
+1. [Kubernetes Multi-node Deployment](#kubernetes-multi-node-deployment)
 
 For a development environment, see [CONTRIBUTING.md](CONTRIBUTING.md)
 
@@ -48,5 +49,11 @@ the search UI (Kibana).
 - When using Docker Desktop, remember to allocate enough disk space to your
   Docker Desktop machine.
 - Do keep tabs on the amount of disk space left.
+
+## Kubernetes Multi-node Deployment
+
+We have not yet documented and tested multi-node deployments, thus you are on
+your own for now. We have plans to write Kubernetes manifests for multi-node
+deployments.
 
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
