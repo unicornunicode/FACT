@@ -11,15 +11,13 @@ machines running in the cloud or on-premise.
 # Deployment
 
 For a basic single-node deployment, we recommend using [Docker](https://docs.docker.com/get-docker/)
-and [Docker Compose](https://docs.docker.com/compose/install/). Start the stack
-using:
+and [Docker Compose](https://docs.docker.com/compose/install/). First, read
+[`docker-compose.yaml`](docker-compose.yaml) for configuration and requirements.
+Then, start the stack using:
 
 ```sh
 docker-compose up -d
 ```
-
-Read [`docker-compose.yaml`](docker-compose.yaml) for configuration and
-requirements.
 
 ## Multi-Node Deployment
 

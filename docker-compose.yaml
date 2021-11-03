@@ -25,12 +25,22 @@ services:
   ui:
     image: ghcr.io/unicornunicode/fact-ui:main
     environment:
-      # Update to match the host IP address
-      - MANAGEMENT_ENDPOINT=http://localhost:5124
+      # Update to match the host IP address. This must be a valid, routed address
+      # accessible throughout the Docker network and on your host.
+      # You can get your host IP address by looking up your system's network
+      # information.
+      - MANAGEMENT_ENDPOINT=http://HOST_IP:5124
     networks:
       - fact
     ports:
       - 3000:3000
+    # Alternatively, if you wish to experiment locally, you can make this
+    # container use host networking by commenting out the `environment`,
+    # `networks` and `ports` sections above and set MANAGEMENT_ENDPOINT
+    # accordingly:
+    #environment:
+    #  - MANAGEMENT_ENDPOINT=http://localhost:5124
+    #network_mode: host
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     environment:
