@@ -3,14 +3,20 @@ version: "3"
 services:
   controller:
     image: ghcr.io/unicornunicode/fact-controller:main
-    command: ["--listen-addr", "0.0.0.0:5123"]
+    command:
+      - --listen-addr
+      - 0.0.0.0:5123
     networks:
       - fact
     volumes:
       - controller-database:/var/lib/fact
   worker:
     image: ghcr.io/unicornunicode/fact-worker:main
-    command: ["--controller-addr", "controller:5123"]
+    command:
+      - --controller-addr
+      - controller:5123
+      - --elasticsearch-host
+      - http://elasticsearch:9200
     networks:
       - fact
     volumes:
@@ -18,7 +24,9 @@ services:
     privileged: true
   grpcwebproxy:
     image: ghcr.io/unicornunicode/fact-grpcwebproxy:main
-    command: ["--backend_addr=controller:5123", "--server_http_debug_port=5124"]
+    command:
+      - --backend_addr=controller:5123
+      - --server_http_debug_port=5124
     networks:
       - fact
     ports:

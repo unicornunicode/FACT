@@ -42,6 +42,13 @@ if __name__ == "__main__":
         help="Folder to store SQLite database, collected disk images, memory "
         "snapshots and other data (Default: /tmp/fact)",
     )
+    parser.add_argument(
+        "--elasticsearch-host",
+        nargs="+",
+        default=["http://elasticsearch:9200"],
+        help="Elasticsearch hosts for search indexing "
+        "(Default: http://elasticsearch:9200)",
+    )
     args = parser.parse_args()
     storage_dir: Path = args.storage_dir.absolute()
     database: Path = storage_dir / "controller.db"
@@ -55,6 +62,7 @@ if __name__ == "__main__":
         listen_addr="localhost:5123",
         database_addr=f"sqlite+aiosqlite:///file:{database}?mode=rwc&uri=true",
         database_echo=True,
+        elasticsearch_hosts=args.elasticsearch_host,
     )
     w = Worker(controller_addr=c.listen_addr, storage_dir=storage_dir)
     p = GRPCWebProxy(listen_addr="0.0.0.0:5124", controller_addr=c.listen_addr)

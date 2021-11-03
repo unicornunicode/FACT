@@ -12,6 +12,8 @@ services:
       - fact.controller
       - --listen-addr
       - 0.0.0.0:5123
+      - --elasticsearch-host
+      - http://elasticsearch:9200
       - --debug
     working_dir: /app
     networks:

@@ -12,6 +12,7 @@ from ..controller_pb2 import (
     WorkerAcceptance,
     WorkerTask,
     WorkerTaskResult,
+    ElasticsearchConnection,
 )
 from ..management_pb2 import (
     CreateTaskRequest,
@@ -76,13 +77,24 @@ class Controller:
     """
     The Controller gets tasks from the UI and schedules them onto workers
 
-    >>> c = Controller("localhost:5123", "sqlite+aiosqlite:///:memory:")
+    >>> c = Controller(
+    ...   "localhost:5123",
+    ...   "sqlite+aiosqlite:///:memory:",
+    ...   ["http://elasticsearch:9200"]
+    ... )
     """
 
     listen_addr: str
+    elasticsearch_hosts: Tuple[str, ...]
     server: Server
 
-    def __init__(self, listen_addr: str, database_addr: str, database_echo=False):
+    def __init__(
+        self,
+        listen_addr: str,
+        database_addr: str,
+        elasticsearch_hosts: Iterable[str],
+        database_echo=False,
+    ):
         self.listen_addr = listen_addr
         self.server = grpc_server()
         # Database
@@ -90,6 +102,8 @@ class Controller:
         engine = create_async_engine(database_addr, echo=database_echo, future=True)
         self.engine = engine
         self.session = sessionmaker(engine, class_=AsyncSession)
+        # Elasticsearch
+        self.elasticsearch_hosts = tuple(elasticsearch_hosts)
         # Services
         worker_tasks = WorkerTasks(controller=self)
         add_WorkerTasksServicer_to_server(worker_tasks, self.server)
@@ -496,7 +510,15 @@ class WorkerTasks(WorkerTasksServicer):
             # Existing worker
             uuid = UUID(bytes=registration.previous_uuid)
             await self.controller._update_worker(uuid, registration.hostname)
-        yield SessionEvents(worker_acceptance=WorkerAcceptance(uuid=uuid.bytes))
+        # Attach additional configuration options
+        elasticsearch = ElasticsearchConnection(
+            hosts=self.controller.elasticsearch_hosts
+        )
+        acceptance = WorkerAcceptance(
+            uuid=uuid.bytes,
+            elasticsearch=elasticsearch,
+        )
+        yield SessionEvents(worker_acceptance=acceptance)
 
     async def _pop_task(self, worker_uuid: UUID) -> Optional[WorkerTask]:
         next_task = await self.controller._pop_worker_next_task(worker_uuid)
