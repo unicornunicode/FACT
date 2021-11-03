@@ -35,6 +35,14 @@ export interface ListTaskResult {
   tasks: ListTask[];
 }
 
+export interface GetTaskRequest {
+  uuid: Uint8Array;
+}
+
+export interface GetTaskResult {
+  task: ListTask | undefined;
+}
+
 export interface ListTask {
   uuid: Uint8Array;
   status: ListTask_Status;
@@ -516,6 +524,126 @@ export const ListTaskResult = {
       for (const e of object.tasks) {
         message.tasks.push(ListTask.fromPartial(e));
       }
+    }
+    return message;
+  },
+};
+
+const baseGetTaskRequest: object = {};
+
+export const GetTaskRequest = {
+  encode(
+    message: GetTaskRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.uuid.length !== 0) {
+      writer.uint32(10).bytes(message.uuid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetTaskRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGetTaskRequest } as GetTaskRequest;
+    message.uuid = new Uint8Array();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.uuid = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetTaskRequest {
+    const message = { ...baseGetTaskRequest } as GetTaskRequest;
+    message.uuid = new Uint8Array();
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = bytesFromBase64(object.uuid);
+    }
+    return message;
+  },
+
+  toJSON(message: GetTaskRequest): unknown {
+    const obj: any = {};
+    message.uuid !== undefined &&
+      (obj.uuid = base64FromBytes(
+        message.uuid !== undefined ? message.uuid : new Uint8Array()
+      ));
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<GetTaskRequest>): GetTaskRequest {
+    const message = { ...baseGetTaskRequest } as GetTaskRequest;
+    if (object.uuid !== undefined && object.uuid !== null) {
+      message.uuid = object.uuid;
+    } else {
+      message.uuid = new Uint8Array();
+    }
+    return message;
+  },
+};
+
+const baseGetTaskResult: object = {};
+
+export const GetTaskResult = {
+  encode(
+    message: GetTaskResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.task !== undefined) {
+      ListTask.encode(message.task, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetTaskResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGetTaskResult } as GetTaskResult;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.task = ListTask.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetTaskResult {
+    const message = { ...baseGetTaskResult } as GetTaskResult;
+    if (object.task !== undefined && object.task !== null) {
+      message.task = ListTask.fromJSON(object.task);
+    } else {
+      message.task = undefined;
+    }
+    return message;
+  },
+
+  toJSON(message: GetTaskResult): unknown {
+    const obj: any = {};
+    message.task !== undefined &&
+      (obj.task = message.task ? ListTask.toJSON(message.task) : undefined);
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<GetTaskResult>): GetTaskResult {
+    const message = { ...baseGetTaskResult } as GetTaskResult;
+    if (object.task !== undefined && object.task !== null) {
+      message.task = ListTask.fromPartial(object.task);
+    } else {
+      message.task = undefined;
     }
     return message;
   },
@@ -1806,6 +1934,10 @@ export interface Management {
     request: DeepPartial<ListTaskRequest>,
     metadata?: grpc.Metadata
   ): Promise<ListTaskResult>;
+  GetTask(
+    request: DeepPartial<GetTaskRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<GetTaskResult>;
   CreateTarget(
     request: DeepPartial<CreateTargetRequest>,
     metadata?: grpc.Metadata
@@ -1835,6 +1967,7 @@ export class ManagementClientImpl implements Management {
     this.rpc = rpc;
     this.CreateTask = this.CreateTask.bind(this);
     this.ListTask = this.ListTask.bind(this);
+    this.GetTask = this.GetTask.bind(this);
     this.CreateTarget = this.CreateTarget.bind(this);
     this.ListTarget = this.ListTarget.bind(this);
     this.GetTarget = this.GetTarget.bind(this);
@@ -1860,6 +1993,17 @@ export class ManagementClientImpl implements Management {
     return this.rpc.unary(
       ManagementListTaskDesc,
       ListTaskRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetTask(
+    request: DeepPartial<GetTaskRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<GetTaskResult> {
+    return this.rpc.unary(
+      ManagementGetTaskDesc,
+      GetTaskRequest.fromPartial(request),
       metadata
     );
   }
@@ -1960,6 +2104,28 @@ export const ManagementListTaskDesc: UnaryMethodDefinitionish = {
     deserializeBinary(data: Uint8Array) {
       return {
         ...ListTaskResult.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const ManagementGetTaskDesc: UnaryMethodDefinitionish = {
+  methodName: "GetTask",
+  service: ManagementDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetTaskRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...GetTaskResult.decode(data),
         toObject() {
           return this;
         },

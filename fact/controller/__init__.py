@@ -18,12 +18,12 @@ from ..management_pb2 import (
     CreateTaskResult,
     ListTaskRequest,
     ListTaskResult,
-    ListTask,
+    GetTaskRequest,
+    GetTaskResult,
     CreateTargetRequest,
     CreateTargetResult,
     ListTargetRequest,
     ListTargetResult,
-    ListTarget,
     GetTargetRequest,
     GetTargetResult,
     ListTargetDiskinfoRequest,
@@ -65,7 +65,7 @@ from .database import (
     TaskType,
     TaskStatus,
 )
-from .mappings import task_status_from_db
+from .mappings import task_from_db, target_from_db
 
 
 log = logging.getLogger(__name__)
@@ -129,6 +129,14 @@ class Controller:
                 tasks = (await session.execute(stmt)).scalars().all()
                 session.expunge_all()
                 return tasks
+
+    async def _get_task(self, uuid: UUID) -> Task:
+        async with self.session() as session:
+            async with session.begin():
+                stmt = select(Task).where(Task.uuid == uuid)
+                task = (await session.execute(stmt)).scalar_one()
+                session.expunge_all()
+                return task
 
     async def _create_target(
         self,
@@ -368,63 +376,18 @@ class Management(ManagementServicer):
     async def ListTask(
         self, request: ListTaskRequest, context: ServicerContext
     ) -> ListTaskResult:
-        list_tasks = []
         tasks = await self.controller._list_task(limit=request.limit)
-        for task in tasks:
-            assert task.uuid is not None
-            assert task.status is not None
-            assert task.created_at is not None
-            created_at = Timestamp(seconds=int(task.created_at.timestamp()))
-            assigned_at = (
-                Timestamp(seconds=int(task.assigned_at.timestamp()))
-                if task.assigned_at is not None
-                else None
-            )
-            completed_at = (
-                Timestamp(seconds=int(task.completed_at.timestamp()))
-                if task.completed_at is not None
-                else None
-            )
-            target = task.target.bytes if task.target is not None else None
-            task_collect_disk = (
-                TaskCollectDisk(device_name=task.task_collect_disk_device_name)
-                if task.type == TaskType.task_collect_disk
-                and task.task_collect_disk_device_name is not None
-                else None
-            )
-            task_collect_memory = (
-                TaskCollectMemory()
-                if task.type == TaskType.task_collect_memory
-                else None
-            )
-            task_collect_diskinfo = (
-                TaskCollectDiskinfo()
-                if task.type == TaskType.task_collect_diskinfo
-                else None
-            )
-            task_ingest = (
-                TaskIngest(collected_uuid=task.task_ingest_collected_uuid.bytes)
-                if task.type == TaskType.task_ingest
-                and task.task_ingest_collected_uuid is not None
-                else None
-            )
-            worker = task.worker.bytes if task.worker is not None else None
-            list_tasks.append(
-                ListTask(
-                    uuid=task.uuid.bytes,
-                    status=task_status_from_db(task.status),
-                    created_at=created_at,
-                    assigned_at=assigned_at,
-                    completed_at=completed_at,
-                    target=target,
-                    task_collect_disk=task_collect_disk,
-                    task_collect_memory=task_collect_memory,
-                    task_collect_diskinfo=task_collect_diskinfo,
-                    task_ingest=task_ingest,
-                    worker=worker,
-                )
-            )
+        list_tasks = list(map(task_from_db, tasks))
         return ListTaskResult(tasks=list_tasks)
+
+    async def GetTask(
+        self, request: GetTaskRequest, context: ServicerContext
+    ) -> GetTaskResult:
+        task_uuid = UUID(bytes=request.uuid)
+        task = await self.controller._get_task(task_uuid)
+        return GetTaskResult(
+            task=task_from_db(task),
+        )
 
     async def CreateTarget(
         self, request: CreateTargetRequest, context: ServicerContext
@@ -448,27 +411,8 @@ class Management(ManagementServicer):
     async def ListTarget(
         self, request: ListTargetRequest, context: ServicerContext
     ) -> ListTargetResult:
-        list_targets = []
         targets = await self.controller._list_target()
-        for target in targets:
-            ssh = None
-            if target.ssh_host is not None:
-                ssh = SSHAccess(
-                    host=target.ssh_host or "",
-                    user=target.ssh_user or "",
-                    port=target.ssh_port or 0,
-                    private_key=target.ssh_private_key or "",
-                    become=target.ssh_become or False,
-                    become_password=target.ssh_become_password or "",
-                )
-            assert target.uuid is not None
-            list_targets.append(
-                ListTarget(
-                    uuid=target.uuid.bytes,
-                    name=target.name or "",
-                    ssh=ssh,
-                )
-            )
+        list_targets = list(map(target_from_db, targets))
         return ListTargetResult(targets=list_targets)
 
     async def GetTarget(
@@ -476,23 +420,7 @@ class Management(ManagementServicer):
     ) -> GetTargetResult:
         target_uuid = UUID(bytes=request.uuid)
         target = await self.controller._get_target(target_uuid)
-        ssh = None
-        if target.ssh_host is not None:
-            ssh = SSHAccess(
-                host=target.ssh_host or "",
-                user=target.ssh_user or "",
-                port=target.ssh_port or 0,
-                private_key=target.ssh_private_key or "",
-                become=target.ssh_become or False,
-                become_password=target.ssh_become_password or "",
-            )
-        return GetTargetResult(
-            target=ListTarget(
-                uuid=target.uuid.bytes if target.uuid is not None else None,
-                name=target.name or "",
-                ssh=ssh,
-            )
-        )
+        return GetTargetResult(target=target_from_db(target))
 
     async def ListTargetDiskinfo(
         self, request: ListTargetDiskinfoRequest, context: ServicerContext

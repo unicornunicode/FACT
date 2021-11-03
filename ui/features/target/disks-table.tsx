@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import Table from 'react-bootstrap/Table';
 import filesize from 'filesize';
 
@@ -28,7 +29,7 @@ const DisksTable = ({target, disks, checkbox}: Props) => {
 				<td>{disk.type}</td>
 				<td title={`${disk.size} bytes`}>{filesize(disk.size)}</td>
 				<td>{disk.mountpoint}</td>
-				<td>{disk.collectedAt ? new Date(disk.collectedAt).toLocaleString() : ''}</td>
+				<td>{disk.collectedUuid && disk.collectedAt ? <Link href={`/task/${disk.collectedUuid}`}>{new Date(disk.collectedAt).toLocaleString()}</Link> : ''}</td>
 			</tr>
 		);
 	};

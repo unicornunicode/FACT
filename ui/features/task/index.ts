@@ -47,3 +47,23 @@ export function sortCompletedAt(a: SerializableTask, b: SerializableTask) {
 
 	return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 }
+
+export function formatType(task: SerializableTask): string {
+	if (task.taskCollectDisk !== undefined) {
+		return 'Capture disks';
+	}
+
+	if (task.taskCollectMemory !== undefined) {
+		return 'Capture memory';
+	}
+
+	if (task.taskCollectDiskinfo !== undefined) {
+		return 'Scan disks';
+	}
+
+	if (task.taskIngest !== undefined) {
+		return 'Ingest captures';
+	}
+
+	return 'Unknown';
+}

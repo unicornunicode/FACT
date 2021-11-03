@@ -1,5 +1,4 @@
-import Link from 'next/link';
-
+import Uuid from '../uuid';
 import type {SerializableTarget, SelectCheckbox} from '.';
 
 interface Props {
@@ -11,7 +10,7 @@ const SelectFormTarget = ({target, checkbox}: Props) => (
 	<tr>
 		{checkbox && <td>{checkbox([`target.${target.uuid}`])}</td>}
 		<td>{target.name}</td>
-		<td><small className="text-muted"><Link href={`/target/${target.uuid}`}>{target.uuid}</Link></small></td>
+		<td><Uuid uuid={target.uuid} href={`/target/${target.uuid}`}/></td>
 	</tr>
 );
 

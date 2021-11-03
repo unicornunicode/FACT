@@ -6,6 +6,7 @@ import "fact/tasks.proto";
 service Management {
     rpc CreateTask(CreateTaskRequest) returns (CreateTaskResult);
     rpc ListTask(ListTaskRequest) returns (ListTaskResult);
+	rpc GetTask(GetTaskRequest) returns (GetTaskResult);
 	rpc CreateTarget(CreateTargetRequest) returns (CreateTargetResult);
 	rpc ListTarget(ListTargetRequest) returns (ListTargetResult);
 	rpc GetTarget(GetTargetRequest) returns (GetTargetResult);
@@ -34,6 +35,14 @@ message ListTaskRequest {
 
 message ListTaskResult {
     repeated ListTask tasks = 1;
+}
+
+message GetTaskRequest {
+	bytes uuid = 1;
+}
+
+message GetTaskResult {
+	ListTask task = 1;
 }
 
 message ListTask {
