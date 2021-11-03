@@ -142,6 +142,20 @@ class DiskAnalyzer(Analyzer):
             if str(p).startswith(str(self.loop_device_path)):
                 yield p
 
+    def _try_mount(self, options: str, device: Path, path: Path) -> bool:
+        args = [
+            "mount",
+            "--options",
+            options,
+            str(device),
+            str(path),
+        ]
+        returncode, _, stderr = self._exec_command(args)
+        if returncode != 0:
+            log.info(stderr)
+            return False
+        return True
+
     def _mount_partitions(self) -> None:
         """Mounts the partitions found previously
 
@@ -156,19 +170,19 @@ class DiskAnalyzer(Analyzer):
             p_mnt_path = mnt_base_path / p.name
             if not p_mnt_path.exists():
                 p_mnt_path.mkdir(parents=True)
-            args = [
-                "mount",
-                "--options",
-                "ro",
-                p,
-                p_mnt_path,
-            ]
-            returncode, _, stderr = self._exec_command(args)
-            if returncode != 0:
-                p_mnt_path.rmdir()
-                log.warning(stderr)
-            else:
+
+            # Most filesystems
+            if self._try_mount("ro", p, p_mnt_path):
                 self.mount_paths.append(p_mnt_path)
+                continue
+            # ext3/ext4
+            if self._try_mount("ro,noload", p, p_mnt_path):
+                self.mount_paths.append(p_mnt_path)
+                continue
+
+            log.warn(f"Failed to mount {p}: All mount methods exhausted")
+            # Cleanup
+            p_mnt_path.rmdir()
 
     def _unmount_partitions(self) -> None:
         """Unmount the partitions mounted previously
@@ -206,6 +220,6 @@ class DiskAnalyzer(Analyzer):
                 path = file.relative_to(mount)
                 yield FileRecord.from_stat_result(
                     partition=partition,
-                    path=str(path),
+                    path="/" + str(path),
                     os_stat=file.lstat(),
                 )
