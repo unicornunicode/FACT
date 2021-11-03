@@ -19,12 +19,7 @@ Then, start the stack using:
 docker-compose up -d
 ```
 
-See [INSTALL.md](INSTALL.md) for more details.
-
-## Multi-node Deployment
-
-We have not yet documented and tested multi-node deployments, thus you are on
-your own for now.
+See [INSTALL.md](INSTALL.md) for more details and other deployment methods.
 
 # Contributing
 
