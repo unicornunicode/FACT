@@ -28,4 +28,10 @@ your own for now.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+# Screenshots
+
+![targets-1](https://user-images.githubusercontent.com/1705906/140052919-23f7e567-ab52-441e-982e-1a0ec819d17c.png)
+![tasks-1](https://user-images.githubusercontent.com/1705906/140052963-f39cce21-5634-4235-afa2-193e1621ba50.png)
+![dashboard-1](https://user-images.githubusercontent.com/1705906/140052998-09c39a3f-b690-4c62-a2ba-9734244ace63.png)
+
 <!-- vim: set conceallevel=2 et ts=2 sw=2: -->
