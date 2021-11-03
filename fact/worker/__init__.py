@@ -185,7 +185,7 @@ class Worker:
         assert s_artifact_info is not None
         s_artifact = s_task.get_artifact(s_artifact_info)
         assert s_artifact is not None
-        artifact = s_artifact.artifact_name
+        artifact_name = s_artifact.artifact_name
         # TODO: Rewrite the storage API to always produce writestreams, for
         # compatibility with S3 buckets
         artifact_path = self._storage.get_task_artifact_path(
@@ -203,16 +203,16 @@ class Worker:
 
             # TODO: Read disk image from a Writable stream
             log.debug(f.name)
-            with DiskAnalyzer(artifact, Path(f.name), None) as analyzer:
+            with DiskAnalyzer(Path(f.name), None) as analyzer:
                 log.debug(f"Opened! {str(analyzer.loop_device_path)}")
                 for path in analyzer.mount_paths:
-                    log.debug(f"Mount: {str(path)}")
-                    for f in path.glob("*"):
-                        log.debug(f"{f}")
+                    log.debug(f"Mounted: {str(path)}")
                 for record in analyzer.analyse():
-                    log.debug(record)
                     await self._ingest_destination.index(
-                        UUID(bytes=task.collected_uuid), record
+                        UUID(bytes=task.collected_uuid),
+                        task.target_name,
+                        artifact_name,
+                        record,
                     )
 
     async def _handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:

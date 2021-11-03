@@ -11,12 +11,13 @@ class DestinationElasticsearch:
 
         self._es = AsyncElasticsearch(hosts=list(hosts))
 
-    async def index(self, task: UUID, record: Record):
+    async def index(self, task: UUID, target: str, artifact: str, record: Record):
         document = asdict(record)
         document["fact_task"] = str(task)
-        # TODO: Include Target in document
+        document["fact_target"] = target
+        document["fact_artifact"] = artifact
         await self._es.index(
-            index=f"fact-{record.fact_type}",
+            index=f"fact-{target}-{record.fact_type}",
             document=document,
             doc_type=record.fact_type,
         )
