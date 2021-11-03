@@ -203,7 +203,13 @@ class Worker:
             # TODO: Read disk image from a Writable stream
             log.debug(f.name)
             with DiskAnalyzer(Path(f.name), None) as analyzer:
+                log.debug(f"Opened! {str(analyzer.loop_device_path)}")
+                for path in analyzer.mount_paths:
+                    log.debug(f"Mount: {str(path)}")
+                    for f in path.glob("*"):
+                        log.debug(f"{f}")
                 for record in analyzer.analyse():
+                    log.debug(record)
                     await self._ingest_destination.index(
                         UUID(bytes=task.collected_uuid), record
                     )

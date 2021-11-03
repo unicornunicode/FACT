@@ -139,10 +139,7 @@ class DiskAnalyzer(Analyzer):
 
         device_path = Path("/dev")
         for p in device_path.iterdir():
-            if (
-                str(p).startswith(str(self.loop_device_path))
-                and p != self.loop_device_path
-            ):
+            if str(p).startswith(str(self.loop_device_path)):
                 yield p
 
     def _mount_partitions(self) -> None:
@@ -162,7 +159,7 @@ class DiskAnalyzer(Analyzer):
             args = [
                 "mount",
                 "--options",
-                "ro,noload",
+                "ro",
                 p,
                 p_mnt_path,
             ]
