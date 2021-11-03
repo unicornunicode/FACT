@@ -38,7 +38,7 @@ from ..tasks_pb2 import (
     TaskCollectDisk,
     TaskCollectMemory,
     TaskCollectDiskinfo,
-    TaskIngestion,
+    TaskIngest,
     SSHAccess,
 )
 from ..controller_pb2_grpc import (
@@ -105,7 +105,7 @@ class Controller:
         task_type: TaskType,
         target_uuid: Optional[UUID] = None,
         task_collect_disk_device_name: Optional[str] = None,
-        task_ingestion_collected_uuid: Optional[UUID] = None,
+        task_ingest_collected_uuid: Optional[UUID] = None,
     ) -> UUID:
         uuid = uuid4()
         async with self.session() as session:
@@ -115,7 +115,7 @@ class Controller:
                     target=target_uuid,
                     type=task_type,
                     task_collect_disk_device_name=task_collect_disk_device_name,
-                    task_ingestion_collected_uuid=task_ingestion_collected_uuid,
+                    task_ingest_collected_uuid=task_ingest_collected_uuid,
                 )
                 session.add(task)
         return uuid
@@ -351,11 +351,11 @@ class Management(ManagementServicer):
                 task_type=TaskType.task_collect_diskinfo,
                 target_uuid=target_uuid,
             )
-        elif task_type == "task_ingestion":
+        elif task_type == "task_ingest":
             uuid = await self.controller._create_task(
-                task_type=TaskType.task_ingestion,
-                task_ingestion_collected_uuid=UUID(
-                    bytes=request.task_ingestion.collected_uuid
+                task_type=TaskType.task_ingest,
+                task_ingest_collected_uuid=UUID(
+                    bytes=request.task_ingest.collected_uuid
                 ),
             )
         else:
@@ -400,10 +400,10 @@ class Management(ManagementServicer):
                 if task.type == TaskType.task_collect_diskinfo
                 else None
             )
-            task_ingestion = (
-                TaskIngestion(collected_uuid=task.task_ingestion_collected_uuid.bytes)
-                if task.type == TaskType.task_ingestion
-                and task.task_ingestion_collected_uuid is not None
+            task_ingest = (
+                TaskIngest(collected_uuid=task.task_ingest_collected_uuid.bytes)
+                if task.type == TaskType.task_ingest
+                and task.task_ingest_collected_uuid is not None
                 else None
             )
             worker = task.worker.bytes if task.worker is not None else None
@@ -418,7 +418,7 @@ class Management(ManagementServicer):
                     task_collect_disk=task_collect_disk,
                     task_collect_memory=task_collect_memory,
                     task_collect_diskinfo=task_collect_diskinfo,
-                    task_ingestion=task_ingestion,
+                    task_ingest=task_ingest,
                     worker=worker,
                 )
             )
@@ -616,14 +616,14 @@ class WorkerTasks(WorkerTasksServicer):
                 target=task_target,
                 task_collect_diskinfo=task_collect_diskinfo,
             )
-        elif task.type == TaskType.task_ingestion:
-            assert task.task_ingestion_collected_uuid is not None
-            task_ingestion = TaskIngestion(
-                collected_uuid=task.task_ingestion_collected_uuid.bytes
+        elif task.type == TaskType.task_ingest:
+            assert task.task_ingest_collected_uuid is not None
+            task_ingest = TaskIngest(
+                collected_uuid=task.task_ingest_collected_uuid.bytes
             )
             return WorkerTask(
                 uuid=task.uuid.bytes,
-                task_ingestion=task_ingestion,
+                task_ingest=task_ingest,
             )
         else:
             raise Exception(f"Unreachable: Invalid task type {task.type}")

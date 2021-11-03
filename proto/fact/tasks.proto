@@ -48,10 +48,10 @@ message TaskCollectDiskinfoResult {
     repeated TargetDiskinfo diskinfos = 1;
 }
 
-message TaskIngestion {
+message TaskIngest {
 	bytes collected_uuid = 1;
 }
 
-message TaskIngestionResult {
+message TaskIngestResult {
 
 }

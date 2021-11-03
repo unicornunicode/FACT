@@ -42,11 +42,11 @@ export interface TaskCollectDiskinfoResult {
   diskinfos: TargetDiskinfo[];
 }
 
-export interface TaskIngestion {
+export interface TaskIngest {
   collectedUuid: Uint8Array;
 }
 
-export interface TaskIngestionResult {}
+export interface TaskIngestResult {}
 
 const baseTarget: object = {};
 
@@ -708,11 +708,11 @@ export const TaskCollectDiskinfoResult = {
   },
 };
 
-const baseTaskIngestion: object = {};
+const baseTaskIngest: object = {};
 
-export const TaskIngestion = {
+export const TaskIngest = {
   encode(
-    message: TaskIngestion,
+    message: TaskIngest,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.collectedUuid.length !== 0) {
@@ -721,10 +721,10 @@ export const TaskIngestion = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): TaskIngestion {
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskIngest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTaskIngestion } as TaskIngestion;
+    const message = { ...baseTaskIngest } as TaskIngest;
     message.collectedUuid = new Uint8Array();
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -740,8 +740,8 @@ export const TaskIngestion = {
     return message;
   },
 
-  fromJSON(object: any): TaskIngestion {
-    const message = { ...baseTaskIngestion } as TaskIngestion;
+  fromJSON(object: any): TaskIngest {
+    const message = { ...baseTaskIngest } as TaskIngest;
     message.collectedUuid = new Uint8Array();
     if (object.collectedUuid !== undefined && object.collectedUuid !== null) {
       message.collectedUuid = bytesFromBase64(object.collectedUuid);
@@ -749,7 +749,7 @@ export const TaskIngestion = {
     return message;
   },
 
-  toJSON(message: TaskIngestion): unknown {
+  toJSON(message: TaskIngest): unknown {
     const obj: any = {};
     message.collectedUuid !== undefined &&
       (obj.collectedUuid = base64FromBytes(
@@ -760,8 +760,8 @@ export const TaskIngestion = {
     return obj;
   },
 
-  fromPartial(object: DeepPartial<TaskIngestion>): TaskIngestion {
-    const message = { ...baseTaskIngestion } as TaskIngestion;
+  fromPartial(object: DeepPartial<TaskIngest>): TaskIngest {
+    const message = { ...baseTaskIngest } as TaskIngest;
     if (object.collectedUuid !== undefined && object.collectedUuid !== null) {
       message.collectedUuid = object.collectedUuid;
     } else {
@@ -771,20 +771,20 @@ export const TaskIngestion = {
   },
 };
 
-const baseTaskIngestionResult: object = {};
+const baseTaskIngestResult: object = {};
 
-export const TaskIngestionResult = {
+export const TaskIngestResult = {
   encode(
-    _: TaskIngestionResult,
+    _: TaskIngestResult,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): TaskIngestionResult {
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskIngestResult {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTaskIngestionResult } as TaskIngestionResult;
+    const message = { ...baseTaskIngestResult } as TaskIngestResult;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -796,18 +796,18 @@ export const TaskIngestionResult = {
     return message;
   },
 
-  fromJSON(_: any): TaskIngestionResult {
-    const message = { ...baseTaskIngestionResult } as TaskIngestionResult;
+  fromJSON(_: any): TaskIngestResult {
+    const message = { ...baseTaskIngestResult } as TaskIngestResult;
     return message;
   },
 
-  toJSON(_: TaskIngestionResult): unknown {
+  toJSON(_: TaskIngestResult): unknown {
     const obj: any = {};
     return obj;
   },
 
-  fromPartial(_: DeepPartial<TaskIngestionResult>): TaskIngestionResult {
-    const message = { ...baseTaskIngestionResult } as TaskIngestionResult;
+  fromPartial(_: DeepPartial<TaskIngestResult>): TaskIngestResult {
+    const message = { ...baseTaskIngestResult } as TaskIngestResult;
     return message;
   },
 };
