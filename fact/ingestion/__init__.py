@@ -68,6 +68,7 @@ class DiskAnalyzer(Analyzer):
                 ": Need to be root to set up and mount disk images."
             )
         super().__init__(disk_image_path, artifact_hash)
+        assert disk_image_path.exists()
 
     def __enter__(self):
         self.setup()
@@ -107,6 +108,7 @@ class DiskAnalyzer(Analyzer):
         """
         args = [
             "losetup",
+            # TODO: Find a mechanism to mount loop devices without depending on
             "--find",
             "--show",
             "--read-only",
