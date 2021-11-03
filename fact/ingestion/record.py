@@ -1,35 +1,49 @@
-from pathlib import Path
-from datetime import datetime
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from typing import Union
 
 
-class Record:
+@dataclass
+class RecordBase:
     """Base record class for all artifacts"""
 
-    def __init__(self, file_path: Path):
-        """Initialises the record for the artifact"""
-        self.fact_filepath = file_path
-        self.fact_analysisdatetime = datetime.now()
+    fact_artifact: str
+    fact_type: str
 
 
-class DiskRecord(Record):
+@dataclass
+class FileRecord(RecordBase):
     """Record class for disk"""
 
-    def __init__(self, file_path: Path) -> None:
-        """Initialises the record for the file/folder on disk"""
-        super().__init__(file_path)
-        self._get_fs_attributes()
+    st_mode: int
+    st_ino: int
+    st_nlink: int
+    st_uid: int
+    st_gid: int
+    st_size: int
+    st_atime: float
+    st_mtime: float
+    st_ctime: float
 
-    def _get_fs_attributes(self) -> None:
-        """Get the stat of the file/folder"""
-        os_stat = self.fact_filepath.lstat()
+    @classmethod
+    def from_stat_result(
+        cls, artifact: str, type: str, os_stat: os.stat_result
+    ) -> FileRecord:
+        return cls(
+            fact_artifact=artifact,
+            fact_type=type,
+            st_mode=os_stat.st_mode,
+            st_ino=os_stat.st_ino,
+            st_nlink=os_stat.st_nlink,
+            st_uid=os_stat.st_uid,
+            st_gid=os_stat.st_gid,
+            st_size=os_stat.st_size,
+            st_atime=os_stat.st_atime,
+            st_mtime=os_stat.st_mtime,
+            st_ctime=os_stat.st_ctime,
+        )
 
-        self.fs_mode = os_stat.st_mode
-        self.fs_ino = os_stat.st_ino
-        self.fs_dev = os_stat.st_dev
-        self.fs_nlink = os_stat.st_nlink
-        self.fs_uid = os_stat.st_uid
-        self.fs_gid = os_stat.st_gid
-        self.fs_size = os_stat.st_size
-        self.fs_atime = os_stat.st_atime
-        self.fs_mtime = os_stat.st_mtime
-        self.fs_ctime = os_stat.st_ctime
+
+Record = Union[FileRecord]

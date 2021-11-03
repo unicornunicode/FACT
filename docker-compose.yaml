@@ -15,6 +15,9 @@ services:
       - fact
     volumes:
       - worker-data:/var/lib/fact
+    cap_add: SYS_ADMIN
+    devices:
+      - /dev/loop-control:/dev/loop-control
   grpcwebproxy:
     image: ghcr.io/unicornunicode/fact-grpcwebproxy:main
     command: ["--backend_addr=controller:5123", "--server_http_debug_port=5124"]
