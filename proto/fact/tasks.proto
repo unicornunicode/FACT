@@ -50,6 +50,7 @@ message TaskCollectDiskinfoResult {
 
 message TaskIngest {
 	bytes collected_uuid = 1;
+	optional string target_name = 2;
 }
 
 message TaskIngestResult {

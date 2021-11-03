@@ -570,8 +570,14 @@ class WorkerTasks(WorkerTasksServicer):
             )
         elif task.type == TaskType.task_ingest:
             assert task.task_ingest_collected_uuid is not None
+            collected_uuid = UUID(bytes=task.task_ingest_collected_uuid.bytes)
+            collected_task = await self.controller._get_task(collected_uuid)
+            assert collected_task.target is not None
+            collected_target = await self.controller._get_target(collected_task.target)
+            assert collected_target.name is not None
             task_ingest = TaskIngest(
-                collected_uuid=task.task_ingest_collected_uuid.bytes
+                collected_uuid=task.task_ingest_collected_uuid.bytes,
+                target_name=collected_target.name,
             )
             return WorkerTask(
                 uuid=task.uuid.bytes,

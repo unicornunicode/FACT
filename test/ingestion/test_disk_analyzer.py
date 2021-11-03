@@ -10,7 +10,6 @@ def disk_analyzer():
     disk_gz_path = Path("test/files/disk.raw.gz")
     try:
         disk_analyzer = DiskAnalyzer(
-            artifact="test",
             disk_image_path=disk_gz_path,
             artifact_hash="cfff29e041c818881a58a5ac1ddc68f6fa05b02504485c327822d6df2e131fa5",
         )

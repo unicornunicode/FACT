@@ -54,9 +54,7 @@ class DiskAnalyzer(Analyzer):
     loop_device_path: Optional[Path] = None
     mount_paths: Optional[List[Path]] = None
 
-    def __init__(
-        self, artifact: str, disk_image_path: Path, artifact_hash: Optional[str]
-    ) -> None:
+    def __init__(self, disk_image_path: Path, artifact_hash: Optional[str]) -> None:
         """Initialise Analyzer for disk images
 
         :param disk_image_path: Path of gzipped disk image for analysis
@@ -70,7 +68,6 @@ class DiskAnalyzer(Analyzer):
                 ": Need to be root to set up and mount disk images."
             )
         super().__init__(disk_image_path, artifact_hash)
-        self.artifact = artifact
         assert disk_image_path.exists()
 
     def __enter__(self):
@@ -208,7 +205,6 @@ class DiskAnalyzer(Analyzer):
             for file in file_paths:
                 path = file.relative_to(mount)
                 yield FileRecord.from_stat_result(
-                    artifact=self.artifact,
                     partition=partition,
                     path=str(path),
                     os_stat=file.lstat(),

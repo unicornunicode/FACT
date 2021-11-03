@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"&\n\x0fTaskCollectDisk\x12\x13\n\x0b\x64\x65vice_name\x18\x02 \x01(\t\"\x17\n\x15TaskCollectDiskResult\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult\"\x15\n\x13TaskCollectDiskinfo\"U\n\x0eTargetDiskinfo\x12\x13\n\x0b\x64\x65vice_name\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\x04\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x12\n\nmountpoint\x18\x04 \x01(\t\"?\n\x19TaskCollectDiskinfoResult\x12\"\n\tdiskinfos\x18\x01 \x03(\x0b\x32\x0f.TargetDiskinfo\"$\n\nTaskIngest\x12\x16\n\x0e\x63ollected_uuid\x18\x01 \x01(\x0c\"\x12\n\x10TaskIngestResultb\x06proto3'
+  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"&\n\x0fTaskCollectDisk\x12\x13\n\x0b\x64\x65vice_name\x18\x02 \x01(\t\"\x17\n\x15TaskCollectDiskResult\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult\"\x15\n\x13TaskCollectDiskinfo\"U\n\x0eTargetDiskinfo\x12\x13\n\x0b\x64\x65vice_name\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\x04\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x12\n\nmountpoint\x18\x04 \x01(\t\"?\n\x19TaskCollectDiskinfoResult\x12\"\n\tdiskinfos\x18\x01 \x03(\x0b\x32\x0f.TargetDiskinfo\"N\n\nTaskIngest\x12\x16\n\x0e\x63ollected_uuid\x18\x01 \x01(\x0c\x12\x18\n\x0btarget_name\x18\x02 \x01(\tH\x00\x88\x01\x01\x42\x0e\n\x0c_target_name\"\x12\n\x10TaskIngestResultb\x06proto3'
 )
 
 
@@ -368,6 +368,13 @@ _TASKINGEST = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='target_name', full_name='TaskIngest.target_name', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -379,9 +386,14 @@ _TASKINGEST = _descriptor.Descriptor(
   syntax='proto3',
   extension_ranges=[],
   oneofs=[
+    _descriptor.OneofDescriptor(
+      name='_target_name', full_name='TaskIngest._target_name',
+      index=0, containing_type=None,
+      create_key=_descriptor._internal_create_key,
+    fields=[]),
   ],
   serialized_start=486,
-  serialized_end=522,
+  serialized_end=564,
 )
 
 
@@ -405,8 +417,8 @@ _TASKINGESTRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=524,
-  serialized_end=542,
+  serialized_start=566,
+  serialized_end=584,
 )
 
 _TARGET.fields_by_name['ssh'].message_type = _SSHACCESS
@@ -414,6 +426,9 @@ _TARGET.oneofs_by_name['access'].fields.append(
   _TARGET.fields_by_name['ssh'])
 _TARGET.fields_by_name['ssh'].containing_oneof = _TARGET.oneofs_by_name['access']
 _TASKCOLLECTDISKINFORESULT.fields_by_name['diskinfos'].message_type = _TARGETDISKINFO
+_TASKINGEST.oneofs_by_name['_target_name'].fields.append(
+  _TASKINGEST.fields_by_name['target_name'])
+_TASKINGEST.fields_by_name['target_name'].containing_oneof = _TASKINGEST.oneofs_by_name['_target_name']
 DESCRIPTOR.message_types_by_name['Target'] = _TARGET
 DESCRIPTOR.message_types_by_name['SSHAccess'] = _SSHACCESS
 DESCRIPTOR.message_types_by_name['TaskCollectDisk'] = _TASKCOLLECTDISK

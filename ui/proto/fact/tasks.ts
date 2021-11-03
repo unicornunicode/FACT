@@ -44,6 +44,7 @@ export interface TaskCollectDiskinfoResult {
 
 export interface TaskIngest {
   collectedUuid: Uint8Array;
+  targetName?: string | undefined;
 }
 
 export interface TaskIngestResult {}
@@ -718,6 +719,9 @@ export const TaskIngest = {
     if (message.collectedUuid.length !== 0) {
       writer.uint32(10).bytes(message.collectedUuid);
     }
+    if (message.targetName !== undefined) {
+      writer.uint32(18).string(message.targetName);
+    }
     return writer;
   },
 
@@ -731,6 +735,9 @@ export const TaskIngest = {
       switch (tag >>> 3) {
         case 1:
           message.collectedUuid = reader.bytes();
+          break;
+        case 2:
+          message.targetName = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -746,6 +753,11 @@ export const TaskIngest = {
     if (object.collectedUuid !== undefined && object.collectedUuid !== null) {
       message.collectedUuid = bytesFromBase64(object.collectedUuid);
     }
+    if (object.targetName !== undefined && object.targetName !== null) {
+      message.targetName = String(object.targetName);
+    } else {
+      message.targetName = undefined;
+    }
     return message;
   },
 
@@ -757,6 +769,7 @@ export const TaskIngest = {
           ? message.collectedUuid
           : new Uint8Array()
       ));
+    message.targetName !== undefined && (obj.targetName = message.targetName);
     return obj;
   },
 
@@ -766,6 +779,11 @@ export const TaskIngest = {
       message.collectedUuid = object.collectedUuid;
     } else {
       message.collectedUuid = new Uint8Array();
+    }
+    if (object.targetName !== undefined && object.targetName !== null) {
+      message.targetName = object.targetName;
+    } else {
+      message.targetName = undefined;
     }
     return message;
   },

@@ -10,7 +10,6 @@ from typing import Optional, Union
 class RecordBase:
     """Base record class for all artifacts"""
 
-    fact_artifact: str
     fact_type: str
 
 
@@ -32,10 +31,9 @@ class FileRecord(RecordBase):
 
     @classmethod
     def from_stat_result(
-        cls, artifact: str, partition: Optional[str], path: str, os_stat: os.stat_result
+        cls, partition: Optional[str], path: str, os_stat: os.stat_result
     ) -> FileRecord:
         return cls(
-            fact_artifact=artifact,
             fact_type="file",
             partition=partition,
             path=path,
