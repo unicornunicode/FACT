@@ -8,7 +8,7 @@ import {
   TaskCollectDisk,
   TaskCollectMemory,
   TaskCollectDiskinfo,
-  TaskIngestion,
+  TaskIngest,
   SSHAccess,
 } from "../fact/tasks";
 
@@ -19,7 +19,7 @@ export interface CreateTaskRequest {
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
   taskCollectDiskinfo: TaskCollectDiskinfo | undefined;
-  taskIngestion: TaskIngestion | undefined;
+  taskIngest: TaskIngest | undefined;
   target: Uint8Array;
 }
 
@@ -46,7 +46,7 @@ export interface ListTask {
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
   taskCollectDiskinfo: TaskCollectDiskinfo | undefined;
-  taskIngestion: TaskIngestion | undefined;
+  taskIngest: TaskIngest | undefined;
   /** Worker UUID */
   worker: Uint8Array;
 }
@@ -171,11 +171,8 @@ export const CreateTaskRequest = {
         writer.uint32(42).fork()
       ).ldelim();
     }
-    if (message.taskIngestion !== undefined) {
-      TaskIngestion.encode(
-        message.taskIngestion,
-        writer.uint32(50).fork()
-      ).ldelim();
+    if (message.taskIngest !== undefined) {
+      TaskIngest.encode(message.taskIngest, writer.uint32(50).fork()).ldelim();
     }
     if (message.target.length !== 0) {
       writer.uint32(34).bytes(message.target);
@@ -210,7 +207,7 @@ export const CreateTaskRequest = {
           );
           break;
         case 6:
-          message.taskIngestion = TaskIngestion.decode(reader, reader.uint32());
+          message.taskIngest = TaskIngest.decode(reader, reader.uint32());
           break;
         case 4:
           message.target = reader.bytes();
@@ -256,10 +253,10 @@ export const CreateTaskRequest = {
     } else {
       message.taskCollectDiskinfo = undefined;
     }
-    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
-      message.taskIngestion = TaskIngestion.fromJSON(object.taskIngestion);
+    if (object.taskIngest !== undefined && object.taskIngest !== null) {
+      message.taskIngest = TaskIngest.fromJSON(object.taskIngest);
     } else {
-      message.taskIngestion = undefined;
+      message.taskIngest = undefined;
     }
     if (object.target !== undefined && object.target !== null) {
       message.target = bytesFromBase64(object.target);
@@ -281,9 +278,9 @@ export const CreateTaskRequest = {
       (obj.taskCollectDiskinfo = message.taskCollectDiskinfo
         ? TaskCollectDiskinfo.toJSON(message.taskCollectDiskinfo)
         : undefined);
-    message.taskIngestion !== undefined &&
-      (obj.taskIngestion = message.taskIngestion
-        ? TaskIngestion.toJSON(message.taskIngestion)
+    message.taskIngest !== undefined &&
+      (obj.taskIngest = message.taskIngest
+        ? TaskIngest.toJSON(message.taskIngest)
         : undefined);
     message.target !== undefined &&
       (obj.target = base64FromBytes(
@@ -324,10 +321,10 @@ export const CreateTaskRequest = {
     } else {
       message.taskCollectDiskinfo = undefined;
     }
-    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
-      message.taskIngestion = TaskIngestion.fromPartial(object.taskIngestion);
+    if (object.taskIngest !== undefined && object.taskIngest !== null) {
+      message.taskIngest = TaskIngest.fromPartial(object.taskIngest);
     } else {
-      message.taskIngestion = undefined;
+      message.taskIngest = undefined;
     }
     if (object.target !== undefined && object.target !== null) {
       message.target = object.target;
@@ -576,11 +573,8 @@ export const ListTask = {
         writer.uint32(90).fork()
       ).ldelim();
     }
-    if (message.taskIngestion !== undefined) {
-      TaskIngestion.encode(
-        message.taskIngestion,
-        writer.uint32(98).fork()
-      ).ldelim();
+    if (message.taskIngest !== undefined) {
+      TaskIngest.encode(message.taskIngest, writer.uint32(98).fork()).ldelim();
     }
     if (message.worker.length !== 0) {
       writer.uint32(82).bytes(message.worker);
@@ -641,7 +635,7 @@ export const ListTask = {
           );
           break;
         case 12:
-          message.taskIngestion = TaskIngestion.decode(reader, reader.uint32());
+          message.taskIngest = TaskIngest.decode(reader, reader.uint32());
           break;
         case 10:
           message.worker = reader.bytes();
@@ -715,10 +709,10 @@ export const ListTask = {
     } else {
       message.taskCollectDiskinfo = undefined;
     }
-    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
-      message.taskIngestion = TaskIngestion.fromJSON(object.taskIngestion);
+    if (object.taskIngest !== undefined && object.taskIngest !== null) {
+      message.taskIngest = TaskIngest.fromJSON(object.taskIngest);
     } else {
-      message.taskIngestion = undefined;
+      message.taskIngest = undefined;
     }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = bytesFromBase64(object.worker);
@@ -756,9 +750,9 @@ export const ListTask = {
       (obj.taskCollectDiskinfo = message.taskCollectDiskinfo
         ? TaskCollectDiskinfo.toJSON(message.taskCollectDiskinfo)
         : undefined);
-    message.taskIngestion !== undefined &&
-      (obj.taskIngestion = message.taskIngestion
-        ? TaskIngestion.toJSON(message.taskIngestion)
+    message.taskIngest !== undefined &&
+      (obj.taskIngest = message.taskIngest
+        ? TaskIngest.toJSON(message.taskIngest)
         : undefined);
     message.worker !== undefined &&
       (obj.worker = base64FromBytes(
@@ -829,10 +823,10 @@ export const ListTask = {
     } else {
       message.taskCollectDiskinfo = undefined;
     }
-    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
-      message.taskIngestion = TaskIngestion.fromPartial(object.taskIngestion);
+    if (object.taskIngest !== undefined && object.taskIngest !== null) {
+      message.taskIngest = TaskIngest.fromPartial(object.taskIngest);
     } else {
-      message.taskIngestion = undefined;
+      message.taskIngest = undefined;
     }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = object.worker;

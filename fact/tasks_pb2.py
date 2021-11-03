@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"&\n\x0fTaskCollectDisk\x12\x13\n\x0b\x64\x65vice_name\x18\x02 \x01(\t\"\x17\n\x15TaskCollectDiskResult\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult\"\x15\n\x13TaskCollectDiskinfo\"U\n\x0eTargetDiskinfo\x12\x13\n\x0b\x64\x65vice_name\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\x04\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x12\n\nmountpoint\x18\x04 \x01(\t\"?\n\x19TaskCollectDiskinfoResult\x12\"\n\tdiskinfos\x18\x01 \x03(\x0b\x32\x0f.TargetDiskinfo\"\'\n\rTaskIngestion\x12\x16\n\x0e\x63ollected_uuid\x18\x01 \x01(\x0c\"\x15\n\x13TaskIngestionResultb\x06proto3'
+  serialized_pb=b'\n\x10\x66\x61\x63t/tasks.proto\";\n\x06Target\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x19\n\x03ssh\x18\x02 \x01(\x0b\x32\n.SSHAccessH\x00\x42\x08\n\x06\x61\x63\x63\x65ss\"s\n\tSSHAccess\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0c\n\x04user\x18\x02 \x01(\t\x12\x0c\n\x04port\x18\x03 \x01(\r\x12\x13\n\x0bprivate_key\x18\x04 \x01(\t\x12\x0e\n\x06\x62\x65\x63ome\x18\x05 \x01(\x08\x12\x17\n\x0f\x62\x65\x63ome_password\x18\x06 \x01(\t\"&\n\x0fTaskCollectDisk\x12\x13\n\x0b\x64\x65vice_name\x18\x02 \x01(\t\"\x17\n\x15TaskCollectDiskResult\"\x13\n\x11TaskCollectMemory\"\x19\n\x17TaskCollectMemoryResult\"\x15\n\x13TaskCollectDiskinfo\"U\n\x0eTargetDiskinfo\x12\x13\n\x0b\x64\x65vice_name\x18\x01 \x01(\t\x12\x0c\n\x04size\x18\x02 \x01(\x04\x12\x0c\n\x04type\x18\x03 \x01(\t\x12\x12\n\nmountpoint\x18\x04 \x01(\t\"?\n\x19TaskCollectDiskinfoResult\x12\"\n\tdiskinfos\x18\x01 \x03(\x0b\x32\x0f.TargetDiskinfo\"$\n\nTaskIngest\x12\x16\n\x0e\x63ollected_uuid\x18\x01 \x01(\x0c\"\x12\n\x10TaskIngestResultb\x06proto3'
 )
 
 
@@ -353,16 +353,16 @@ _TASKCOLLECTDISKINFORESULT = _descriptor.Descriptor(
 )
 
 
-_TASKINGESTION = _descriptor.Descriptor(
-  name='TaskIngestion',
-  full_name='TaskIngestion',
+_TASKINGEST = _descriptor.Descriptor(
+  name='TaskIngest',
+  full_name='TaskIngest',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   create_key=_descriptor._internal_create_key,
   fields=[
     _descriptor.FieldDescriptor(
-      name='collected_uuid', full_name='TaskIngestion.collected_uuid', index=0,
+      name='collected_uuid', full_name='TaskIngest.collected_uuid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
@@ -381,13 +381,13 @@ _TASKINGESTION = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=486,
-  serialized_end=525,
+  serialized_end=522,
 )
 
 
-_TASKINGESTIONRESULT = _descriptor.Descriptor(
-  name='TaskIngestionResult',
-  full_name='TaskIngestionResult',
+_TASKINGESTRESULT = _descriptor.Descriptor(
+  name='TaskIngestResult',
+  full_name='TaskIngestResult',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
@@ -405,8 +405,8 @@ _TASKINGESTIONRESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=527,
-  serialized_end=548,
+  serialized_start=524,
+  serialized_end=542,
 )
 
 _TARGET.fields_by_name['ssh'].message_type = _SSHACCESS
@@ -423,8 +423,8 @@ DESCRIPTOR.message_types_by_name['TaskCollectMemoryResult'] = _TASKCOLLECTMEMORY
 DESCRIPTOR.message_types_by_name['TaskCollectDiskinfo'] = _TASKCOLLECTDISKINFO
 DESCRIPTOR.message_types_by_name['TargetDiskinfo'] = _TARGETDISKINFO
 DESCRIPTOR.message_types_by_name['TaskCollectDiskinfoResult'] = _TASKCOLLECTDISKINFORESULT
-DESCRIPTOR.message_types_by_name['TaskIngestion'] = _TASKINGESTION
-DESCRIPTOR.message_types_by_name['TaskIngestionResult'] = _TASKINGESTIONRESULT
+DESCRIPTOR.message_types_by_name['TaskIngest'] = _TASKINGEST
+DESCRIPTOR.message_types_by_name['TaskIngestResult'] = _TASKINGESTRESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Target = _reflection.GeneratedProtocolMessageType('Target', (_message.Message,), {
@@ -490,19 +490,19 @@ TaskCollectDiskinfoResult = _reflection.GeneratedProtocolMessageType('TaskCollec
   })
 _sym_db.RegisterMessage(TaskCollectDiskinfoResult)
 
-TaskIngestion = _reflection.GeneratedProtocolMessageType('TaskIngestion', (_message.Message,), {
-  'DESCRIPTOR' : _TASKINGESTION,
+TaskIngest = _reflection.GeneratedProtocolMessageType('TaskIngest', (_message.Message,), {
+  'DESCRIPTOR' : _TASKINGEST,
   '__module__' : 'fact.tasks_pb2'
-  # @@protoc_insertion_point(class_scope:TaskIngestion)
+  # @@protoc_insertion_point(class_scope:TaskIngest)
   })
-_sym_db.RegisterMessage(TaskIngestion)
+_sym_db.RegisterMessage(TaskIngest)
 
-TaskIngestionResult = _reflection.GeneratedProtocolMessageType('TaskIngestionResult', (_message.Message,), {
-  'DESCRIPTOR' : _TASKINGESTIONRESULT,
+TaskIngestResult = _reflection.GeneratedProtocolMessageType('TaskIngestResult', (_message.Message,), {
+  'DESCRIPTOR' : _TASKINGESTRESULT,
   '__module__' : 'fact.tasks_pb2'
-  # @@protoc_insertion_point(class_scope:TaskIngestionResult)
+  # @@protoc_insertion_point(class_scope:TaskIngestResult)
   })
-_sym_db.RegisterMessage(TaskIngestionResult)
+_sym_db.RegisterMessage(TaskIngestResult)
 
 
 # @@protoc_insertion_point(module_scope)

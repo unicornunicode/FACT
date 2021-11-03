@@ -43,7 +43,7 @@ message WorkerTask {
         TaskCollectDisk task_collect_disk = 4;
         TaskCollectMemory task_collect_memory = 5;
         TaskCollectDiskinfo task_collect_diskinfo = 6;
-        TaskIngestion task_ingestion = 7;
+        TaskIngest task_ingest = 7;
     }
 }
 
@@ -53,7 +53,7 @@ message WorkerTaskResult {
         TaskCollectDiskResult task_collect_disk = 3;
         TaskCollectMemoryResult task_collect_memory = 4;
         TaskCollectDiskinfoResult task_collect_diskinfo = 5;
-        TaskIngestionResult task_ingestion = 6;
+        TaskIngestResult task_ingest = 6;
     }
 }
 

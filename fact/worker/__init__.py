@@ -21,8 +21,8 @@ from ..tasks_pb2 import (
     TaskCollectDiskinfo,
     TargetDiskinfo,
     TaskCollectDiskinfoResult,
-    TaskIngestion,
-    TaskIngestionResult,
+    TaskIngest,
+    TaskIngestResult,
 )
 from ..controller_pb2_grpc import WorkerTasksStub
 from ..utils.stream import Stream
@@ -156,12 +156,12 @@ class Worker:
     ) -> None:
         log.error("Task collect_memory not implemented")
 
-    async def _handle_task_ingestion(
+    async def _handle_task_ingest(
         self,
         task_uuid: UUID,
-        task: TaskIngestion,
+        task: TaskIngest,
     ) -> None:
-        log.error("Task ingestion not implemented")
+        log.error("Task ingest not implemented")
 
     async def _handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
         """
@@ -192,10 +192,10 @@ class Worker:
                 uuid=task_uuid.bytes,
                 task_collect_diskinfo=TaskCollectDiskinfoResult(diskinfos=diskinfos),
             )
-        if task_type == "task_ingestion":
-            await self._handle_task_ingestion(task_uuid, task.task_ingestion)
+        if task_type == "task_ingest":
+            await self._handle_task_ingest(task_uuid, task.task_ingest)
             return WorkerTaskResult(
-                uuid=task_uuid.bytes, task_ingestion=TaskIngestionResult()
+                uuid=task_uuid.bytes, task_ingest=TaskIngestResult()
             )
         raise Exception("Unreachable: Invalid task type")
 
