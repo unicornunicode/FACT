@@ -71,6 +71,7 @@ class TargetDiskinfo(Base):
     type = Column(String, nullable=False)
     mountpoint = Column(String, nullable=False)
     collected_at = Column(DateTime, nullable=True)
+    collected_uuid = Column(UUID, nullable=True)
 
 
 # vim: set et ts=4 sw=4:

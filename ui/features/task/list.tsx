@@ -33,7 +33,7 @@ const renderOptions = (task: SerializableTask): JSX.Element | string => {
 				<tbody>
 					<tr>
 						<th>Disk</th>
-						<td>{task.taskCollectDisk.selector?.path}</td>
+						<td>{task.taskCollectDisk.deviceName}</td>
 					</tr>
 				</tbody>
 			</Table>
