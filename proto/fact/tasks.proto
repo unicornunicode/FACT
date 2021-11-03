@@ -17,24 +17,12 @@ message SSHAccess {
     string become_password = 6;
 }
 
-message TaskNone {
-
-}
-
-message TaskNoneResult {
-
-}
-
 message TaskCollectDisk {
-    CollectDiskSelector selector = 2;
+    string device_name = 2;
 }
 
 message TaskCollectDiskResult {
 
-}
-
-message CollectDiskSelector {
-	string path = 1;
 }
 
 message TaskCollectMemory {
@@ -58,4 +46,12 @@ message TargetDiskinfo {
 
 message TaskCollectDiskinfoResult {
     repeated TargetDiskinfo diskinfos = 1;
+}
+
+message TaskIngestion {
+	bytes collected_uuid = 1;
+}
+
+message TaskIngestionResult {
+
 }

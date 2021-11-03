@@ -24,10 +24,10 @@ class TaskStatus(enum.Enum):
 
 
 class TaskType(enum.Enum):
-    task_none = "task_none"
     task_collect_disk = "task_collect_disk"
     task_collect_memory = "task_collect_memory"
     task_collect_diskinfo = "task_collect_diskinfo"
+    task_ingestion = "task_ingestion"
 
 
 class Task(Base):
@@ -41,7 +41,8 @@ class Task(Base):
 
     type = Column(Enum(TaskType), nullable=False)
     target = Column(UUID, ForeignKey("target.uuid"), nullable=True)
-    task_collect_disk_selector_path = Column(String, nullable=True)
+    task_collect_disk_device_name = Column(String, nullable=True)
+    task_ingestion_collected_uuid = Column(UUID, nullable=True)
 
     worker = Column(UUID, ForeignKey("worker.uuid"), nullable=True)
 
