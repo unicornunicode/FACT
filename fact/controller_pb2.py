@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\x1a\x10\x66\x61\x63t/tasks.proto\"\x7f\n\x0eSessionResults\x12\x32\n\x13worker_registration\x18\x01 \x01(\x0b\x32\x13.WorkerRegistrationH\x00\x12/\n\x12worker_task_result\x18\x02 \x01(\x0b\x32\x11.WorkerTaskResultH\x00\x42\x08\n\x06result\"l\n\rSessionEvents\x12.\n\x11worker_acceptance\x18\x01 \x01(\x0b\x32\x11.WorkerAcceptanceH\x00\x12\"\n\x0bworker_task\x18\x02 \x01(\x0b\x32\x0b.WorkerTaskH\x00\x42\x07\n\x05\x65vent\"T\n\x12WorkerRegistration\x12\x1a\n\rprevious_uuid\x18\x01 \x01(\x0cH\x00\x88\x01\x01\x12\x10\n\x08hostname\x18\x02 \x01(\tB\x10\n\x0e_previous_uuid\" \n\x10WorkerAcceptance\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\"\x84\x02\n\nWorkerTask\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1c\n\x06target\x18\x02 \x01(\x0b\x32\x07.TargetH\x01\x88\x01\x01\x12\x1e\n\ttask_none\x18\x03 \x01(\x0b\x32\t.TaskNoneH\x00\x12-\n\x11task_collect_disk\x18\x04 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x05 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12\x35\n\x15task_collect_diskinfo\x18\x06 \x01(\x0b\x32\x14.TaskCollectDiskinfoH\x00\x42\x06\n\x04taskB\t\n\x07_target\"\xf9\x01\n\x10WorkerTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12$\n\ttask_none\x18\x02 \x01(\x0b\x32\x0f.TaskNoneResultH\x00\x12\x33\n\x11task_collect_disk\x18\x03 \x01(\x0b\x32\x16.TaskCollectDiskResultH\x00\x12\x37\n\x13task_collect_memory\x18\x04 \x01(\x0b\x32\x18.TaskCollectMemoryResultH\x00\x12;\n\x15task_collect_diskinfo\x18\x05 \x01(\x0b\x32\x1a.TaskCollectDiskinfoResultH\x00\x42\x06\n\x04task2=\n\x0bWorkerTasks\x12.\n\x07Session\x12\x0f.SessionResults\x1a\x0e.SessionEvents(\x01\x30\x01\x62\x06proto3'
+  serialized_pb=b'\n\x15\x66\x61\x63t/controller.proto\x1a\x10\x66\x61\x63t/tasks.proto\"\x7f\n\x0eSessionResults\x12\x32\n\x13worker_registration\x18\x01 \x01(\x0b\x32\x13.WorkerRegistrationH\x00\x12/\n\x12worker_task_result\x18\x02 \x01(\x0b\x32\x11.WorkerTaskResultH\x00\x42\x08\n\x06result\"l\n\rSessionEvents\x12.\n\x11worker_acceptance\x18\x01 \x01(\x0b\x32\x11.WorkerAcceptanceH\x00\x12\"\n\x0bworker_task\x18\x02 \x01(\x0b\x32\x0b.WorkerTaskH\x00\x42\x07\n\x05\x65vent\"T\n\x12WorkerRegistration\x12\x1a\n\rprevious_uuid\x18\x01 \x01(\x0cH\x00\x88\x01\x01\x12\x10\n\x08hostname\x18\x02 \x01(\tB\x10\n\x0e_previous_uuid\"Q\n\x10WorkerAcceptance\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12/\n\relasticsearch\x18\x03 \x01(\x0b\x32\x18.ElasticsearchConnection\"(\n\x17\x45lasticsearchConnection\x12\r\n\x05hosts\x18\x01 \x03(\t\"\x8e\x02\n\nWorkerTask\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x1c\n\x06target\x18\x02 \x01(\x0b\x32\x07.TargetH\x01\x88\x01\x01\x12-\n\x11task_collect_disk\x18\x04 \x01(\x0b\x32\x10.TaskCollectDiskH\x00\x12\x31\n\x13task_collect_memory\x18\x05 \x01(\x0b\x32\x12.TaskCollectMemoryH\x00\x12\x35\n\x15task_collect_diskinfo\x18\x06 \x01(\x0b\x32\x14.TaskCollectDiskinfoH\x00\x12(\n\x0etask_ingestion\x18\x07 \x01(\x0b\x32\x0e.TaskIngestionH\x00\x42\x06\n\x04taskB\t\n\x07_target\"\x83\x02\n\x10WorkerTaskResult\x12\x0c\n\x04uuid\x18\x01 \x01(\x0c\x12\x33\n\x11task_collect_disk\x18\x03 \x01(\x0b\x32\x16.TaskCollectDiskResultH\x00\x12\x37\n\x13task_collect_memory\x18\x04 \x01(\x0b\x32\x18.TaskCollectMemoryResultH\x00\x12;\n\x15task_collect_diskinfo\x18\x05 \x01(\x0b\x32\x1a.TaskCollectDiskinfoResultH\x00\x12.\n\x0etask_ingestion\x18\x06 \x01(\x0b\x32\x14.TaskIngestionResultH\x00\x42\x06\n\x04task2=\n\x0bWorkerTasks\x12.\n\x07Session\x12\x0f.SessionResults\x1a\x0e.SessionEvents(\x01\x30\x01\x62\x06proto3'
   ,
   dependencies=[fact_dot_tasks__pb2.DESCRIPTOR,])
 
@@ -174,6 +174,13 @@ _WORKERACCEPTANCE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='elasticsearch', full_name='WorkerAcceptance.elasticsearch', index=1,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -187,7 +194,39 @@ _WORKERACCEPTANCE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=368,
-  serialized_end=400,
+  serialized_end=449,
+)
+
+
+_ELASTICSEARCHCONNECTION = _descriptor.Descriptor(
+  name='ElasticsearchConnection',
+  full_name='ElasticsearchConnection',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='hosts', full_name='ElasticsearchConnection.hosts', index=0,
+      number=1, type=9, cpp_type=9, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=451,
+  serialized_end=491,
 )
 
 
@@ -214,29 +253,29 @@ _WORKERTASK = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='task_none', full_name='WorkerTask.task_none', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='task_collect_disk', full_name='WorkerTask.task_collect_disk', index=3,
+      name='task_collect_disk', full_name='WorkerTask.task_collect_disk', index=2,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='task_collect_memory', full_name='WorkerTask.task_collect_memory', index=4,
+      name='task_collect_memory', full_name='WorkerTask.task_collect_memory', index=3,
       number=5, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='task_collect_diskinfo', full_name='WorkerTask.task_collect_diskinfo', index=5,
+      name='task_collect_diskinfo', full_name='WorkerTask.task_collect_diskinfo', index=4,
       number=6, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_ingestion', full_name='WorkerTask.task_ingestion', index=5,
+      number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -263,8 +302,8 @@ _WORKERTASK = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=403,
-  serialized_end=663,
+  serialized_start=494,
+  serialized_end=764,
 )
 
 
@@ -284,29 +323,29 @@ _WORKERTASKRESULT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='task_none', full_name='WorkerTaskResult.task_none', index=1,
-      number=2, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
-    _descriptor.FieldDescriptor(
-      name='task_collect_disk', full_name='WorkerTaskResult.task_collect_disk', index=2,
+      name='task_collect_disk', full_name='WorkerTaskResult.task_collect_disk', index=1,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='task_collect_memory', full_name='WorkerTaskResult.task_collect_memory', index=3,
+      name='task_collect_memory', full_name='WorkerTaskResult.task_collect_memory', index=2,
       number=4, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='task_collect_diskinfo', full_name='WorkerTaskResult.task_collect_diskinfo', index=4,
+      name='task_collect_diskinfo', full_name='WorkerTaskResult.task_collect_diskinfo', index=3,
       number=5, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='task_ingestion', full_name='WorkerTaskResult.task_ingestion', index=4,
+      number=6, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -328,8 +367,8 @@ _WORKERTASKRESULT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=666,
-  serialized_end=915,
+  serialized_start=767,
+  serialized_end=1026,
 )
 
 _SESSIONRESULTS.fields_by_name['worker_registration'].message_type = _WORKERREGISTRATION
@@ -351,14 +390,12 @@ _SESSIONEVENTS.fields_by_name['worker_task'].containing_oneof = _SESSIONEVENTS.o
 _WORKERREGISTRATION.oneofs_by_name['_previous_uuid'].fields.append(
   _WORKERREGISTRATION.fields_by_name['previous_uuid'])
 _WORKERREGISTRATION.fields_by_name['previous_uuid'].containing_oneof = _WORKERREGISTRATION.oneofs_by_name['_previous_uuid']
+_WORKERACCEPTANCE.fields_by_name['elasticsearch'].message_type = _ELASTICSEARCHCONNECTION
 _WORKERTASK.fields_by_name['target'].message_type = fact_dot_tasks__pb2._TARGET
-_WORKERTASK.fields_by_name['task_none'].message_type = fact_dot_tasks__pb2._TASKNONE
 _WORKERTASK.fields_by_name['task_collect_disk'].message_type = fact_dot_tasks__pb2._TASKCOLLECTDISK
 _WORKERTASK.fields_by_name['task_collect_memory'].message_type = fact_dot_tasks__pb2._TASKCOLLECTMEMORY
 _WORKERTASK.fields_by_name['task_collect_diskinfo'].message_type = fact_dot_tasks__pb2._TASKCOLLECTDISKINFO
-_WORKERTASK.oneofs_by_name['task'].fields.append(
-  _WORKERTASK.fields_by_name['task_none'])
-_WORKERTASK.fields_by_name['task_none'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
+_WORKERTASK.fields_by_name['task_ingestion'].message_type = fact_dot_tasks__pb2._TASKINGESTION
 _WORKERTASK.oneofs_by_name['task'].fields.append(
   _WORKERTASK.fields_by_name['task_collect_disk'])
 _WORKERTASK.fields_by_name['task_collect_disk'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
@@ -368,16 +405,16 @@ _WORKERTASK.fields_by_name['task_collect_memory'].containing_oneof = _WORKERTASK
 _WORKERTASK.oneofs_by_name['task'].fields.append(
   _WORKERTASK.fields_by_name['task_collect_diskinfo'])
 _WORKERTASK.fields_by_name['task_collect_diskinfo'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
+_WORKERTASK.oneofs_by_name['task'].fields.append(
+  _WORKERTASK.fields_by_name['task_ingestion'])
+_WORKERTASK.fields_by_name['task_ingestion'].containing_oneof = _WORKERTASK.oneofs_by_name['task']
 _WORKERTASK.oneofs_by_name['_target'].fields.append(
   _WORKERTASK.fields_by_name['target'])
 _WORKERTASK.fields_by_name['target'].containing_oneof = _WORKERTASK.oneofs_by_name['_target']
-_WORKERTASKRESULT.fields_by_name['task_none'].message_type = fact_dot_tasks__pb2._TASKNONERESULT
 _WORKERTASKRESULT.fields_by_name['task_collect_disk'].message_type = fact_dot_tasks__pb2._TASKCOLLECTDISKRESULT
 _WORKERTASKRESULT.fields_by_name['task_collect_memory'].message_type = fact_dot_tasks__pb2._TASKCOLLECTMEMORYRESULT
 _WORKERTASKRESULT.fields_by_name['task_collect_diskinfo'].message_type = fact_dot_tasks__pb2._TASKCOLLECTDISKINFORESULT
-_WORKERTASKRESULT.oneofs_by_name['task'].fields.append(
-  _WORKERTASKRESULT.fields_by_name['task_none'])
-_WORKERTASKRESULT.fields_by_name['task_none'].containing_oneof = _WORKERTASKRESULT.oneofs_by_name['task']
+_WORKERTASKRESULT.fields_by_name['task_ingestion'].message_type = fact_dot_tasks__pb2._TASKINGESTIONRESULT
 _WORKERTASKRESULT.oneofs_by_name['task'].fields.append(
   _WORKERTASKRESULT.fields_by_name['task_collect_disk'])
 _WORKERTASKRESULT.fields_by_name['task_collect_disk'].containing_oneof = _WORKERTASKRESULT.oneofs_by_name['task']
@@ -387,10 +424,14 @@ _WORKERTASKRESULT.fields_by_name['task_collect_memory'].containing_oneof = _WORK
 _WORKERTASKRESULT.oneofs_by_name['task'].fields.append(
   _WORKERTASKRESULT.fields_by_name['task_collect_diskinfo'])
 _WORKERTASKRESULT.fields_by_name['task_collect_diskinfo'].containing_oneof = _WORKERTASKRESULT.oneofs_by_name['task']
+_WORKERTASKRESULT.oneofs_by_name['task'].fields.append(
+  _WORKERTASKRESULT.fields_by_name['task_ingestion'])
+_WORKERTASKRESULT.fields_by_name['task_ingestion'].containing_oneof = _WORKERTASKRESULT.oneofs_by_name['task']
 DESCRIPTOR.message_types_by_name['SessionResults'] = _SESSIONRESULTS
 DESCRIPTOR.message_types_by_name['SessionEvents'] = _SESSIONEVENTS
 DESCRIPTOR.message_types_by_name['WorkerRegistration'] = _WORKERREGISTRATION
 DESCRIPTOR.message_types_by_name['WorkerAcceptance'] = _WORKERACCEPTANCE
+DESCRIPTOR.message_types_by_name['ElasticsearchConnection'] = _ELASTICSEARCHCONNECTION
 DESCRIPTOR.message_types_by_name['WorkerTask'] = _WORKERTASK
 DESCRIPTOR.message_types_by_name['WorkerTaskResult'] = _WORKERTASKRESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -423,6 +464,13 @@ WorkerAcceptance = _reflection.GeneratedProtocolMessageType('WorkerAcceptance', 
   })
 _sym_db.RegisterMessage(WorkerAcceptance)
 
+ElasticsearchConnection = _reflection.GeneratedProtocolMessageType('ElasticsearchConnection', (_message.Message,), {
+  'DESCRIPTOR' : _ELASTICSEARCHCONNECTION,
+  '__module__' : 'fact.controller_pb2'
+  # @@protoc_insertion_point(class_scope:ElasticsearchConnection)
+  })
+_sym_db.RegisterMessage(ElasticsearchConnection)
+
 WorkerTask = _reflection.GeneratedProtocolMessageType('WorkerTask', (_message.Message,), {
   'DESCRIPTOR' : _WORKERTASK,
   '__module__' : 'fact.controller_pb2'
@@ -446,8 +494,8 @@ _WORKERTASKS = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=917,
-  serialized_end=978,
+  serialized_start=1028,
+  serialized_end=1089,
   methods=[
   _descriptor.MethodDescriptor(
     name='Session',

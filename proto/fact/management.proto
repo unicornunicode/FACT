@@ -16,10 +16,10 @@ service Management {
 message CreateTaskRequest {
     oneof task {
 		// TODO: Shorten these
-        TaskNone task_none = 1;
         TaskCollectDisk task_collect_disk = 2;
         TaskCollectMemory task_collect_memory = 3;
 		TaskCollectDiskinfo task_collect_diskinfo = 5;
+		TaskIngestion task_ingestion = 6;
     }
     bytes target = 4;
 }
@@ -50,10 +50,10 @@ message ListTask {
 
     bytes target = 6; // Target UUID
     oneof task {
-        TaskNone task_none = 7;
         TaskCollectDisk task_collect_disk = 8;
         TaskCollectMemory task_collect_memory = 9;
 		TaskCollectDiskinfo task_collect_diskinfo = 11;
+		TaskIngestion task_ingestion = 12;
     }
 
     bytes worker = 10; // Worker UUID
@@ -108,6 +108,7 @@ message ListTargetDiskinfo {
     string type = 3;
     string mountpoint = 4;
 	google.protobuf.Timestamp collected_at = 5;
+	bytes collected_uuid = 6;
 }
 
 message ListWorkerRequest {

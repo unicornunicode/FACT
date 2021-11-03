@@ -19,19 +19,11 @@ export interface SSHAccess {
   becomePassword: string;
 }
 
-export interface TaskNone {}
-
-export interface TaskNoneResult {}
-
 export interface TaskCollectDisk {
-  selector: CollectDiskSelector | undefined;
+  deviceName: string;
 }
 
 export interface TaskCollectDiskResult {}
-
-export interface CollectDiskSelector {
-  path: string;
-}
 
 export interface TaskCollectMemory {}
 
@@ -49,6 +41,12 @@ export interface TargetDiskinfo {
 export interface TaskCollectDiskinfoResult {
   diskinfos: TargetDiskinfo[];
 }
+
+export interface TaskIngestion {
+  collectedUuid: Uint8Array;
+}
+
+export interface TaskIngestionResult {}
 
 const baseTarget: object = {};
 
@@ -280,97 +278,15 @@ export const SSHAccess = {
   },
 };
 
-const baseTaskNone: object = {};
-
-export const TaskNone = {
-  encode(_: TaskNone, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): TaskNone {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTaskNone } as TaskNone;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(_: any): TaskNone {
-    const message = { ...baseTaskNone } as TaskNone;
-    return message;
-  },
-
-  toJSON(_: TaskNone): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: DeepPartial<TaskNone>): TaskNone {
-    const message = { ...baseTaskNone } as TaskNone;
-    return message;
-  },
-};
-
-const baseTaskNoneResult: object = {};
-
-export const TaskNoneResult = {
-  encode(
-    _: TaskNoneResult,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): TaskNoneResult {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseTaskNoneResult } as TaskNoneResult;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(_: any): TaskNoneResult {
-    const message = { ...baseTaskNoneResult } as TaskNoneResult;
-    return message;
-  },
-
-  toJSON(_: TaskNoneResult): unknown {
-    const obj: any = {};
-    return obj;
-  },
-
-  fromPartial(_: DeepPartial<TaskNoneResult>): TaskNoneResult {
-    const message = { ...baseTaskNoneResult } as TaskNoneResult;
-    return message;
-  },
-};
-
-const baseTaskCollectDisk: object = {};
+const baseTaskCollectDisk: object = { deviceName: "" };
 
 export const TaskCollectDisk = {
   encode(
     message: TaskCollectDisk,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    if (message.selector !== undefined) {
-      CollectDiskSelector.encode(
-        message.selector,
-        writer.uint32(18).fork()
-      ).ldelim();
+    if (message.deviceName !== "") {
+      writer.uint32(18).string(message.deviceName);
     }
     return writer;
   },
@@ -383,10 +299,7 @@ export const TaskCollectDisk = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 2:
-          message.selector = CollectDiskSelector.decode(
-            reader,
-            reader.uint32()
-          );
+          message.deviceName = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -398,29 +311,26 @@ export const TaskCollectDisk = {
 
   fromJSON(object: any): TaskCollectDisk {
     const message = { ...baseTaskCollectDisk } as TaskCollectDisk;
-    if (object.selector !== undefined && object.selector !== null) {
-      message.selector = CollectDiskSelector.fromJSON(object.selector);
+    if (object.deviceName !== undefined && object.deviceName !== null) {
+      message.deviceName = String(object.deviceName);
     } else {
-      message.selector = undefined;
+      message.deviceName = "";
     }
     return message;
   },
 
   toJSON(message: TaskCollectDisk): unknown {
     const obj: any = {};
-    message.selector !== undefined &&
-      (obj.selector = message.selector
-        ? CollectDiskSelector.toJSON(message.selector)
-        : undefined);
+    message.deviceName !== undefined && (obj.deviceName = message.deviceName);
     return obj;
   },
 
   fromPartial(object: DeepPartial<TaskCollectDisk>): TaskCollectDisk {
     const message = { ...baseTaskCollectDisk } as TaskCollectDisk;
-    if (object.selector !== undefined && object.selector !== null) {
-      message.selector = CollectDiskSelector.fromPartial(object.selector);
+    if (object.deviceName !== undefined && object.deviceName !== null) {
+      message.deviceName = object.deviceName;
     } else {
-      message.selector = undefined;
+      message.deviceName = "";
     }
     return message;
   },
@@ -466,64 +376,6 @@ export const TaskCollectDiskResult = {
 
   fromPartial(_: DeepPartial<TaskCollectDiskResult>): TaskCollectDiskResult {
     const message = { ...baseTaskCollectDiskResult } as TaskCollectDiskResult;
-    return message;
-  },
-};
-
-const baseCollectDiskSelector: object = { path: "" };
-
-export const CollectDiskSelector = {
-  encode(
-    message: CollectDiskSelector,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.path !== "") {
-      writer.uint32(10).string(message.path);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): CollectDiskSelector {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseCollectDiskSelector } as CollectDiskSelector;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.path = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): CollectDiskSelector {
-    const message = { ...baseCollectDiskSelector } as CollectDiskSelector;
-    if (object.path !== undefined && object.path !== null) {
-      message.path = String(object.path);
-    } else {
-      message.path = "";
-    }
-    return message;
-  },
-
-  toJSON(message: CollectDiskSelector): unknown {
-    const obj: any = {};
-    message.path !== undefined && (obj.path = message.path);
-    return obj;
-  },
-
-  fromPartial(object: DeepPartial<CollectDiskSelector>): CollectDiskSelector {
-    const message = { ...baseCollectDiskSelector } as CollectDiskSelector;
-    if (object.path !== undefined && object.path !== null) {
-      message.path = object.path;
-    } else {
-      message.path = "";
-    }
     return message;
   },
 };
@@ -852,6 +704,110 @@ export const TaskCollectDiskinfoResult = {
         message.diskinfos.push(TargetDiskinfo.fromPartial(e));
       }
     }
+    return message;
+  },
+};
+
+const baseTaskIngestion: object = {};
+
+export const TaskIngestion = {
+  encode(
+    message: TaskIngestion,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.collectedUuid.length !== 0) {
+      writer.uint32(10).bytes(message.collectedUuid);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskIngestion {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseTaskIngestion } as TaskIngestion;
+    message.collectedUuid = new Uint8Array();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.collectedUuid = reader.bytes();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): TaskIngestion {
+    const message = { ...baseTaskIngestion } as TaskIngestion;
+    message.collectedUuid = new Uint8Array();
+    if (object.collectedUuid !== undefined && object.collectedUuid !== null) {
+      message.collectedUuid = bytesFromBase64(object.collectedUuid);
+    }
+    return message;
+  },
+
+  toJSON(message: TaskIngestion): unknown {
+    const obj: any = {};
+    message.collectedUuid !== undefined &&
+      (obj.collectedUuid = base64FromBytes(
+        message.collectedUuid !== undefined
+          ? message.collectedUuid
+          : new Uint8Array()
+      ));
+    return obj;
+  },
+
+  fromPartial(object: DeepPartial<TaskIngestion>): TaskIngestion {
+    const message = { ...baseTaskIngestion } as TaskIngestion;
+    if (object.collectedUuid !== undefined && object.collectedUuid !== null) {
+      message.collectedUuid = object.collectedUuid;
+    } else {
+      message.collectedUuid = new Uint8Array();
+    }
+    return message;
+  },
+};
+
+const baseTaskIngestionResult: object = {};
+
+export const TaskIngestionResult = {
+  encode(
+    _: TaskIngestionResult,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TaskIngestionResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseTaskIngestionResult } as TaskIngestionResult;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(_: any): TaskIngestionResult {
+    const message = { ...baseTaskIngestionResult } as TaskIngestionResult;
+    return message;
+  },
+
+  toJSON(_: TaskIngestionResult): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  fromPartial(_: DeepPartial<TaskIngestionResult>): TaskIngestionResult {
+    const message = { ...baseTaskIngestionResult } as TaskIngestionResult;
     return message;
   },
 };

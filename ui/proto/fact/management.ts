@@ -5,10 +5,10 @@ import _m0 from "protobufjs/minimal";
 import { BrowserHeaders } from "browser-headers";
 import { Timestamp } from "../google/protobuf/timestamp";
 import {
-  TaskNone,
   TaskCollectDisk,
   TaskCollectMemory,
   TaskCollectDiskinfo,
+  TaskIngestion,
   SSHAccess,
 } from "../fact/tasks";
 
@@ -16,10 +16,10 @@ export const protobufPackage = "";
 
 export interface CreateTaskRequest {
   /** TODO: Shorten these */
-  taskNone: TaskNone | undefined;
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
   taskCollectDiskinfo: TaskCollectDiskinfo | undefined;
+  taskIngestion: TaskIngestion | undefined;
   target: Uint8Array;
 }
 
@@ -43,10 +43,10 @@ export interface ListTask {
   completedAt: Date | undefined;
   /** Target UUID */
   target: Uint8Array;
-  taskNone: TaskNone | undefined;
   taskCollectDisk: TaskCollectDisk | undefined;
   taskCollectMemory: TaskCollectMemory | undefined;
   taskCollectDiskinfo: TaskCollectDiskinfo | undefined;
+  taskIngestion: TaskIngestion | undefined;
   /** Worker UUID */
   worker: Uint8Array;
 }
@@ -132,6 +132,7 @@ export interface ListTargetDiskinfo {
   type: string;
   mountpoint: string;
   collectedAt: Date | undefined;
+  collectedUuid: Uint8Array;
 }
 
 export interface ListWorkerRequest {}
@@ -152,9 +153,6 @@ export const CreateTaskRequest = {
     message: CreateTaskRequest,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    if (message.taskNone !== undefined) {
-      TaskNone.encode(message.taskNone, writer.uint32(10).fork()).ldelim();
-    }
     if (message.taskCollectDisk !== undefined) {
       TaskCollectDisk.encode(
         message.taskCollectDisk,
@@ -173,6 +171,12 @@ export const CreateTaskRequest = {
         writer.uint32(42).fork()
       ).ldelim();
     }
+    if (message.taskIngestion !== undefined) {
+      TaskIngestion.encode(
+        message.taskIngestion,
+        writer.uint32(50).fork()
+      ).ldelim();
+    }
     if (message.target.length !== 0) {
       writer.uint32(34).bytes(message.target);
     }
@@ -187,9 +191,6 @@ export const CreateTaskRequest = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          message.taskNone = TaskNone.decode(reader, reader.uint32());
-          break;
         case 2:
           message.taskCollectDisk = TaskCollectDisk.decode(
             reader,
@@ -208,6 +209,9 @@ export const CreateTaskRequest = {
             reader.uint32()
           );
           break;
+        case 6:
+          message.taskIngestion = TaskIngestion.decode(reader, reader.uint32());
+          break;
         case 4:
           message.target = reader.bytes();
           break;
@@ -222,11 +226,6 @@ export const CreateTaskRequest = {
   fromJSON(object: any): CreateTaskRequest {
     const message = { ...baseCreateTaskRequest } as CreateTaskRequest;
     message.target = new Uint8Array();
-    if (object.taskNone !== undefined && object.taskNone !== null) {
-      message.taskNone = TaskNone.fromJSON(object.taskNone);
-    } else {
-      message.taskNone = undefined;
-    }
     if (
       object.taskCollectDisk !== undefined &&
       object.taskCollectDisk !== null
@@ -257,6 +256,11 @@ export const CreateTaskRequest = {
     } else {
       message.taskCollectDiskinfo = undefined;
     }
+    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
+      message.taskIngestion = TaskIngestion.fromJSON(object.taskIngestion);
+    } else {
+      message.taskIngestion = undefined;
+    }
     if (object.target !== undefined && object.target !== null) {
       message.target = bytesFromBase64(object.target);
     }
@@ -265,10 +269,6 @@ export const CreateTaskRequest = {
 
   toJSON(message: CreateTaskRequest): unknown {
     const obj: any = {};
-    message.taskNone !== undefined &&
-      (obj.taskNone = message.taskNone
-        ? TaskNone.toJSON(message.taskNone)
-        : undefined);
     message.taskCollectDisk !== undefined &&
       (obj.taskCollectDisk = message.taskCollectDisk
         ? TaskCollectDisk.toJSON(message.taskCollectDisk)
@@ -281,6 +281,10 @@ export const CreateTaskRequest = {
       (obj.taskCollectDiskinfo = message.taskCollectDiskinfo
         ? TaskCollectDiskinfo.toJSON(message.taskCollectDiskinfo)
         : undefined);
+    message.taskIngestion !== undefined &&
+      (obj.taskIngestion = message.taskIngestion
+        ? TaskIngestion.toJSON(message.taskIngestion)
+        : undefined);
     message.target !== undefined &&
       (obj.target = base64FromBytes(
         message.target !== undefined ? message.target : new Uint8Array()
@@ -290,11 +294,6 @@ export const CreateTaskRequest = {
 
   fromPartial(object: DeepPartial<CreateTaskRequest>): CreateTaskRequest {
     const message = { ...baseCreateTaskRequest } as CreateTaskRequest;
-    if (object.taskNone !== undefined && object.taskNone !== null) {
-      message.taskNone = TaskNone.fromPartial(object.taskNone);
-    } else {
-      message.taskNone = undefined;
-    }
     if (
       object.taskCollectDisk !== undefined &&
       object.taskCollectDisk !== null
@@ -324,6 +323,11 @@ export const CreateTaskRequest = {
       );
     } else {
       message.taskCollectDiskinfo = undefined;
+    }
+    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
+      message.taskIngestion = TaskIngestion.fromPartial(object.taskIngestion);
+    } else {
+      message.taskIngestion = undefined;
     }
     if (object.target !== undefined && object.target !== null) {
       message.target = object.target;
@@ -554,9 +558,6 @@ export const ListTask = {
     if (message.target.length !== 0) {
       writer.uint32(50).bytes(message.target);
     }
-    if (message.taskNone !== undefined) {
-      TaskNone.encode(message.taskNone, writer.uint32(58).fork()).ldelim();
-    }
     if (message.taskCollectDisk !== undefined) {
       TaskCollectDisk.encode(
         message.taskCollectDisk,
@@ -573,6 +574,12 @@ export const ListTask = {
       TaskCollectDiskinfo.encode(
         message.taskCollectDiskinfo,
         writer.uint32(90).fork()
+      ).ldelim();
+    }
+    if (message.taskIngestion !== undefined) {
+      TaskIngestion.encode(
+        message.taskIngestion,
+        writer.uint32(98).fork()
       ).ldelim();
     }
     if (message.worker.length !== 0) {
@@ -615,9 +622,6 @@ export const ListTask = {
         case 6:
           message.target = reader.bytes();
           break;
-        case 7:
-          message.taskNone = TaskNone.decode(reader, reader.uint32());
-          break;
         case 8:
           message.taskCollectDisk = TaskCollectDisk.decode(
             reader,
@@ -635,6 +639,9 @@ export const ListTask = {
             reader,
             reader.uint32()
           );
+          break;
+        case 12:
+          message.taskIngestion = TaskIngestion.decode(reader, reader.uint32());
           break;
         case 10:
           message.worker = reader.bytes();
@@ -678,11 +685,6 @@ export const ListTask = {
     if (object.target !== undefined && object.target !== null) {
       message.target = bytesFromBase64(object.target);
     }
-    if (object.taskNone !== undefined && object.taskNone !== null) {
-      message.taskNone = TaskNone.fromJSON(object.taskNone);
-    } else {
-      message.taskNone = undefined;
-    }
     if (
       object.taskCollectDisk !== undefined &&
       object.taskCollectDisk !== null
@@ -713,6 +715,11 @@ export const ListTask = {
     } else {
       message.taskCollectDiskinfo = undefined;
     }
+    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
+      message.taskIngestion = TaskIngestion.fromJSON(object.taskIngestion);
+    } else {
+      message.taskIngestion = undefined;
+    }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = bytesFromBase64(object.worker);
     }
@@ -737,10 +744,6 @@ export const ListTask = {
       (obj.target = base64FromBytes(
         message.target !== undefined ? message.target : new Uint8Array()
       ));
-    message.taskNone !== undefined &&
-      (obj.taskNone = message.taskNone
-        ? TaskNone.toJSON(message.taskNone)
-        : undefined);
     message.taskCollectDisk !== undefined &&
       (obj.taskCollectDisk = message.taskCollectDisk
         ? TaskCollectDisk.toJSON(message.taskCollectDisk)
@@ -752,6 +755,10 @@ export const ListTask = {
     message.taskCollectDiskinfo !== undefined &&
       (obj.taskCollectDiskinfo = message.taskCollectDiskinfo
         ? TaskCollectDiskinfo.toJSON(message.taskCollectDiskinfo)
+        : undefined);
+    message.taskIngestion !== undefined &&
+      (obj.taskIngestion = message.taskIngestion
+        ? TaskIngestion.toJSON(message.taskIngestion)
         : undefined);
     message.worker !== undefined &&
       (obj.worker = base64FromBytes(
@@ -792,11 +799,6 @@ export const ListTask = {
     } else {
       message.target = new Uint8Array();
     }
-    if (object.taskNone !== undefined && object.taskNone !== null) {
-      message.taskNone = TaskNone.fromPartial(object.taskNone);
-    } else {
-      message.taskNone = undefined;
-    }
     if (
       object.taskCollectDisk !== undefined &&
       object.taskCollectDisk !== null
@@ -826,6 +828,11 @@ export const ListTask = {
       );
     } else {
       message.taskCollectDiskinfo = undefined;
+    }
+    if (object.taskIngestion !== undefined && object.taskIngestion !== null) {
+      message.taskIngestion = TaskIngestion.fromPartial(object.taskIngestion);
+    } else {
+      message.taskIngestion = undefined;
     }
     if (object.worker !== undefined && object.worker !== null) {
       message.worker = object.worker;
@@ -1481,6 +1488,9 @@ export const ListTargetDiskinfo = {
         writer.uint32(42).fork()
       ).ldelim();
     }
+    if (message.collectedUuid.length !== 0) {
+      writer.uint32(50).bytes(message.collectedUuid);
+    }
     return writer;
   },
 
@@ -1488,6 +1498,7 @@ export const ListTargetDiskinfo = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseListTargetDiskinfo } as ListTargetDiskinfo;
+    message.collectedUuid = new Uint8Array();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1508,6 +1519,9 @@ export const ListTargetDiskinfo = {
             Timestamp.decode(reader, reader.uint32())
           );
           break;
+        case 6:
+          message.collectedUuid = reader.bytes();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1518,6 +1532,7 @@ export const ListTargetDiskinfo = {
 
   fromJSON(object: any): ListTargetDiskinfo {
     const message = { ...baseListTargetDiskinfo } as ListTargetDiskinfo;
+    message.collectedUuid = new Uint8Array();
     if (object.deviceName !== undefined && object.deviceName !== null) {
       message.deviceName = String(object.deviceName);
     } else {
@@ -1543,6 +1558,9 @@ export const ListTargetDiskinfo = {
     } else {
       message.collectedAt = undefined;
     }
+    if (object.collectedUuid !== undefined && object.collectedUuid !== null) {
+      message.collectedUuid = bytesFromBase64(object.collectedUuid);
+    }
     return message;
   },
 
@@ -1554,6 +1572,12 @@ export const ListTargetDiskinfo = {
     message.mountpoint !== undefined && (obj.mountpoint = message.mountpoint);
     message.collectedAt !== undefined &&
       (obj.collectedAt = message.collectedAt.toISOString());
+    message.collectedUuid !== undefined &&
+      (obj.collectedUuid = base64FromBytes(
+        message.collectedUuid !== undefined
+          ? message.collectedUuid
+          : new Uint8Array()
+      ));
     return obj;
   },
 
@@ -1583,6 +1607,11 @@ export const ListTargetDiskinfo = {
       message.collectedAt = object.collectedAt;
     } else {
       message.collectedAt = undefined;
+    }
+    if (object.collectedUuid !== undefined && object.collectedUuid !== null) {
+      message.collectedUuid = object.collectedUuid;
+    } else {
+      message.collectedUuid = new Uint8Array();
     }
     return message;
   },

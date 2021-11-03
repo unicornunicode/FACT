@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from contextlib import contextmanager
 from pathlib import Path
@@ -15,7 +14,6 @@ from ..controller_pb2 import (
 )
 from ..tasks_pb2 import (
     Target,
-    TaskNoneResult,
     TaskCollectDisk,
     TaskCollectDiskResult,
     TaskCollectMemory,
@@ -23,6 +21,8 @@ from ..tasks_pb2 import (
     TaskCollectDiskinfo,
     TargetDiskinfo,
     TaskCollectDiskinfoResult,
+    TaskIngestion,
+    TaskIngestionResult,
 )
 from ..controller_pb2_grpc import WorkerTasksStub
 from ..utils.stream import Stream
@@ -145,9 +145,9 @@ class Worker:
         self, task_uuid: UUID, target: Target, task: TaskCollectDisk
     ) -> None:
         remote = self._remote(target)
-        with _storage_open(self._storage, task_uuid, task.selector.path, "disk") as f:
+        with _storage_open(self._storage, task_uuid, task.device_name, "disk") as f:
             try:
-                remote.collect_image(task.selector.path, f)
+                remote.collect_image(task.device_name, f)
             except Exception as e:
                 log.error("Failed to collect disk", e)
 
@@ -156,6 +156,13 @@ class Worker:
     ) -> None:
         log.error("Task collect_memory not implemented")
 
+    async def _handle_task_ingestion(
+        self,
+        task_uuid: UUID,
+        task: TaskIngestion,
+    ) -> None:
+        log.error("Task ingestion not implemented")
+
     async def _handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
         """
         Handle one incoming worker task, returning the result
@@ -163,9 +170,6 @@ class Worker:
         log.debug(task)
         task_type = task.WhichOneof("task")
         task_uuid = UUID(bytes=task.uuid)
-        if task_type == "task_none":
-            await asyncio.sleep(1)
-            return WorkerTaskResult(uuid=task_uuid.bytes, task_none=TaskNoneResult())
         if task_type == "task_collect_disk":
             await self._handle_task_collect_disk(
                 task_uuid, task.target, task.task_collect_disk
@@ -187,6 +191,11 @@ class Worker:
             return WorkerTaskResult(
                 uuid=task_uuid.bytes,
                 task_collect_diskinfo=TaskCollectDiskinfoResult(diskinfos=diskinfos),
+            )
+        if task_type == "task_ingestion":
+            await self._handle_task_ingestion(task_uuid, task.task_ingestion)
+            return WorkerTaskResult(
+                uuid=task_uuid.bytes, task_ingestion=TaskIngestionResult()
             )
         raise Exception("Unreachable: Invalid task type")
 

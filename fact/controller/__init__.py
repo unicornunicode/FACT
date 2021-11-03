@@ -35,11 +35,10 @@ from ..management_pb2 import (
 )
 from ..tasks_pb2 import (
     Target as ProtoTarget,
-    TaskNone,
     TaskCollectDisk,
-    CollectDiskSelector,
     TaskCollectMemory,
     TaskCollectDiskinfo,
+    TaskIngestion,
     SSHAccess,
 )
 from ..controller_pb2_grpc import (
@@ -103,9 +102,10 @@ class Controller:
 
     async def _create_task(
         self,
-        target_uuid: UUID,
         task_type: TaskType,
-        task_collect_disk_selector_path: Optional[str] = None,
+        target_uuid: Optional[UUID] = None,
+        task_collect_disk_device_name: Optional[str] = None,
+        task_ingestion_collected_uuid: Optional[UUID] = None,
     ) -> UUID:
         uuid = uuid4()
         async with self.session() as session:
@@ -114,7 +114,8 @@ class Controller:
                     uuid=uuid,
                     target=target_uuid,
                     type=task_type,
-                    task_collect_disk_selector_path=task_collect_disk_selector_path,
+                    task_collect_disk_device_name=task_collect_disk_device_name,
+                    task_ingestion_collected_uuid=task_ingestion_collected_uuid,
                 )
                 session.add(task)
         return uuid
@@ -238,7 +239,7 @@ class Controller:
                 task = (await session.execute(stmt)).scalar_one()
                 stmt_diskinfo = select(TargetDiskinfo).where(
                     TargetDiskinfo.target == task.target,
-                    TargetDiskinfo.device_name == task.task_collect_disk_selector_path,
+                    TargetDiskinfo.device_name == task.task_collect_disk_device_name,
                 )
                 diskinfo = (await session.execute(stmt_diskinfo)).scalar_one()
                 diskinfo.collected_at = datetime.utcnow()
@@ -333,23 +334,28 @@ class Management(ManagementServicer):
     ) -> CreateTaskResult:
         target_uuid = UUID(bytes=request.target)
         task_type = request.WhichOneof("task")
-        if task_type == "task_none":
+        if task_type == "task_collect_disk":
             uuid = await self.controller._create_task(
-                target_uuid=target_uuid, task_type=TaskType.task_none
-            )
-        elif task_type == "task_collect_disk":
-            uuid = await self.controller._create_task(
-                target_uuid=target_uuid,
                 task_type=TaskType.task_collect_disk,
-                task_collect_disk_selector_path=request.task_collect_disk.selector.path,
+                target_uuid=target_uuid,
+                task_collect_disk_device_name=request.task_collect_disk.device_name,
             )
         elif task_type == "task_collect_memory":
             uuid = await self.controller._create_task(
-                target_uuid=target_uuid, task_type=TaskType.task_collect_memory
+                task_type=TaskType.task_collect_memory,
+                target_uuid=target_uuid,
             )
         elif task_type == "task_collect_diskinfo":
             uuid = await self.controller._create_task(
-                target_uuid=target_uuid, task_type=TaskType.task_collect_diskinfo
+                task_type=TaskType.task_collect_diskinfo,
+                target_uuid=target_uuid,
+            )
+        elif task_type == "task_ingestion":
+            uuid = await self.controller._create_task(
+                task_type=TaskType.task_ingestion,
+                task_ingestion_collected_uuid=UUID(
+                    bytes=request.task_ingestion.collected_uuid
+                ),
             )
         else:
             context.abort(StatusCode.INVALID_ARGUMENT)
@@ -362,15 +368,25 @@ class Management(ManagementServicer):
         list_tasks = []
         tasks = await self.controller._list_task(limit=request.limit)
         for task in tasks:
-            task_none = TaskNone() if task.type == TaskType.task_none else None
+            assert task.uuid is not None
+            assert task.status is not None
+            assert task.created_at is not None
+            created_at = Timestamp(seconds=int(task.created_at.timestamp()))
+            assigned_at = (
+                Timestamp(seconds=int(task.assigned_at.timestamp()))
+                if task.assigned_at is not None
+                else None
+            )
+            completed_at = (
+                Timestamp(seconds=int(task.completed_at.timestamp()))
+                if task.completed_at is not None
+                else None
+            )
+            target = task.target.bytes if task.target is not None else None
             task_collect_disk = (
-                TaskCollectDisk(
-                    selector=CollectDiskSelector(
-                        path=task.task_collect_disk_selector_path
-                    )
-                )
+                TaskCollectDisk(device_name=task.task_collect_disk_device_name)
                 if task.type == TaskType.task_collect_disk
-                and task.task_collect_disk_selector_path is not None
+                and task.task_collect_disk_device_name is not None
                 else None
             )
             task_collect_memory = (
@@ -383,27 +399,26 @@ class Management(ManagementServicer):
                 if task.type == TaskType.task_collect_diskinfo
                 else None
             )
+            task_ingestion = (
+                TaskIngestion(collected_uuid=task.task_ingestion_collected_uuid.bytes)
+                if task.type == TaskType.task_ingestion
+                and task.task_ingestion_collected_uuid is not None
+                else None
+            )
+            worker = task.worker.bytes if task.worker is not None else None
             list_tasks.append(
                 ListTask(
-                    uuid=task.uuid.bytes if task.uuid is not None else None,
-                    status=task_status_from_db(task.status)
-                    if task.status is not None
-                    else ListTask.Status.WAITING,
-                    created_at=Timestamp(seconds=int(task.created_at.timestamp()))
-                    if task.created_at is not None
-                    else None,
-                    assigned_at=Timestamp(seconds=int(task.assigned_at.timestamp()))
-                    if task.assigned_at is not None
-                    else None,
-                    completed_at=Timestamp(seconds=int(task.completed_at.timestamp()))
-                    if task.completed_at is not None
-                    else None,
-                    target=task.target.bytes if task.target is not None else None,
-                    task_none=task_none,
+                    uuid=task.uuid.bytes,
+                    status=task_status_from_db(task.status),
+                    created_at=created_at,
+                    assigned_at=assigned_at,
+                    completed_at=completed_at,
+                    target=target,
                     task_collect_disk=task_collect_disk,
                     task_collect_memory=task_collect_memory,
                     task_collect_diskinfo=task_collect_diskinfo,
-                    worker=task.worker.bytes if task.worker is not None else None,
+                    task_ingestion=task_ingestion,
+                    worker=worker,
                 )
             )
         return ListTaskResult(tasks=list_tasks)
@@ -443,9 +458,10 @@ class Management(ManagementServicer):
                     become=target.ssh_become or False,
                     become_password=target.ssh_become_password or "",
                 )
+            assert target.uuid is not None
             list_targets.append(
                 ListTarget(
-                    uuid=target.uuid.bytes if target.uuid is not None else None,
+                    uuid=target.uuid.bytes,
                     name=target.name or "",
                     ssh=ssh,
                 )
@@ -482,21 +498,22 @@ class Management(ManagementServicer):
         diskinfos = await self.controller._list_target_diskinfos(target_uuid)
         list_diskinfos = []
         for diskinfo in diskinfos:
+            assert diskinfo.device_name is not None
+            assert diskinfo.size is not None
+            assert diskinfo.type is not None
+            assert diskinfo.mountpoint is not None  # Empty string when no mountpoint
+            collected_at = (
+                Timestamp(seconds=int(diskinfo.collected_at.timestamp()))
+                if diskinfo.collected_at is not None
+                else None
+            )
             list_diskinfos.append(
                 ListTargetDiskinfo(
-                    device_name=diskinfo.device_name
-                    if diskinfo.device_name is not None
-                    else "",
-                    size=diskinfo.size if diskinfo.size is not None else 0,
-                    type=diskinfo.type if diskinfo.type is not None else "",
-                    mountpoint=diskinfo.mountpoint
-                    if diskinfo.mountpoint is not None
-                    else "",
-                    collected_at=Timestamp(
-                        seconds=int(diskinfo.collected_at.timestamp())
-                    )
-                    if diskinfo.collected_at is not None
-                    else None,
+                    device_name=diskinfo.device_name,
+                    size=diskinfo.size,
+                    type=diskinfo.type,
+                    mountpoint=diskinfo.mountpoint,
+                    collected_at=collected_at,
                 )
             )
         return ListTargetDiskinfoResult(diskinfos=list_diskinfos)
@@ -550,48 +567,56 @@ class WorkerTasks(WorkerTasksServicer):
             return None
         task, target = next_task
 
-        ssh = SSHAccess(
-            host=target.ssh_host or "",
-            user=target.ssh_user or "",
-            port=target.ssh_port or 0,
-            private_key=target.ssh_private_key or "",
-            become=target.ssh_become or False,
-            become_password=target.ssh_become_password or "",
+        assert task.uuid is not None
+        ssh = (
+            SSHAccess(
+                host=target.ssh_host or "",
+                user=target.ssh_user or "",
+                port=target.ssh_port or 0,
+                private_key=target.ssh_private_key or "",
+                become=target.ssh_become or False,
+                become_password=target.ssh_become_password or "",
+            )
+            if target.uuid is not None
+            else None
         )
-        task_target = ProtoTarget(
-            uuid=target.uuid.bytes if target.uuid is not None else None, ssh=ssh
+        task_target = (
+            ProtoTarget(uuid=target.uuid.bytes, ssh=ssh)
+            if target.uuid is not None
+            else None
         )
         if task.type == TaskType.task_collect_disk:
+            assert task.task_collect_disk_device_name is not None
             task_collect_disk = TaskCollectDisk(
-                selector=CollectDiskSelector(
-                    path=task.task_collect_disk_selector_path
-                    if task.task_collect_disk_selector_path is not None
-                    else ""
-                )
+                device_name=task.task_collect_disk_device_name
             )
             return WorkerTask(
-                uuid=task.uuid.bytes if task.uuid is not None else None,
+                uuid=task.uuid.bytes,
                 target=task_target,
                 task_collect_disk=task_collect_disk,
             )
         elif task.type == TaskType.task_collect_memory:
             task_collect_memory = TaskCollectMemory()
             return WorkerTask(
-                uuid=task.uuid.bytes if task.uuid is not None else None,
+                uuid=task.uuid.bytes,
                 target=task_target,
                 task_collect_memory=task_collect_memory,
             )
         elif task.type == TaskType.task_collect_diskinfo:
             task_collect_diskinfo = TaskCollectDiskinfo()
             return WorkerTask(
-                uuid=task.uuid.bytes if task.uuid is not None else None,
+                uuid=task.uuid.bytes,
                 target=task_target,
                 task_collect_diskinfo=task_collect_diskinfo,
             )
-        elif task.type == TaskType.task_none:
+        elif task.type == TaskType.task_ingestion:
+            assert task.task_ingestion_collected_uuid is not None
+            task_ingestion = TaskIngestion(
+                collected_uuid=task.task_ingestion_collected_uuid.bytes
+            )
             return WorkerTask(
-                uuid=task.uuid.bytes if task.uuid is not None else None,
-                task_none=TaskNone(),
+                uuid=task.uuid.bytes,
+                task_ingestion=task_ingestion,
             )
         else:
             raise Exception(f"Unreachable: Invalid task type {task.type}")

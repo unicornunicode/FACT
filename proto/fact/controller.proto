@@ -27,26 +27,33 @@ message WorkerRegistration {
 
 message WorkerAcceptance {
     bytes uuid = 1;
+    // Additional worker configuration
+	ElasticsearchConnection elasticsearch = 3;
+}
+
+message ElasticsearchConnection {
+	repeated string hosts = 1;
+	// TODO: Authentication mechanisms
 }
 
 message WorkerTask {
     bytes uuid = 1;
     optional Target target = 2;
     oneof task {
-        TaskNone task_none = 3;
         TaskCollectDisk task_collect_disk = 4;
         TaskCollectMemory task_collect_memory = 5;
         TaskCollectDiskinfo task_collect_diskinfo = 6;
+        TaskIngestion task_ingestion = 7;
     }
 }
 
 message WorkerTaskResult {
     bytes uuid = 1;
     oneof task {
-        TaskNoneResult task_none = 2;
         TaskCollectDiskResult task_collect_disk = 3;
         TaskCollectMemoryResult task_collect_memory = 4;
         TaskCollectDiskinfoResult task_collect_diskinfo = 5;
+        TaskIngestionResult task_ingestion = 6;
     }
 }
 
