@@ -37,6 +37,10 @@ services:
     volumes:
       - .:/app
       - worker-data:/var/lib/fact
+    cap_add:
+      - SYS_ADMIN
+    devices:
+      - /dev/loop-control:/dev/loop-control
   grpcwebproxy:
     build:
       context: .

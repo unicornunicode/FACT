@@ -1,4 +1,4 @@
-from .record import DiskRecord
+from .record import FileRecord
 
 from fact.exceptions import (
     LoopDeviceSetupError,
@@ -13,7 +13,7 @@ from pathlib import Path
 from tempfile import mkstemp
 from os import getegid
 
-from typing import List, Tuple
+from typing import Optional, List, Tuple, Generator
 import logging
 
 log = logging.getLogger(__name__)
@@ -22,9 +22,12 @@ log = logging.getLogger(__name__)
 class Analyzer:
     """Base class for all analyzers"""
 
-    def __init__(self, artifact_path: Path, artifact_hash: str) -> None:
+    def __init__(self, artifact_path: Path, artifact_hash: Optional[str]) -> None:
         self.artifact_path = artifact_path
         self.decompress_path: Path
+        if artifact_hash is None:
+            self.gzip_decompress()
+            return
         if self.hash_integrity_check(artifact_hash):
             self.gzip_decompress()
 
@@ -48,7 +51,10 @@ class Analyzer:
 class DiskAnalyzer(Analyzer):
     """Sets up disk images for analysis"""
 
-    def __init__(self, disk_image_path: Path, artifact_hash: str) -> None:
+    loop_device_path: Optional[Path] = None
+    mount_paths: Optional[List[Path]] = None
+
+    def __init__(self, disk_image_path: Path, artifact_hash: Optional[str]) -> None:
         """Initialise Analyzer for disk images
 
         :param disk_image_path: Path of gzipped disk image for analysis
@@ -62,21 +68,17 @@ class DiskAnalyzer(Analyzer):
                 ": Need to be root to set up and mount disk images."
             )
         super().__init__(disk_image_path, artifact_hash)
-        self.loop_device_path: Path
-        self.mount_paths: List[Path]
-        self.partitions: List[Path]
 
     def __enter__(self):
         self.setup()
         return self
 
-    def __exit__(self):
+    def __exit__(self, *rest):
         self.cleanup()
 
     def setup(self) -> None:
         """Wrapper function to call various functions to setup disk image"""
         self._setup_loop_device()
-        self._identify_partitions()
         self._mount_partitions()
 
     def cleanup(self) -> None:
@@ -84,7 +86,7 @@ class DiskAnalyzer(Analyzer):
         self._unmount_partitions()
         self._detach_loop_device()
 
-    def analyse(self) -> List[DiskRecord]:
+    def analyse(self) -> Generator[FileRecord, None, None]:
         """Wrapper function to call various functions to analyse disk image"""
         return self._traverse_partitions()
 
@@ -129,16 +131,17 @@ class DiskAnalyzer(Analyzer):
         if returncode != 0:
             raise LoopDeviceDetachError(stderr)
 
-    def _identify_partitions(self) -> None:
+    def _identify_partitions(self) -> Generator[Path, None, None]:
         """Identifies the partitions of the loop device"""
+        assert self.loop_device_path is not None
+
         device_path = Path("/dev")
-        self.partitions = []
         for p in device_path.iterdir():
             if (
                 str(p).startswith(str(self.loop_device_path))
                 and p != self.loop_device_path
             ):
-                self.partitions.append(p)
+                yield p
 
     def _mount_partitions(self) -> None:
         """Mounts the partitions found previously
@@ -147,11 +150,10 @@ class DiskAnalyzer(Analyzer):
             AttributeError: No partition search was initialised
             MountPartitionError: Failure to mount the partition
         """
-        assert self.partitions is not None
-
         self.mount_paths = []
+
         mnt_base_path = Path("/tmp/fact/ingestion")
-        for p in self.partitions:
+        for p in self._identify_partitions():
             p_mnt_path = mnt_base_path / p.name
             if not p_mnt_path.exists():
                 p_mnt_path.mkdir(parents=True)
@@ -185,13 +187,16 @@ class DiskAnalyzer(Analyzer):
                 raise UnmountPartitionError(stderr)
             path.rmdir()
 
-    def _traverse_partitions(self) -> List[DiskRecord]:
+    def _traverse_partitions(self) -> Generator[FileRecord, None, None]:
         """Traverse the mounted partitions
 
-        :returns: List of map generators of DiskRecord for each file
+        :returns: List of map generators of FileRecord for each file
         """
-        partitions_records: List = []
-        for path in self.mount_paths:
-            file_paths = path.rglob("*")
-            partitions_records.append(map(DiskRecord, file_paths))
-        return partitions_records
+        assert self.mount_paths is not None
+
+        for mount in self.mount_paths:
+            file_paths = mount.rglob("*")
+            for file in file_paths:
+                yield FileRecord.from_stat_result(
+                    str(self.artifact_path), str(mount), file.lstat()
+                )

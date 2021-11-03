@@ -11,6 +11,7 @@ python = "^3.9"
 grpcio = "^1.41.1"
 protobuf = "^3.19.1"
 SQLAlchemy = "^1.4.25"
+elasticsearch = {extras = ["async"], version = "^7.15.1"}
 # Drivers
 aiosqlite = { version = "^0.17.0", optional = true }
 asyncpg = { version = "^0.24.0", optional = true }
@@ -39,6 +40,7 @@ mypy-protobuf = "^2.10"
 types-protobuf = "^3.18.0"
 grpc-stubs = "^1.24.7"
 SQLAlchemy = {extras = ["mypy"], version = "^1.4.25"}
+elasticsearch-stubs = "^0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

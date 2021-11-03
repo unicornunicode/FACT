@@ -9,6 +9,7 @@ from ..controller_pb2 import (
     SessionResults,
     SessionEvents,
     WorkerRegistration,
+    WorkerAcceptance,
     WorkerTask,
     WorkerTaskResult,
 )
@@ -35,6 +36,8 @@ import platform
 from fact.target import SSHTargetAccess
 from fact.target.types import TargetAccess
 from fact.storage import Session, Storage, Task, Artifact
+from fact.ingestion import DiskAnalyzer
+from fact.ingestion.destinations import DestinationElasticsearch
 
 
 @contextmanager
@@ -64,6 +67,7 @@ class Worker:
     _storage_dir: Path
     _uuid_file: Path
     _uuid: Optional[UUID] = None
+    _ingest_destination: Optional[DestinationElasticsearch] = None
 
     def __init__(self, controller_addr: str, storage_dir: Path):
         self._controller_addr = controller_addr
@@ -105,6 +109,11 @@ class Worker:
         The current machine hostname
         """
         return platform.node()
+
+    async def _setup(self, info: WorkerAcceptance) -> None:
+        self._ingest_destination = DestinationElasticsearch(
+            hosts=info.elasticsearch.hosts
+        )
 
     def _remote(self, target: Target) -> TargetAccess:
         access_type = target.WhichOneof("access")
@@ -161,7 +170,29 @@ class Worker:
         task_uuid: UUID,
         task: TaskIngest,
     ) -> None:
-        log.error("Task ingest not implemented")
+        # Should not happen: We have already called _setup()
+        assert self._ingest_destination is not None
+
+        # HACK: Get the first artifact. We should only have one artifact per
+        # task. A task is never called with multiple disks at the moment.
+        s_task = self._storage.get_task(str(UUID(bytes=task.collected_uuid)))
+        assert s_task is not None
+        # TODO: Rewrite the storage API to avoid using dict
+        s_task_info = s_task.get_task_info()
+        assert s_task_info is not None
+        s_artifact_info = s_task_info.get("artifacts", []).pop()
+        assert s_artifact_info is not None
+        s_artifact = s_task.get_artifact(s_artifact_info)
+        assert s_artifact is not None
+        # TODO: Rewrite the storage API to always produce writestreams, for
+        # compatibility with S3 buckets
+        artifact_path, _ = s_artifact.get_artifact_path()
+
+        with DiskAnalyzer(artifact_path, None) as analyzer:
+            for record in analyzer.analyse():
+                await self._ingest_destination.index(
+                    UUID(bytes=task.collected_uuid), record
+                )
 
     async def _handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
         """
@@ -221,6 +252,8 @@ class Worker:
         # Preserve assigned UUID
         if self._uuid is None:
             self._set_uuid(UUID(bytes=first_event.worker_acceptance.uuid))
+        # Perform additional setup
+        await self._setup(first_event.worker_acceptance)
 
     async def start(self) -> None:
         async with insecure_channel(self._controller_addr) as channel:
