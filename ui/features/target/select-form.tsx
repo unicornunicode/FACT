@@ -12,7 +12,7 @@ export interface SelectFormData {
 	selection: string[];
 }
 
-type SelectMode = null | 'target' | 'target+disk' | 'disk';
+type SelectMode = null | 'target' | 'target+disk' | 'target+disk+task' | 'disk';
 
 interface Props {
 	targets: SerializableTarget[] | null;
@@ -41,17 +41,20 @@ const SelectForm = ({targets, mode, onUpdate}: Props) => {
 		selectionUpdate(target.value, target.checked);
 	};
 
-	const renderCheck = (value: string) => (
-		<Form.Check id={'selection+' + value} type="checkbox" value={value} onInput={onInput}/>
-	);
+	const renderCheck = (value: string[]) => {
+		const merge = value.join(',');
+		return (
+			<Form.Check id={'selection+' + merge} type="checkbox" value={merge} onInput={onInput}/>
+		);
+	};
 
 	const renderTarget = (target: SerializableTarget, mode: SelectMode) => (
 		<Fragment key={target.uuid}>
-			<SelectFormTarget target={target} checkbox={selection => mode?.startsWith('target') ? renderCheck(selection) : ''}/>
+			<SelectFormTarget target={target} checkbox={selection => mode?.includes('target') ? renderCheck(selection) : ''}/>
 			<tr>
 				<td/>
 				<td colSpan={3} className="p-0">
-					<Disks target={target} checkbox={selection => mode?.endsWith('disk') ? renderCheck(selection) : ''}/>
+					<Disks target={target} checkbox={selection => mode?.includes('disk') || mode?.includes('task') ? renderCheck(selection) : ''}/>
 				</td>
 			</tr>
 		</Fragment>
