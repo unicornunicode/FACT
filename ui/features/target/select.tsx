@@ -87,9 +87,7 @@ const Select = ({targets, onShowAddTarget}: Props) => {
 			await client.CreateTask({
 				target: new Uint8Array(parseUuid(target)),
 				taskCollectDisk: {
-					selector: {
-						path: disk,
-					},
+					deviceName: disk,
 				},
 			});
 		}

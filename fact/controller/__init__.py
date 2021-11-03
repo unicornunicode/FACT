@@ -243,6 +243,7 @@ class Controller:
                 )
                 diskinfo = (await session.execute(stmt_diskinfo)).scalar_one()
                 diskinfo.collected_at = datetime.utcnow()
+                diskinfo.collected_uuid = task.uuid
 
     async def _pop_worker_next_task(self, uuid: UUID) -> Optional[Tuple[Task, Target]]:
         async with self.session() as session:
@@ -507,6 +508,11 @@ class Management(ManagementServicer):
                 if diskinfo.collected_at is not None
                 else None
             )
+            collected_uuid = (
+                diskinfo.collected_uuid.bytes
+                if diskinfo.collected_uuid is not None
+                else None
+            )
             list_diskinfos.append(
                 ListTargetDiskinfo(
                     device_name=diskinfo.device_name,
@@ -514,6 +520,7 @@ class Management(ManagementServicer):
                     type=diskinfo.type,
                     mountpoint=diskinfo.mountpoint,
                     collected_at=collected_at,
+                    collected_uuid=collected_uuid,
                 )
             )
         return ListTargetDiskinfoResult(diskinfos=list_diskinfos)
