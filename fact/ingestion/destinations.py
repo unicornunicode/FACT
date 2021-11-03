@@ -13,10 +13,10 @@ class DestinationElasticsearch:
 
     async def index(self, task: UUID, record: Record):
         document = asdict(record)
-        document["task"] = str(task)
+        document["fact_task"] = str(task)
         # TODO: Include Target in document
         await self._es.index(
-            index="fact",
+            index=f"fact-{record.fact_type}",
             document=document,
             doc_type=record.fact_type,
         )

@@ -54,7 +54,9 @@ class DiskAnalyzer(Analyzer):
     loop_device_path: Optional[Path] = None
     mount_paths: Optional[List[Path]] = None
 
-    def __init__(self, disk_image_path: Path, artifact_hash: Optional[str]) -> None:
+    def __init__(
+        self, artifact: str, disk_image_path: Path, artifact_hash: Optional[str]
+    ) -> None:
         """Initialise Analyzer for disk images
 
         :param disk_image_path: Path of gzipped disk image for analysis
@@ -68,6 +70,7 @@ class DiskAnalyzer(Analyzer):
                 ": Need to be root to set up and mount disk images."
             )
         super().__init__(disk_image_path, artifact_hash)
+        self.artifact = artifact
         assert disk_image_path.exists()
 
     def __enter__(self):
@@ -192,10 +195,21 @@ class DiskAnalyzer(Analyzer):
         :returns: List of map generators of FileRecord for each file
         """
         assert self.mount_paths is not None
+        assert self.loop_device_path is not None
 
         for mount in self.mount_paths:
+            # HACK: Use the string after the "p" as partition index
+            suffix = mount.name.replace(self.loop_device_path.name, "")
+            partition: Optional[str] = None
+            if len(suffix) > 0:
+                partition = suffix
+
             file_paths = mount.rglob("*")
             for file in file_paths:
+                path = file.relative_to(mount)
                 yield FileRecord.from_stat_result(
-                    str(self.artifact_path), str(mount), file.lstat()
+                    artifact=self.artifact,
+                    partition=partition,
+                    path=str(path),
+                    os_stat=file.lstat(),
                 )

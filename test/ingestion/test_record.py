@@ -9,9 +9,11 @@ def test_asdict_base():
     assert asdict(r) == {"fact_artifact": "test_artifact", "fact_type": "test"}
 
     os_stat = Path("/").lstat()
-    r = FileRecord.from_stat_result("test_artifact", "test", os_stat)
+    r = FileRecord.from_stat_result("test_artifact", "0", "/path", os_stat)
     d = asdict(r)
-    assert d["fact_type"] == "test"
+    assert d["fact_artifact"] == "test_artifact"
+    assert d["fact_type"] == "file"
+    assert d["path"] == "/path"
     assert "st_mode" in d
     assert "st_atime" in d
 
