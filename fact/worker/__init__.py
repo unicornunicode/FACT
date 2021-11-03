@@ -1,6 +1,7 @@
 import logging
 from contextlib import contextmanager
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import List, Optional, Literal, Generator, AsyncIterator
 
 # Protocol
@@ -186,13 +187,26 @@ class Worker:
         assert s_artifact is not None
         # TODO: Rewrite the storage API to always produce writestreams, for
         # compatibility with S3 buckets
-        artifact_path, _ = s_artifact.get_artifact_path()
+        artifact_path = self._storage.get_task_artifact_path(
+            str(s_task.task_uuid), s_artifact
+        )
 
-        with DiskAnalyzer(artifact_path, None) as analyzer:
-            for record in analyzer.analyse():
-                await self._ingest_destination.index(
-                    UUID(bytes=task.collected_uuid), record
-                )
+        # Copy the file into a temporary file
+        with NamedTemporaryFile("wb", suffix=".gz") as f:
+            # HACK: Directly read from artifact_path since we already have it
+            log.debug(str(artifact_path))
+            with open(artifact_path, "rb") as artifact_f:
+                while buf := artifact_f.read(65535):
+                    f.write(buf)
+            f.flush()
+
+            # TODO: Read disk image from a Writable stream
+            log.debug(f.name)
+            with DiskAnalyzer(Path(f.name), None) as analyzer:
+                for record in analyzer.analyse():
+                    await self._ingest_destination.index(
+                        UUID(bytes=task.collected_uuid), record
+                    )
 
     async def _handle_worker_task(self, task: WorkerTask) -> WorkerTaskResult:
         """
