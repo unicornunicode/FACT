@@ -16,7 +16,8 @@ Compose setup.
 
 1. [Docker](https://docs.docker.com/get-docker/)
 2. [Docker Compose](https://docs.docker.com/compose/install/)
-3. A large amount of disk space
+3. A large amount of disk space for disk images
+4. At least 6GB of RAM available
 
 ### Configuring `docker-compose.yml`
 
@@ -40,9 +41,12 @@ the services using:
 docker-compose up -d
 ```
 
+View the [documentation](https://docs.docker.com/compose/reference/) for
+`docker-compose` for other operations.
+
 Once all the services have started, you can open [http://localhost:3000](http://localhost:3000)
 for the UI, and [http://localhost:5601](http://localhost:5601/app/discover) for
-the search UI (Kibana).
+the search UI (Kibana). Data will be populated after your first Ingest.
 
 ### Tips
 
