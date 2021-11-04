@@ -39,23 +39,24 @@ services:
       # accessible throughout the Docker network and on your host.
       # You can get your host IP address by looking up your system's network
       # information.
-      - MANAGEMENT_ENDPOINT=http://HOST_IP:5124
+      - MANAGEMENT_ENDPOINT=http://${HOST_IP}:5124
     networks:
       - fact
     ports:
       - 3000:3000
-    # Alternatively, if you wish to experiment locally, you can make this
-    # container use host networking by commenting out the `environment`,
-    # `networks` and `ports` sections above and set MANAGEMENT_ENDPOINT
-    # accordingly:
-    #environment:
-    #  - MANAGEMENT_ENDPOINT=http://localhost:5124
-    #network_mode: host
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - bootstrap.memory_lock=true
+      # Consider tweaking this to match the amount of available memory, or
+      # remove it entirely. See https://www.elastic.co/guide/en/elasticsearch/reference/7.15/docker.html
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     networks:
       - fact
     volumes:
