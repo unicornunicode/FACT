@@ -48,11 +48,12 @@ def _parse_lsblk_output(raw_lsblk_data: bytes) -> List[Tuple[str, int, str, str]
 
 
 class SSHTargetAccess(TargetAccess):
-    def __init__(self, host: str, user: str, port: int, private_key: str):
+    def __init__(self, host: str, user: str, port: int, private_key: str, become: bool):
         self.host = host
         self.user = user
         self.port = port
         self.private_key = private_key
+        self.become = become
 
     @contextmanager
     def do_ssh(
@@ -78,6 +79,8 @@ class SSHTargetAccess(TargetAccess):
                 str(self.port),
                 self.host,
             ]
+            if self.become:
+                args.append("sudo")
             args.extend(command)
 
             with Popen(

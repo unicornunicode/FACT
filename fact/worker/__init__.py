@@ -124,6 +124,7 @@ class Worker:
                 user=target.ssh.user,
                 port=target.ssh.port,
                 private_key=target.ssh.private_key,
+                become=target.ssh.become,
             )
         else:
             raise Exception(f"Invalid remote access type {access_type}")
