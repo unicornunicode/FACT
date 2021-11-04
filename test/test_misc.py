@@ -1,10 +1,7 @@
-import os
-import pytest
-
+from tempfile import NamedTemporaryFile
 from pathlib import Path
+import gzip
 
-from fact.utils.decompression import decompress_gzip
-from fact.exceptions import GzipExtensionError, GzipDecompressionError
 from fact.utils.hashing import calculate_sha256
 
 
@@ -16,20 +13,12 @@ def test_sha256sum_implementation():
     )
 
 
-def test_invalid_gunzip_extension():
-    with pytest.raises(GzipExtensionError):
-        decompress_gzip(Path("test/files/raw_data"))
-
-
-def test_invalid_gunzip():
-    with pytest.raises(GzipDecompressionError):
-        decompress_gzip(Path("test/files/invalid_gzip.gz"))
-    os.remove("test/files/invalid_gzip")
-
-
 def test_gunzip():
-    decompress_gzip(Path("test/files/test_data.gz"))
-    assert calculate_sha256(Path("test/files/test_data")) == calculate_sha256(
-        Path("test/files/raw_data")
-    )
-    os.remove("test/files/test_data")
+    with NamedTemporaryFile("wb") as disk_f:
+        with gzip.open(Path("test/files/test_data.gz"), "rb") as f:
+            while buf := f.read(65535):
+                disk_f.write(buf)
+        disk_f.flush()
+        assert calculate_sha256(Path(disk_f.name)) == calculate_sha256(
+            Path("test/files/raw_data")
+        )

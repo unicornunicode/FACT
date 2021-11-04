@@ -2,6 +2,7 @@ import logging
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import NamedTemporaryFile
+import gzip
 from typing import List, Optional, Literal, Generator, AsyncIterator
 
 # Protocol
@@ -187,24 +188,22 @@ class Worker:
         s_artifact = s_task.get_artifact(s_artifact_info)
         assert s_artifact is not None
         artifact_name = s_artifact.artifact_name
-        # TODO: Rewrite the storage API to always produce writestreams, for
-        # compatibility with S3 buckets
+        # HACK: Directly obtain a handle to the storage path
         artifact_path = self._storage.get_task_artifact_path(
             str(s_task.task_uuid), s_artifact
         )
 
-        # Copy the file into a temporary file
-        with NamedTemporaryFile("wb", suffix=".gz") as f:
-            # HACK: Directly read from artifact_path since we already have it
-            log.debug(str(artifact_path))
-            with open(artifact_path, "rb") as artifact_f:
-                while buf := artifact_f.read(65535):
-                    f.write(buf)
-            f.flush()
+        # Decompress the disk for mounting
+        # TODO: Put decompression logic in the storage API
+        with NamedTemporaryFile("wb") as disk_f:
+            with gzip.open(artifact_path, "rb") as f:
+                while buf := f.read(65535):
+                    disk_f.write(buf)
+            disk_f.flush()
 
             # TODO: Read disk image from a Writable stream
-            log.debug(f.name)
-            with DiskAnalyzer(Path(f.name), None) as analyzer:
+            log.debug(disk_f.name)
+            with DiskAnalyzer(Path(disk_f.name)) as analyzer:
                 log.debug(f"Opened! {str(analyzer.loop_device_path)}")
                 for path in analyzer.mount_paths:
                     log.debug(f"Mounted: {str(path)}")

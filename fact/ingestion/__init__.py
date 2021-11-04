@@ -5,12 +5,9 @@ from fact.exceptions import (
     LoopDeviceDetachError,
     UnmountPartitionError,
 )
-from fact.utils.decompression import decompress_gzip
-from fact.utils.hashing import calculate_sha256
 
 import subprocess
 from pathlib import Path
-from tempfile import mkstemp
 from os import getegid
 
 from typing import Optional, List, Tuple, Generator
@@ -19,42 +16,14 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class Analyzer:
-    """Base class for all analyzers"""
-
-    def __init__(self, artifact_path: Path, artifact_hash: Optional[str]) -> None:
-        self.artifact_path = artifact_path
-        self.decompress_path: Path
-        if artifact_hash is None:
-            self.gzip_decompress()
-            return
-        if self.hash_integrity_check(artifact_hash):
-            self.gzip_decompress()
-
-    def gzip_decompress(self) -> None:
-        """Decompress artifact at self.artifact_path"""
-        artifact_suffix = "".join(self.artifact_path.suffixes[:-1])
-        _, decompress_path = mkstemp(artifact_suffix, self.artifact_path.stem)
-        self.decompress_path = Path(decompress_path)
-        self.decompress_path.unlink()
-        decompress_gzip(self.artifact_path, self.decompress_path, True)
-
-    def hash_integrity_check(self, expected_hash: str) -> bool:
-        """Checks the hash of the artifact if it matches expected hash
-
-        :param expected_hash: Expected hash of artifact
-        """
-        actual_hash = calculate_sha256(self.artifact_path)
-        return actual_hash == expected_hash
-
-
-class DiskAnalyzer(Analyzer):
+class DiskAnalyzer:
     """Sets up disk images for analysis"""
 
+    disk_image_path: Path
     loop_device_path: Optional[Path] = None
     mount_paths: Optional[List[Path]] = None
 
-    def __init__(self, disk_image_path: Path, artifact_hash: Optional[str]) -> None:
+    def __init__(self, disk_image_path: Path) -> None:
         """Initialise Analyzer for disk images
 
         :param disk_image_path: Path of gzipped disk image for analysis
@@ -67,7 +36,7 @@ class DiskAnalyzer(Analyzer):
                 f"Insufficient permissions to initialise {self.__class__.__name__}"
                 ": Need to be root to set up and mount disk images."
             )
-        super().__init__(disk_image_path, artifact_hash)
+        self.disk_image_path = disk_image_path
         assert disk_image_path.exists()
 
     def __enter__(self):
@@ -113,7 +82,7 @@ class DiskAnalyzer(Analyzer):
             "--show",
             "--read-only",
             "--partscan",
-            self.decompress_path,
+            self.disk_image_path,
         ]
         returncode, stdout, stderr = self._exec_command(args)
         if returncode != 0:
