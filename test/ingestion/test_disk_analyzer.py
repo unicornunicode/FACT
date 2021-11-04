@@ -3,23 +3,25 @@ import pytest
 from fact.ingestion import DiskAnalyzer
 
 from pathlib import Path
+from tempfile import NamedTemporaryFile
+import gzip
 
 
 @pytest.fixture
 def disk_analyzer():
-    disk_gz_path = Path("test/files/disk.raw.gz")
-    try:
-        disk_analyzer = DiskAnalyzer(
-            disk_image_path=disk_gz_path,
-            artifact_hash="cfff29e041c818881a58a5ac1ddc68f6fa05b02504485c327822d6df2e131fa5",
-        )
-    except PermissionError:
-        pytest.skip()
-    return disk_analyzer
+    with NamedTemporaryFile("wb") as disk_f:
+        with gzip.open(Path("test/files/test_data.gz"), "rb") as f:
+            while buf := f.read(65535):
+                disk_f.write(buf)
+        disk_f.flush()
 
-
-def test_init_analyzer(disk_analyzer: DiskAnalyzer):
-    assert disk_analyzer.decompress_path
+        try:
+            disk_analyzer = DiskAnalyzer(
+                disk_image_path=disk_f.name,
+            )
+        except PermissionError:
+            pytest.skip()
+        return disk_analyzer
 
 
 def test_setup_disk(disk_analyzer: DiskAnalyzer):

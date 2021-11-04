@@ -16,6 +16,9 @@ import logging
 
 log = logging.getLogger(__name__)
 
+# TODO: Rewrite the storage API to always produce writestreams, for
+# compatibility with S3 buckets
+
 
 class Artifact:
     """

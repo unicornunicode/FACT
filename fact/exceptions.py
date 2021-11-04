@@ -1,6 +1,3 @@
-from pathlib import Path
-
-
 class FACTError:
     def __init__(self, message: str):
         self.message = message
@@ -17,16 +14,6 @@ class LsblkParseError(FACTError, ValueError):
     def __init__(self, raw_data: bytes):
         super().__init__("Failed to parse lsblk data")
         self.raw_data = raw_data
-
-
-class GzipExtensionError(FACTError, AssertionError):
-    def __init__(self, path: Path):
-        super().__init__(f"Path {path} should end with .gz")
-
-
-class GzipDecompressionError(FACTError, ValueError):
-    def __init__(self, path: Path):
-        super().__init__(f"Failed to decompress gzipped data at {path}")
 
 
 class TaskExistsError(FACTError, Exception):
