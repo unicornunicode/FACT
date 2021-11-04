@@ -85,7 +85,7 @@ const Select = ({targets, onShowAddTarget}: Props) => {
 		setCanScanDisks(targets.length > 0 && disks.length === 0);
 		setCanCaptureDisks(targets.length === 0 && disks.length > 0);
 		setCanCaptureMemory(targets.length > 0 && disks.length === 0);
-		setCanIngest(tasks.length > 0);
+		setCanIngest(targets.length === 0 && tasks.length > 0);
 	}, []);
 
 	const onScanDisks = useCallback(async () => {
@@ -145,7 +145,7 @@ const Select = ({targets, onShowAddTarget}: Props) => {
 				<Button className="me-auto" onClick={onShowAddTarget}>Add target</Button>
 				<Button disabled={!canScanDisks} onClick={onScanDisks}>{renderCount('Scan disks', targetSelection)}</Button>
 				<Button disabled={!canCaptureDisks} onClick={onCaptureDisks}>{renderCount('Capture disks', diskSelection)}</Button>
-				<Button disabled={!canCaptureMemory} onClick={onCaptureMemory}>{renderCount('Capture memory', targetSelection)}</Button>
+				<Button disabled={!canCaptureMemory} style={{display: "none"}} onClick={onCaptureMemory}>{renderCount('Capture memory', targetSelection)}</Button>
 				<Button disabled={!canIngest} onClick={onIngest}>{renderCount('Ingest captures', taskSelection)}</Button>
 			</div>
 			<SelectForm targets={targets} mode="target+disk+task" onUpdate={onSelectionUpdate}/>

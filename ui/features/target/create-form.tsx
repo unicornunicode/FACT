@@ -74,7 +74,7 @@ const CreateForm = ({onSubmit, modal, modalShow, onModalClose}: Props) => {
 						<InputGroup.Text>
 							<Form.Check.Input id="target-ssh-become" type="checkbox" aria-label="Use sudo for privilege escalation" {...register('sshBecome')}/>
 						</InputGroup.Text>
-						<Form.Control required type="text" placeholder="sudo password" disabled={!sshBecome} {...register('sshBecomePassword')}/>
+						<Form.Control required type="text" placeholder="(sudo password currently ignored)" disabled={!sshBecome} {...register('sshBecomePassword')}/>
 					</InputGroup>
 					{sshUser !== 'root' && !sshBecome ? <Form.Text className="text-danger">You should enable <code>sudo</code> if you are using a non-root user</Form.Text> : ''}
 					{sshUser === 'root' && sshBecome ? <Form.Text className="text-danger">You should not need to enable <code>sudo</code> if you are using the root user</Form.Text> : ''}
