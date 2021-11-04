@@ -10,7 +10,7 @@ For a development environment, see [CONTRIBUTING.md](CONTRIBUTING.md)
 ## Docker Compose Single-node Deployment
 
 You can run FACT on platforms supported by Docker Desktop using our Docker
-Compose setup. *This setup is not meant for production use yet.*
+Compose setup. _This setup is not meant for production use yet._
 
 ### Prerequisites
 
