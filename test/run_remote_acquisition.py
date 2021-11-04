@@ -28,7 +28,7 @@ if __name__ == "__main__":
     t = Task(str(uuid4()))
     s = Storage(Path(storage_folder))
 
-    target = SSHTargetAccess(host=host, user=username, port=port, private_key=pkey)
+    target = SSHTargetAccess(host=host, user=username, port=port, private_key=pkey, become=True)
 
     if "image" in test_keywords:
         with Session(s, t, a) as sess:
