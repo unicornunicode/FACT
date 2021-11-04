@@ -145,7 +145,7 @@ const Select = ({targets, onShowAddTarget}: Props) => {
 				<Button className="me-auto" onClick={onShowAddTarget}>Add target</Button>
 				<Button disabled={!canScanDisks} onClick={onScanDisks}>{renderCount('Scan disks', targetSelection)}</Button>
 				<Button disabled={!canCaptureDisks} onClick={onCaptureDisks}>{renderCount('Capture disks', diskSelection)}</Button>
-				<Button disabled={!canCaptureMemory} style={{display: "none"}} onClick={onCaptureMemory}>{renderCount('Capture memory', targetSelection)}</Button>
+				<Button disabled={!canCaptureMemory} style={{display: 'none'}} onClick={onCaptureMemory}>{renderCount('Capture memory', targetSelection)}</Button>
 				<Button disabled={!canIngest} onClick={onIngest}>{renderCount('Ingest captures', taskSelection)}</Button>
 			</div>
 			<SelectForm targets={targets} mode="target+disk+task" onUpdate={onSelectionUpdate}/>
