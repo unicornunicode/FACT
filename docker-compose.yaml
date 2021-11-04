@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 
 services:
   controller:
@@ -6,17 +6,18 @@ services:
     command:
       - --listen-addr
       - 0.0.0.0:5123
+      - --elasticsearch-host
+      - http://elasticsearch:9200
     networks:
       - fact
     volumes:
       - controller-database:/var/lib/fact
   worker:
     image: ghcr.io/unicornunicode/fact-worker:main
+    restart: always
     command:
       - --controller-addr
       - controller:5123
-      - --elasticsearch-host
-      - http://elasticsearch:9200
     networks:
       - fact
     volumes:
