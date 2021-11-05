@@ -2,7 +2,7 @@ version: "3.4"
 
 services:
   controller:
-    image: ghcr.io/unicornunicode/fact-controller:main
+    image: ghcr.io/unicornunicode/fact-controller:${FACT_TAG:-main}
     command:
       - --listen-addr
       - 0.0.0.0:5123
@@ -13,7 +13,7 @@ services:
     volumes:
       - controller-database:/var/lib/fact
   worker:
-    image: ghcr.io/unicornunicode/fact-worker:main
+    image: ghcr.io/unicornunicode/fact-worker:${FACT_TAG:-main}
     restart: always
     command:
       - --controller-addr
@@ -24,7 +24,7 @@ services:
       - worker-data:/var/lib/fact
     privileged: true
   grpcwebproxy:
-    image: ghcr.io/unicornunicode/fact-grpcwebproxy:main
+    image: ghcr.io/unicornunicode/fact-grpcwebproxy:${FACT_TAG:-main}
     command:
       - --backend_addr=controller:5123
       - --server_http_debug_port=5124
@@ -33,7 +33,7 @@ services:
     ports:
       - 5124:5124
   ui:
-    image: ghcr.io/unicornunicode/fact-ui:main
+    image: ghcr.io/unicornunicode/fact-ui:${FACT_TAG:-main}
     environment:
       # Update to match the host IP address. This must be a valid, routed address
       # accessible throughout the Docker network and on your host.

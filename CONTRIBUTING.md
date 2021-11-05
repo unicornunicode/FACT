@@ -5,7 +5,7 @@
 - [Node.js](https://nodejs.org)
 - [Elasticsearch and Kibana](https://www.elastic.co/start)
 - A decent amount of disk space for disk images
-- At least 3GB of RAM available, 8GB recommended
+- At least 4GB of RAM available, 8GB recommended
 
 # Setup
 
