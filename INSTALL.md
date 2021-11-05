@@ -17,16 +17,17 @@ Compose setup. _This setup is not meant for production use yet._
 1. [Docker](https://docs.docker.com/get-docker/)
 2. [Docker Compose](https://docs.docker.com/compose/install/)
 3. A large amount of disk space for disk images
-4. At least 3GB of RAM available, 8GB recommended
+4. At least 4GB of RAM available, 8GB recommended
 
 ### Configuring `docker-compose.yml`
 
 [Download `docker-compose.yml`](https://github.com/unicornunicode/FACT/raw/main/docker-compose.yaml)
-from this repository. Open it in a text editor.
+from this repository.
 
-Replace `${HOST_IP}` with the IP address of your machine running Docker. You can
-find your IP address using your operating system tools or when using Docker
-Desktop, try `host.docker.internal`.
+Open it in a text editor and replace `${HOST_IP}` with the IP address of your
+machine running Docker. Alternatively, set `HOST_IP` in your shell environment
+from which you run `docker-compose`. You can find your IP address using your
+operating system tools or when using Docker Desktop, try `host.docker.internal`.
 
 The IP address can be either the one used to connect to the internet, or when
 using Docker Desktop, the internal IP address of the underlying Docker Desktop
