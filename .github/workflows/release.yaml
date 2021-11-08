@@ -35,7 +35,7 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           context: .
-          file: Dockerfile.ui
+          file: build/Dockerfile.ui
           target: production
           push: true
           tags: ${{ steps.meta-ui.outputs.tags }}
@@ -65,7 +65,7 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           context: .
-          file: Dockerfile
+          file: build/Dockerfile
           target: controller
           push: true
           tags: ${{ steps.meta-controller.outputs.tags }}
@@ -82,7 +82,7 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           context: .
-          file: Dockerfile
+          file: build/Dockerfile
           target: worker
           push: true
           tags: ${{ steps.meta-worker.outputs.tags }}
@@ -112,7 +112,7 @@ jobs:
       - uses: docker/build-push-action@v2
         with:
           context: .
-          file: Dockerfile.grpcwebproxy
+          file: build/Dockerfile.grpcwebproxy
           target: production
           push: true
           tags: ${{ steps.meta-grpcwebproxy.outputs.tags }}
