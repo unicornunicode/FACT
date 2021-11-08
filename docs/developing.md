@@ -1,4 +1,6 @@
-# Requirements
+# Developing FACT
+
+## Requirements
 
 - [Python](https://www.python.org/downloads/)
 - [Poetry](https://python-poetry.org)
@@ -7,7 +9,7 @@
 - A decent amount of disk space for disk images
 - At least 4GB of RAM available, 8GB recommended
 
-# Setup
+## Setup
 
 If you haven't already, clone the repository.
 
@@ -27,7 +29,7 @@ cd ui
 npm install
 ```
 
-# Checks
+## Checks
 
 Before submitting commits or pull requests, consider running the code formatter,
 linter, type checks and tests:
@@ -48,11 +50,11 @@ SKIP_CHECKS=y git commit
 SKIP_CHECKS=y python tools/pre-commit.py
 ```
 
-# Tools
+## Tools
 
 All the tools in `tools/` must be run from the project root.
 
-# Writing Messages
+## Writing Messages
 
 We follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 for commit messages and pull requests:
@@ -83,7 +85,7 @@ mkcommit --autoselect
 With Git hooks installed, your commit messages will automatically be checked
 upon commit.
 
-# Updating gRPC Protocol
+## Updating gRPC Protocol
 
 After any change to the gRPC protocol as defined in the `.proto` files, the
 services, stubs and types must be regenerated using the protocol buffer compiler.
@@ -104,7 +106,7 @@ When `make` is unavailable, directly invoke the compiler:
 python -m grpc_tools.protoc -Iproto --python_out=. --grpc_python_out=. --mypy_out=. --proto_path=proto proto/fact/controller.proto
 ```
 
-# Running
+## Running
 
 For development, a script combining the controller and worker components
 communicating on the loopback interface can be used:
@@ -123,7 +125,7 @@ cd ui
 npm run dev
 ```
 
-# Running (Docker Compose)
+## Running (Docker Compose)
 
 If installing the above requirements is something you don't want to do, you can
 use Docker Compose to run a full development environment. Before you start,
