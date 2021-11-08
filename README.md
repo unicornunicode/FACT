@@ -19,11 +19,17 @@ Then, start the stack using:
 docker-compose up -d
 ```
 
-See [INSTALL.md](INSTALL.md) for more details and other deployment methods.
+See the [installation guide](docs/installation.md) for more details and other
+deployment methods.
 
-# Contributing
+# Using FACT
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+Check out the [user guide](docs/user-guide.md).
+
+# Developing
+
+See the [developer documentation](docs/developing.md) for details on setting up
+a development environment, linting and testing.
 
 # Screenshots
 
