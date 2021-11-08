@@ -5,7 +5,7 @@ To install FACT for deployment
 1. [Docker Compose Single-node Deployment](#docker-compose-single-node-deployment)
 1. [Kubernetes Multi-node Deployment](#kubernetes-multi-node-deployment)
 
-For a development environment, see [CONTRIBUTING.md](CONTRIBUTING.md)
+For a development environment, see the [developer documentation](developing.md)
 
 ## Docker Compose Single-node Deployment
 
