@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-
 import {stringify as uuidStringify, parse as uuidParse} from 'uuid';
 
 interface UuidRaw {
