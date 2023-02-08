@@ -9,7 +9,7 @@ include = ["fact/grpcwebproxy/grpcwebproxy"]
 [tool.poetry.dependencies]
 python = "^3.9"
 grpcio = "^1.41.1"
-protobuf = "^3.19.1"
+protobuf = "^3.19.5"
 SQLAlchemy = "^1.4.25"
 elasticsearch = {extras = ["async"], version = "^7.15.1"}
 # Drivers
